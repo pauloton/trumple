@@ -29,146 +29,145 @@ const SCHEDULE = {
 
 // ============================================================
 // PUZZLE LIBRARY — 10 weekly sets
-// Each puzzle mixes historical events with recent ones.
+// ⚠️  ALL events must be from the LAST 364 DAYS.
+// When adding a new puzzle, drop any event older than 364 days
+// and replace it with something recent.
 // Events stored oldest → newest (correct answer order).
 // ============================================================
 const PUZZLES = {
 
   tw001: {
-    theme: "The Rise",
+    theme: "Day One Chaos",
     events: [
-      { id: 1, title: "Trump descends the Trump Tower escalator and announces his presidential run", hint: "Called Mexican immigrants 'rapists'", year: 2015 },
-      { id: 2, title: "Access Hollywood tape leaked: Trump caught on mic boasting about groping women", hint: "Billy Bush. A bus. A hot mic.", year: 2016 },
-      { id: 3, title: "Trump wins the 2016 presidential election, shocking the world", hint: "The night the pundits got it very wrong", year: 2016 },
-      { id: 4, title: "Trump signs the Muslim travel ban — chaos erupts at airports across America", hint: "Day 7 of his first presidency", year: 2017 },
-      { id: 5, title: "Trump fires FBI Director James Comey, citing 'the Russia thing'", hint: "Then told Russian officials in the Oval Office the next day", year: 2017 },
-      { id: 6, title: "Trump pardons approximately 1,500 January 6 rioters on his first day back in office", hint: "Including those convicted of violent offences", year: 2025 },
-      { id: 7, title: "Trump withdraws the US from the Paris Climate Agreement — for the second time", hint: "He also did this in his first term", year: 2025 },
+      { id: 1, title: "Trump is sentenced to 'unconditional discharge' in the New York hush money case — no jail, no fine", hint: "The most anticlimactic sentencing in legal history", year: 2025 },
+      { id: 2, title: "Trump signs an executive order attempting to end birthright citizenship — courts block it within hours", hint: "14th Amendment. Still applies.", year: 2025 },
+      { id: 3, title: "Trump pardons approximately 1,500 January 6 defendants on his first day back in office", hint: "Including those convicted of violent offences", year: 2025 },
+      { id: 4, title: "Trump fires six inspectors general in an overnight purge — no warning, no reason given", hint: "They were the government's own watchdogs", year: 2025 },
+      { id: 5, title: "Trump imposes sweeping 25% tariffs on Canada and Mexico", hint: "America's two largest trading partners — blindsided", year: 2025 },
+      { id: 6, title: "Trump and Vance publicly berate Zelensky in the Oval Office on live television", hint: "'You're gambling with World War Three'", year: 2025 },
+      { id: 7, title: "Trump announces sweeping tariffs on nearly every country on 'Liberation Day'", hint: "Global markets immediately crater", year: 2025 },
     ],
   },
 
   tw002: {
-    theme: "Firings & Chaos",
+    theme: "DOGE Days",
     events: [
-      { id: 1, title: "Michael Flynn resigns as National Security Advisor after just 24 days", hint: "Lied to the VP about calls with Russia", year: 2017 },
-      { id: 2, title: "Anthony Scaramucci fired as Communications Director after just 10 days", hint: "An all-time White House record", year: 2017 },
-      { id: 3, title: "Jeff Sessions fired as Attorney General the day after midterm elections", hint: "Trump blamed him for recusing from the Russia probe", year: 2018 },
-      { id: 4, title: "Trump impeached by the House for abuse of power and obstruction of Congress", hint: "Third US president ever impeached", year: 2019 },
-      { id: 5, title: "Senate acquits Trump — Mitt Romney is the only Republican to vote guilty", hint: "'My faith is at the heart of who I am'", year: 2020 },
-      { id: 6, title: "Oval Office confrontation: Trump and Vance publicly berate Zelensky on live TV", hint: "'You're not in a good position to dictate'", year: 2025 },
-      { id: 7, title: "Trump announces sweeping 25% tariffs on Canada and Mexico", hint: "Markets wobbled. Ottawa fumed.", year: 2025 },
+      { id: 1, title: "Elon Musk's DOGE team is granted access to sensitive US Treasury payment systems", hint: "Controlling the flow of $6 trillion in federal payments", year: 2025 },
+      { id: 2, title: "USAID is effectively dissolved — thousands of employees placed on administrative leave overnight", hint: "Decades of foreign aid infrastructure dismantled in days", year: 2025 },
+      { id: 3, title: "Musk takes the stage at CPAC wielding a chainsaw as a symbol of government cuts", hint: "The crowd loved it", year: 2025 },
+      { id: 4, title: "Federal judges order DOGE to halt access to government payment and data systems", hint: "The courts pump the brakes", year: 2025 },
+      { id: 5, title: "Courts order the reinstatement of thousands of fired probationary federal employees", hint: "DOGE fired them. Judges said no.", year: 2025 },
+      { id: 6, title: "Trump fires General CQ Brown, Chairman of the Joint Chiefs of Staff", hint: "And the other Joint Chiefs with him", year: 2025 },
+      { id: 7, title: "Musk publicly falls out with Trump over the 'Big Beautiful Bill', calling it a 'betrayal'", hint: "The bromance ends on social media", year: 2025 },
     ],
   },
 
   tw003: {
-    theme: "Russia & Mueller",
+    theme: "Tariff Terror",
     events: [
-      { id: 1, title: "Robert Mueller appointed Special Counsel to investigate Russian election interference", hint: "8 days after Comey was fired", year: 2017 },
-      { id: 2, title: "Mueller indicts 13 Russian nationals for interfering in the 2016 election", hint: "The Internet Research Agency troll farm exposed", year: 2018 },
-      { id: 3, title: "Paul Manafort, Trump's former campaign chairman, convicted on 8 counts of financial fraud", hint: "Flipped, then un-flipped", year: 2018 },
-      { id: 4, title: "Helsinki summit: Trump sides with Putin over his own intelligence agencies", hint: "'I don't see why it would be Russia'", year: 2018 },
-      { id: 5, title: "Mueller submits his final 448-page report to Attorney General Barr", hint: "Barr's 4-page summary caused outrage", year: 2019 },
-      { id: 6, title: "Trump announces massive tariffs on nearly every country on 'Liberation Day'", hint: "Global stock markets crater", year: 2025 },
-      { id: 7, title: "Trump reverses most tariffs, announcing a 90-day pause after markets collapse", hint: "'It takes courage and strength to be flexible'", year: 2025 },
+      { id: 1, title: "Trump announces 25% tariffs on Canada and Mexico, effective immediately", hint: "Justin Trudeau flew to Mar-a-Lago to beg for a pause", year: 2025 },
+      { id: 2, title: "Trump briefly pauses Canada and Mexico tariffs after emergency calls with both leaders", hint: "A 30-day reprieve — for now", year: 2025 },
+      { id: 3, title: "Trump announces sweeping tariffs on nearly every country on 'Liberation Day'", hint: "April 2nd. The markets did not celebrate.", year: 2025 },
+      { id: 4, title: "Dow Jones drops over 4,000 points in two days following Liberation Day tariff announcement", hint: "Trillions wiped from global markets", year: 2025 },
+      { id: 5, title: "Trump announces a 90-day pause on most tariffs after stock markets collapse", hint: "'It takes courage and strength to be flexible'", year: 2025 },
+      { id: 6, title: "China retaliates with tariffs of up to 125% on American goods", hint: "Beijing refused to blink", year: 2025 },
+      { id: 7, title: "US and China announce a 90-day truce and agree to dramatically reduce tariffs on both sides", hint: "Markets surge on the news", year: 2025 },
     ],
   },
 
   tw004: {
-    theme: "Ukraine & Impeachment",
+    theme: "Ukraine Unravels",
     events: [
-      { id: 1, title: "Trump calls Zelensky asking for a 'favor' — conditioning military aid on a Biden investigation", hint: "The famous 'perfect call'", year: 2019 },
-      { id: 2, title: "An anonymous whistleblower files a complaint about Trump's Ukraine call", hint: "The complaint that changed everything", year: 2019 },
-      { id: 3, title: "Trump impeached a second time — for incitement of insurrection after January 6", hint: "First president impeached twice", year: 2021 },
-      { id: 4, title: "Senate acquits Trump again — 57-43, falling short of the 67 votes needed", hint: "Seven Republicans broke ranks", year: 2021 },
-      { id: 5, title: "FBI raids Mar-a-Lago searching for classified government documents", hint: "Trump called it 'dark times for our nation'", year: 2022 },
-      { id: 6, title: "'SignalGate': Senior officials accidentally add a journalist to a Signal chat about classified Yemen strikes", hint: "Defense Secretary Hegseth shared operational details", year: 2025 },
-      { id: 7, title: "Oval Office confrontation: Trump and Vance publicly berate Ukrainian President Zelensky on live TV", hint: "Broadcast live around the world", year: 2025 },
+      { id: 1, title: "Trump suspends US military intelligence sharing with Ukraine", hint: "Zelesnky learned about it from the news", year: 2025 },
+      { id: 2, title: "Trump and Vance ambush Zelensky in the Oval Office — cameras rolling", hint: "Zelensky came looking for support. He didn't get it.", year: 2025 },
+      { id: 3, title: "Trump freezes all military aid to Ukraine in the wake of the Oval Office confrontation", hint: "Hundreds of millions of dollars put on hold", year: 2025 },
+      { id: 4, title: "SignalGate: Defense Secretary Hegseth accidentally adds The Atlantic's editor to a classified group chat about Yemen strikes", hint: "The journalist published everything", year: 2025 },
+      { id: 5, title: "Hegseth doubles down and refuses to resign despite bipartisan calls to step down over the Signal leak", hint: "Trump backs him publicly", year: 2025 },
+      { id: 6, title: "US and Ukraine sign a minerals deal, giving America preferential access to Ukrainian natural resources", hint: "Trump called it 'the deal of the century'", year: 2025 },
+      { id: 7, title: "Trump announces a ceasefire framework for Ukraine after back-channel talks with Moscow", hint: "Zelesnky was not in the room", year: 2025 },
     ],
   },
 
   tw005: {
-    theme: "COVID Chaos",
+    theme: "Courts vs. Trump",
     events: [
-      { id: 1, title: "Trump tells CNBC in Davos: 'We have it totally under control. It's one person.'", hint: "January 22, 2020", year: 2020 },
-      { id: 2, title: "Trump calls Democrat criticism of his COVID response 'their new hoax'", hint: "Same week the CDC warned of community spread", year: 2020 },
-      { id: 3, title: "Trump muses at a briefing: maybe disinfectant could be injected to kill the virus", hint: "Poison control lines flooded with calls", year: 2020 },
-      { id: 4, title: "Bob Woodward book reveals Trump knew COVID was 'deadly' but chose to 'play it down'", hint: "Trump said he didn't want to 'create a panic'", year: 2020 },
-      { id: 5, title: "Trump tests positive for COVID and is rushed to Walter Reed hospital", hint: "Days after a crowded Rose Garden superspreader event", year: 2020 },
-      { id: 6, title: "Trump pardons approximately 1,500 January 6 rioters on his first day back in office", hint: "Including those convicted of violent offences", year: 2025 },
-      { id: 7, title: "Trump announces sweeping 25% tariffs on Canada and Mexico", hint: "Upending decades of trade relations overnight", year: 2025 },
+      { id: 1, title: "A federal judge blocks Trump's birthright citizenship executive order within 14 hours of signing", hint: "Three more courts do the same within days", year: 2025 },
+      { id: 2, title: "Courts block DOGE's access to Treasury payment systems, citing privacy and security concerns", hint: "Temporary restraining order granted", year: 2025 },
+      { id: 3, title: "Federal courts order reinstatement of thousands of federal workers fired without cause", hint: "The mass firings were ruled unlawful", year: 2025 },
+      { id: 4, title: "Courts block Trump's use of the Alien Enemies Act to deport Venezuelan migrants without hearings", hint: "A 1798 wartime law invoked in peacetime", year: 2025 },
+      { id: 5, title: "Supreme Court allows Trump to fire independent agency heads — a major expansion of presidential power", hint: "A decades-old precedent overturned", year: 2025 },
+      { id: 6, title: "Harvard wins a court order blocking the Trump administration's $2.2 billion funding freeze", hint: "The administration had demanded Harvard change its policies", year: 2025 },
+      { id: 7, title: "Supreme Court rules on birthright citizenship, sending the case back to lower courts", hint: "The constitutional question unresolved", year: 2025 },
     ],
   },
 
   tw006: {
-    theme: "The Big Lie",
+    theme: "Liberation Day",
     events: [
-      { id: 1, title: "Biden declared winner of the 2020 election by all major US networks", hint: "Four agonising days of counting", year: 2020 },
-      { id: 2, title: "Rudy Giuliani holds a press conference in a Philadelphia car park next to a dildo shop", hint: "Four Seasons Total Landscaping", year: 2020 },
-      { id: 3, title: "Trump calls Georgia Secretary of State demanding he 'find 11,780 votes'", hint: "The call was recorded", year: 2021 },
-      { id: 4, title: "Trump supporters storm the US Capitol while Congress certifies the election", hint: "Five people died. Hundreds jailed.", year: 2021 },
-      { id: 5, title: "Trump impeached a second time — for incitement of insurrection", hint: "First president impeached twice", year: 2021 },
-      { id: 6, title: "NY judge sentences Trump to 'unconditional discharge' — no jail, no probation, no fine", hint: "The most anticlimactic sentencing in history", year: 2025 },
-      { id: 7, title: "Trump pardons approximately 1,500 January 6 rioters on his first day back in office", hint: "Completing the circle", year: 2025 },
+      { id: 1, title: "Trump teases a major tariff announcement, calling April 2nd 'Liberation Day for America'", hint: "The build-up was ominous", year: 2025 },
+      { id: 2, title: "Trump unveils a chart of tariffs on nearly every country — some rates over 40%", hint: "The formula used confused economists worldwide", year: 2025 },
+      { id: 3, title: "Asian markets open and immediately crash — Japan's Nikkei drops over 7% in a single day", hint: "The worst single-day drop in years", year: 2025 },
+      { id: 4, title: "US markets open and the Dow drops thousands of points over two days", hint: "Trillions in wealth wiped out globally", year: 2025 },
+      { id: 5, title: "Bond markets spike — US Treasury yields surge as investors panic-sell American debt", hint: "The bond market is the signal Trump actually watches", year: 2025 },
+      { id: 6, title: "Trump announces a 90-day pause on most tariffs, sending markets surging back up", hint: "'He blinked' — Financial Times front page", year: 2025 },
+      { id: 7, title: "China is excluded from the 90-day pause — tariffs on Chinese goods raised to 145%", hint: "The trade war with China intensifies", year: 2025 },
     ],
   },
 
   tw007: {
-    theme: "The Indictments",
+    theme: "Campus Crackdown",
     events: [
-      { id: 1, title: "Manhattan grand jury indicts Trump on 34 felony counts over hush money payments", hint: "First ever criminal indictment of a US president", year: 2023 },
-      { id: 2, title: "Federal indictment: 37 counts for illegally retaining classified documents at Mar-a-Lago", hint: "Boxes next to the ballroom. Boxes in the bathroom.", year: 2023 },
-      { id: 3, title: "Federal indictment #2: 4 counts of conspiracy to overturn the 2020 election", hint: "Special Counsel Jack Smith's second bite", year: 2023 },
-      { id: 4, title: "Georgia indicts Trump and 18 co-defendants under RICO for election interference", hint: "All 19 defendants must post mug shots", year: 2023 },
-      { id: 5, title: "Jury finds Trump guilty on all 34 felony counts in New York", hint: "First convicted felon to run for president", year: 2024 },
-      { id: 6, title: "Trump wins the 2024 presidential election — the first convicted felon elected president", hint: "A historic night, in the worst way", year: 2024 },
-      { id: 7, title: "NY judge sentences Trump to 'unconditional discharge' — no jail, no probation, no fine", hint: "The most anticlimactic sentencing in history", year: 2025 },
+      { id: 1, title: "Trump signs executive order threatening to cut funding to universities that allow 'illegal protests'", hint: "Aimed at pro-Palestinian demonstrations", year: 2025 },
+      { id: 2, title: "Columbia University capitulates to Trump administration demands to avoid losing federal funding", hint: "Other universities watched nervously", year: 2025 },
+      { id: 3, title: "Trump administration freezes $2.2 billion in federal grants and contracts to Harvard University", hint: "The largest funding freeze of any American university", year: 2025 },
+      { id: 4, title: "Harvard becomes the first university to formally refuse to comply with the administration's demands", hint: "President Alan Garber: 'We will not surrender'", year: 2025 },
+      { id: 5, title: "Trump threatens to revoke Harvard's tax-exempt status", hint: "A weapon no president has used against a university before", year: 2025 },
+      { id: 6, title: "Harvard sues the Trump administration over the funding freeze", hint: "First Ivy League school to take the fight to court", year: 2025 },
+      { id: 7, title: "A federal judge issues a temporary order blocking the Harvard funding freeze", hint: "Round one to Harvard", year: 2025 },
     ],
   },
 
   tw008: {
-    theme: "International Incidents",
+    theme: "America First Abroad",
     events: [
-      { id: 1, title: "Trump withdraws the United States from the Paris Climate Agreement", hint: "'I was elected to represent Pittsburgh, not Paris'", year: 2017 },
-      { id: 2, title: "Trump meets Kim Jong-un in Singapore — first ever US–North Korea summit", hint: "Gave Kim legitimacy, got nothing binding in return", year: 2018 },
-      { id: 3, title: "Helsinki summit: Trump sides with Putin over his own intelligence agencies", hint: "'I don't see why it would be Russia'", year: 2018 },
-      { id: 4, title: "US kills Iranian General Qasem Soleimani in a drone strike at Baghdad airport", hint: "Brought the US and Iran to the brink of war", year: 2020 },
-      { id: 5, title: "Trump withdraws the US from the Paris Climate Agreement again — on his first day back", hint: "Second time he's done the exact same thing", year: 2025 },
-      { id: 6, title: "Oval Office confrontation: Trump and Vance publicly berate Zelensky on live TV", hint: "Broadcast live around the world", year: 2025 },
-      { id: 7, title: "'Liberation Day': Trump unveils massive tariffs on nearly every country — global markets crater", hint: "Even close allies weren't spared", year: 2025 },
+      { id: 1, title: "Trump withdraws the United States from the World Health Organization — for the second time", hint: "He did it in his first term too. Biden rejoined. Trump left again.", year: 2025 },
+      { id: 2, title: "Trump says the US 'will get' Greenland and refuses to rule out military force to take it", hint: "Denmark called it 'absurd'. Trump didn't care.", year: 2025 },
+      { id: 3, title: "Trump renames the Gulf of Mexico 'Gulf of America' by executive order", hint: "Apple Maps updated it within days", year: 2025 },
+      { id: 4, title: "Trump proposes the US take over Gaza and resettle its 2 million Palestinian residents elsewhere", hint: "Jordan and Egypt both said no", year: 2025 },
+      { id: 5, title: "Trump visits Saudi Arabia, Qatar and the UAE — his first foreign trip of the second term", hint: "Hundreds of billions in investment deals announced", year: 2025 },
+      { id: 6, title: "Trump agrees to a Houthi ceasefire deal brokered by Oman — without telling Israel", hint: "The deal excluded any Israeli hostages or concessions", year: 2025 },
+      { id: 7, title: "Trump and Putin hold a phone call to discuss a potential Ukraine ceasefire framework", hint: "It was not coordinated with NATO allies", year: 2025 },
     ],
   },
 
   tw009: {
-    theme: "The Hush Money Saga",
+    theme: "The Deportation Machine",
     events: [
-      { id: 1, title: "Trump allegedly has an affair with adult film actress Stormy Daniels at a golf tournament", hint: "Melania had just given birth to Barron", year: 2006 },
-      { id: 2, title: "Michael Cohen wires Stormy Daniels $130,000 in hush money — 11 days before the election", hint: "Through a shell company, naturally", year: 2016 },
-      { id: 3, title: "Rudy Giuliani accidentally confirms on live TV that Trump knew about the payment", hint: "He was supposed to be helping", year: 2018 },
-      { id: 4, title: "Michael Cohen pleads guilty to campaign finance violations and says Trump 'directed' him", hint: "Federal court. Under oath.", year: 2018 },
-      { id: 5, title: "Trump indicted in Manhattan on 34 felony counts linked to the Stormy Daniels payment", hint: "The first domino to fall", year: 2023 },
-      { id: 6, title: "Jury convicts Trump on all 34 felony counts — first US president found guilty of a crime", hint: "The verdict was unanimous", year: 2024 },
-      { id: 7, title: "NY judge sentences Trump to 'unconditional discharge' — no jail, no probation, no fine", hint: "The most anticlimactic ending in legal history", year: 2025 },
+      { id: 1, title: "Trump declares a national emergency at the southern border on his first day back in office", hint: "Day one. Executive order number one.", year: 2025 },
+      { id: 2, title: "Trump invokes the Alien Enemies Act — a 1798 wartime law — to deport Venezuelan migrants", hint: "Courts immediately challenge it", year: 2025 },
+      { id: 3, title: "The US deports migrants to El Salvador, paying the country to house them in a notorious mega-prison", hint: "President Bukele was happy to oblige", year: 2025 },
+      { id: 4, title: "Kilmar Abrego Garcia, a Maryland man with no criminal record, is mistakenly deported to an El Salvador prison", hint: "Courts order his return. The administration refuses.", year: 2025 },
+      { id: 5, title: "Supreme Court orders the Trump administration to 'facilitate' the return of the wrongly deported man", hint: "The administration argues it cannot compel El Salvador", year: 2025 },
+      { id: 6, title: "ICE conducts raids in multiple major cities simultaneously, arresting hundreds in a single operation", hint: "The largest coordinated immigration enforcement action in decades", year: 2025 },
+      { id: 7, title: "Trump signs an executive order ending 'catch and release' and mandating detention for all illegal border crossers", hint: "The courts immediately challenge it", year: 2025 },
     ],
   },
 
   tw010: {
-    theme: "Second Term Turbo",
+    theme: "Power Grab",
     events: [
-      { id: 1, title: "Trump pardons approximately 1,500 January 6 defendants on his first day back in office", hint: "Including those convicted of violent offences", year: 2025 },
-      { id: 2, title: "Trump signs executive orders dismantling DEI programmes across the federal government", hint: "Dozens of orders signed in the first hours", year: 2025 },
-      { id: 3, title: "Trump announces sweeping 25% tariffs on Canada and Mexico", hint: "Markets wobbled. Ottawa fumed.", year: 2025 },
-      { id: 4, title: "Oval Office confrontation: Trump and Vance publicly berate Zelensky on live TV", hint: "'You're not in a good position to dictate'", year: 2025 },
-      { id: 5, title: "'SignalGate': Senior officials accidentally add a journalist to a Signal chat discussing classified Yemen strike plans", hint: "Defense Secretary Hegseth shared operational details", year: 2025 },
-      { id: 6, title: "'Liberation Day': Trump unveils massive tariffs on nearly every country — global stock markets crater", hint: "Even allies weren't spared", year: 2025 },
-      { id: 7, title: "Trump reverses most tariffs, announcing a 90-day pause after markets collapse", hint: "'It takes courage and strength to be flexible'", year: 2025 },
+      { id: 1, title: "Trump signs over 100 executive orders in his first week back in office — a presidential record", hint: "Many were immediately challenged in court", year: 2025 },
+      { id: 2, title: "Trump fires the heads of the FTC, FCC and other independent regulatory agencies", hint: "Agencies designed to be independent from the president", year: 2025 },
+      { id: 3, title: "Trump pardons Ross Ulbricht, founder of the dark web drugs marketplace Silk Road", hint: "A promise made at a Libertarian convention during the campaign", year: 2025 },
+      { id: 4, title: "Trump signs executive orders dismantling all DEI programmes across the federal government", hint: "Diversity, Equity and Inclusion — gone by lunch", year: 2025 },
+      { id: 5, title: "Trump moves to dismantle the Department of Education by executive order", hint: "He promised to close it on the campaign trail", year: 2025 },
+      { id: 6, title: "Trump administration demands control over who the Associated Press can send to the White House", hint: "AP sues. Press freedom organisations condemn it.", year: 2025 },
+      { id: 7, title: "Trump signs the 'One Big Beautiful Bill' — sweeping tax cuts paired with major spending reductions", hint: "Critics say it adds trillions to the debt", year: 2025 },
     ],
   },
 
 };
 
-// ============================================================
-// SEEDED SHUFFLE (same shuffle for same week, for everyone)
-// ============================================================
 function seededRandom(seed) {
   let s = seed;
   return function () {
