@@ -270,7 +270,7 @@ function IntroScreen({ onStart, puzzle }) {
         }}
           onMouseEnter={e => e.target.style.transform="scale(1.05)"}
           onMouseLeave={e => e.target.style.transform="scale(1)"}
-        >SORT THE CHAOS</button>
+        >SORT THE CHAOS!</button>
       </div>
     </div>
   );
