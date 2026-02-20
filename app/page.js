@@ -259,7 +259,7 @@ function IntroScreen({ onStart, puzzle }) {
 
       <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", alignItems:"center" }}>
         <AnimatedLogo />
-        <div style={{ fontSize:"0.8rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", margin:"1.4rem 0 3rem" }}>
+        <div style={{ fontSize:"0.8rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", margin:"0.5rem 0 0.8rem" }}>
           {dateLabel}
         </div>
         <button onClick={onStart} style={{
