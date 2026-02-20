@@ -194,9 +194,9 @@ function AnimatedLogo() {
     return () => clearInterval(interval);
   }, []);
 
-  const lw = "clamp(1.6rem, 5.6vw, 3.2rem)";
-  const fs = "clamp(1.6rem, 5.6vw, 3.2rem)";
-  const h  = "clamp(2rem, 7vw, 3.8rem)";
+  const lw = "clamp(2.4rem, 8.4vw, 4.8rem)";
+  const fs = "clamp(2.4rem, 8.4vw, 4.8rem)";
+  const h  = "clamp(3rem, 10.5vw, 5.7rem)";
 
   return (
     <div style={{ position:"relative", height:h, width:"calc("+lw+" * "+n+")", margin:"0 auto" }}>
@@ -206,7 +206,7 @@ function AnimatedLogo() {
           <span key={correctIdx} style={{
             position:"absolute", left:"calc("+lw+" * "+dispIdx+")", top:0,
             width:lw, textAlign:"center", fontSize:fs, fontWeight:900,
-            fontFamily:"'Space Grotesk', sans-serif",
+            fontFamily:"'Nunito', sans-serif",
             color: solved ? C.text : C.dimmer,
             transition:"left 0.16s cubic-bezier(0.34,1.56,0.64,1), color 0.5s ease",
             lineHeight:1.1, userSelect:"none",
@@ -267,10 +267,11 @@ function IntroScreen({ onStart, puzzle }) {
           padding:"1rem 3rem", fontSize:"1.05rem", fontWeight:700, cursor:"pointer",
           fontFamily:"'Space Grotesk', sans-serif", letterSpacing:"0.05em",
           transition:"transform 0.2s ease", boxShadow:"0 4px 24px rgba(178,34,52,0.5)",
+          display:"block", margin:"0 auto", textAlign:"center", width:"clamp(220px, 65vw, 280px)",
         }}
           onMouseEnter={e => e.target.style.transform="scale(1.05)"}
           onMouseLeave={e => e.target.style.transform="scale(1)"}
-        >SORT THE CHAOS!</button>
+        >SORT THE CHAOS</button>
       </div>
     </div>
   );
@@ -713,7 +714,7 @@ export default function TrumpleApp() {
   );
 }
 
-const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700;900&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');" +
+const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Space+Grotesk:wght@300;400;600;700;900&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');" +
   "* { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
   "body { background: #0A1628; margin: 0; overflow: hidden; }" +
   "html { overflow: hidden; }" +
