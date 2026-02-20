@@ -295,7 +295,7 @@ function RevealScreen({ events, onRevealComplete }) {
             opacity: i < revealed ? 1 : 0, transform: i < revealed ? "translateX(0)" : "translateX(-20px)",
             transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",
           }}>
-            <div style={{ fontSize:"clamp(0.82rem,2.3vw,0.98rem)", fontWeight:600, color:C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.3, textAlign:"center" }}>
+            <div style={{ fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color:C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18, textAlign:"center" }}>
               {event.title}
             </div>
           </div>
@@ -397,7 +397,7 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
               transition: isLocked ? "background 0.3s ease" : "none",
               animation: isWrong ? "shake 0.4s ease" : isLocked ? "celebrate 0.5s ease" : "none",
             }}>
-            <div style={{ fontSize:"clamp(0.8rem,2.2vw,0.95rem)", fontWeight:600, color: isLocked ? C.bg : C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.3, textAlign:"center" }}>
+            <div style={{ fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color: isLocked ? C.bg : C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18, textAlign:"center" }}>
               {event.title}
             </div>
           </div>
@@ -407,7 +407,7 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
   );
 }
 
-// Live star row shown during play — dims one star per failed attempt
+// Live star row shown during play, dims one star per failed attempt
 function LiveStars({ failedAttempts }) {
   const total = MAX_ATTEMPTS;
   return (
@@ -428,7 +428,7 @@ function LiveStars({ failedAttempts }) {
   );
 }
 
-// Game Over screen — shows correct answer with hints
+// Game Over screen, shows correct answer with hints
 function GameOverScreen({ events, onViewChain, onMount }) {
   const [stats, setStats] = useState({ played: 0, perfects: 0, best: null });
   const hasRun = useRef(false);
@@ -455,7 +455,7 @@ function GameOverScreen({ events, onViewChain, onMount }) {
       <div style={{ fontSize:"2rem", fontWeight:900, fontFamily:"'Space Grotesk', sans-serif", color:C.red, letterSpacing:"-0.01em" }}>Game Over.</div>
       <div style={{ fontSize:"0.8rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", marginTop:"0.4rem", marginBottom:"1.25rem" }}>Here&apos;s what the order was:</div>
 
-      {/* Correct answer — compact cards */}
+      {/* Correct answer, compact cards */}
       <div style={{ width:"100%", display:"flex", flexDirection:"column", gap:"0.3rem" }}>
         {events.map((ev, i) => (
           <div key={ev.id} style={{ background:C.card, border:"1px solid "+C.border, borderRadius:"10px", padding:"0.55rem 1rem", display:"flex", alignItems:"baseline", gap:"0.6rem" }}>
@@ -470,7 +470,7 @@ function GameOverScreen({ events, onViewChain, onMount }) {
         {[
           { label:"PLAYED",         val: stats.played   || 1 },
           { label:"PERFECT SCORES", val: stats.perfects || 0 },
-          { label:"BEST",           val: stats.best ? formatTime(stats.best).display : "—" },
+          { label:"BEST",           val: stats.best ? formatTime(stats.best).display : "-" },
         ].map(({ label, val }) => (
           <div key={label} style={{ flex:1, background:C.card, border:"1px solid "+C.border, borderRadius:"12px", padding:"0.75rem 0.4rem", textAlign:"center" }}>
             <div style={{ fontSize:"0.48rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"0.3rem", lineHeight:1.3 }}>{label}</div>
@@ -510,7 +510,7 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
           {events.map(event => (
             <div key={event.id} style={{ background:C.locked, borderRadius:"12px", padding:"clamp(0.4rem,1.2vh,1rem) clamp(1rem,3vw,1.5rem)", display:"flex", alignItems:"center", justifyContent:"center", flex:1, minHeight:0, overflow:"hidden" }}>
               <div style={{ textAlign:"center" }}>
-                <div style={{ fontSize:"clamp(0.8rem,2.2vw,0.95rem)", fontWeight:600, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.3 }}>{event.title}</div>
+                <div style={{ fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18 }}>{event.title}</div>
                 <div style={{ fontSize:"clamp(0.6rem,1.6vw,0.72rem)", color:"rgba(10,22,40,0.6)", marginTop:"0.15rem", fontFamily:"'JetBrains Mono', monospace" }}>{event.hint}</div>
                 <div style={{ fontSize:"clamp(0.6rem,1.6vw,0.7rem)", color:"rgba(10,22,40,0.4)", marginTop:"0.08rem", fontFamily:"'JetBrains Mono', monospace", fontWeight:700 }}>{event.year}</div>
               </div>
@@ -685,7 +685,7 @@ export default function TrumpleApp() {
       return;
     }
 
-    // Wrong — burn a star
+    // Wrong, burn a star
     const newFailed = failedAttempts + 1;
     setFailedAttempts(newFailed);
 
