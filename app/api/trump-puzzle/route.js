@@ -6,93 +6,112 @@ import { NextResponse } from "next/server";
 // first 5 eras, and 2 from Era F (2025) = 7 total.
 //
 // TO ADD AN EVENT: append to the right era. Done.
+//
+// ⚠️  TITLE RULES, enforced forever:
+//   • MAX 50 characters per title (fits 2 lines on mobile)
+//   • NO em dashes (they are stripped automatically at serve time)
+//   • Be punchy. Cut every word that is not essential.
+//   • Mix: policy events, gaffes, scandals and personal moments.
+//   • Test: count the chars before you commit.
 // ============================================================
 const POOL = {
 
   // Era A: 2015–2016, The Rise
   A: [
-    { id: "a1", title: "Trump descends the Trump Tower escalator to announce his presidential run, calling Mexican immigrants 'rapists'", hint: "June 16, 2015", year: 2015 },
-    { id: "a2", title: "Trump calls John McCain 'not a war hero, I like people who weren't captured'", hint: "Iowa Family Leadership Summit, July 2015", year: 2015 },
-    { id: "a3", title: "Trump calls for a 'total and complete shutdown of Muslims entering the United States'", hint: "December 2015", year: 2015 },
-    { id: "a4", title: "Access Hollywood tape leaked: Trump caught on mic boasting about groping women without consent", hint: "Billy Bush. A bus. A hot mic.", year: 2016 },
-    { id: "a5", title: "Trump refuses to commit to accepting the election results at the final presidential debate", hint: "Clinton called it 'horrifying'", year: 2016 },
-    { id: "a6", title: "Trump wins the 2016 presidential election, shocking pollsters and pundits worldwide", hint: "The night everyone got it wrong", year: 2016 },
-    { id: "a7", title: "Trump settles the Trump University fraud lawsuit for $25 million, no admission of wrongdoing", hint: "Students claimed they were defrauded of thousands", year: 2016 },
-    { id: "a8", title: "Sean Spicer insists Trump's inauguration had 'the largest audience ever', aerial photos prove otherwise", hint: "Alternative facts. Day one.", year: 2017 },
+    { id: "a1",  title: "Calls Mexican immigrants 'rapists'", hint: "June 16, 2015 launch speech", year: 2015 },
+    { id: "a2",  title: "'I like people who weren't captured'", hint: "Iowa. The John McCain dig.", year: 2015 },
+    { id: "a3",  title: "Calls for a total ban on Muslims entering the US", hint: "December 2015", year: 2015 },
+    { id: "a4",  title: "Access Hollywood: brags about groping women", hint: "Billy Bush. A hot mic. A bus.", year: 2016 },
+    { id: "a5",  title: "Won't say he'll accept the election result", hint: "Clinton called it 'horrifying'", year: 2016 },
+    { id: "a6",  title: "Wins 2016, shocking the world", hint: "The night everyone got it wrong", year: 2016 },
+    { id: "a7",  title: "Settles Trump University fraud for $25M", hint: "Students said they were defrauded", year: 2016 },
+    { id: "a8",  title: "Spicer: inauguration crowd 'the largest ever'", hint: "Alternative facts. Day one.", year: 2017 },
+    { id: "a9",  title: "Mocks a disabled reporter at a rally", hint: "Reporters and the public were appalled", year: 2015 },
+    { id: "a10", title: "'I could shoot someone on 5th Ave' and win", hint: "Iowa rally. He wasn't joking.", year: 2016 },
   ],
 
   // Era B: 2017–2018, First Term Chaos
   B: [
-    { id: "b1",  title: "Trump signs the Muslim travel ban on day 7 of his presidency, chaos erupts at airports across America", hint: "Courts block it. He tries twice more.", year: 2017 },
-    { id: "b2",  title: "Michael Flynn resigns as National Security Advisor after just 24 days, lied to the VP about Russia calls", hint: "The shortest NSA tenure in history", year: 2017 },
-    { id: "b3",  title: "Trump fires FBI Director James Comey, later admitting it was because of 'the Russia thing'", hint: "Then told Russian officials in the Oval Office the very next day", year: 2017 },
-    { id: "b4",  title: "Anthony Scaramucci is fired as White House Communications Director after just 10 days", hint: "An all-time record even by Trump standards", year: 2017 },
-    { id: "b5",  title: "Trump says there were 'very fine people on both sides' after a white nationalist rally in Charlottesville kills a protester", hint: "A remark that follows him still", year: 2017 },
-    { id: "b6",  title: "Trump tweets that North Korea's nuclear button is 'much bigger and more powerful' than Kim Jong-un's", hint: "New Year's Day, 2018", year: 2018 },
-    { id: "b7",  title: "Trump launches a trade war with China, imposing tariffs on $34 billion of Chinese goods", hint: "China retaliates immediately, dollar for dollar", year: 2018 },
-    { id: "b8",  title: "Trump meets Kim Jong-un in Singapore, the first sitting US president to meet a North Korean leader", hint: "A historic handshake. No deal ever followed.", year: 2018 },
-    { id: "b9",  title: "Trump's 'zero tolerance' policy separates over 2,000 migrant children from their parents at the border", hint: "Children in cages. Global outrage.", year: 2018 },
-    { id: "b10", title: "Jeff Sessions resigns as Attorney General the day after the midterms, pushed out by Trump", hint: "'I don't have an Attorney General', Trump, for months", year: 2018 },
+    { id: "b1",  title: "Travel ban signed, chaos at airports", hint: "Courts block it. He tries twice more.", year: 2017 },
+    { id: "b2",  title: "Flynn resigns after 24 days for lying", hint: "Shortest NSA tenure in history", year: 2017 },
+    { id: "b3",  title: "Fires Comey over 'the Russia thing'", hint: "His own words. On tape.", year: 2017 },
+    { id: "b4",  title: "Tells Russians he fired 'nut job' Comey", hint: "In the Oval. The next day.", year: 2017 },
+    { id: "b5",  title: "Scaramucci fired after just 10 days", hint: "An all-time record, even by Trump standards", year: 2017 },
+    { id: "b6",  title: "'Fine people on both sides' at Charlottesville", hint: "A remark that follows him still", year: 2017 },
+    { id: "b7",  title: "'Covfefe': the midnight tweet no one decoded", hint: "He never explained it. Neither did Spicer.", year: 2017 },
+    { id: "b8",  title: "Throws paper towels to Puerto Rico survivors", hint: "Hurricane Maria. A crowd catch. Backlash.", year: 2017 },
+    { id: "b9",  title: "Tweets his nuclear button is bigger than Kim's", hint: "New Year's Day, 2018", year: 2018 },
+    { id: "b10", title: "$34B in tariffs slapped on China", hint: "China retaliates dollar for dollar", year: 2018 },
+    { id: "b11", title: "First US president to meet Kim Jong Un", hint: "Historic handshake. No deal ever followed.", year: 2018 },
+    { id: "b12", title: "2,000+ migrant children separated at border", hint: "Children in cages. Global outrage.", year: 2018 },
   ],
 
   // Era C: 2019–2020, Impeachment I & COVID
   C: [
-    { id: "c1", title: "Trump asks Ukraine's president to 'do us a favour' and investigate Biden, triggering his first impeachment", hint: "July 25, 2019. The 'perfect phone call'.", year: 2019 },
-    { id: "c2", title: "Trump is impeached for the first time by the House of Representatives, acquitted by the Senate", hint: "Charges: abuse of power and obstruction of Congress", year: 2019 },
-    { id: "c3", title: "Trump orders the drone strike assassination of Iranian General Qasem Soleimani in Baghdad", hint: "The world braced for World War Three", year: 2020 },
-    { id: "c4", title: "Trump says the coronavirus is 'totally under control' and will disappear 'like a miracle'", hint: "February 2020. It did not disappear.", year: 2020 },
-    { id: "c5", title: "Trump suggests injecting disinfectant as a possible COVID treatment at a White House briefing", hint: "Bleach manufacturers issued safety warnings", year: 2020 },
-    { id: "c6", title: "Trump refuses to commit to a peaceful transfer of power if he loses the 2020 election", hint: "Asked directly by a reporter. Did not answer.", year: 2020 },
-    { id: "c7", title: "Trump fires Defense Secretary Mark Esper by tweet the day after the 2020 election", hint: "Esper had refused to use the military against protesters", year: 2020 },
-    { id: "c8", title: "Trump signs the USMCA to replace NAFTA, which he had called 'the worst trade deal ever made'", hint: "His signature legislative win of the first term", year: 2020 },
+    { id: "c1",  title: "Calls Ukraine, asks for Biden dirt", hint: "July 25, 2019. 'The perfect phone call.'", year: 2019 },
+    { id: "c2",  title: "Impeached for abuse of power, acquitted", hint: "Charges: abuse of power, obstruction", year: 2019 },
+    { id: "c3",  title: "Doctored hurricane map with a Sharpie", hint: "Dorian wasn't heading to Alabama. He said it was.", year: 2019 },
+    { id: "c4",  title: "Orders assassination of Iran's Soleimani", hint: "World braced for World War Three", year: 2020 },
+    { id: "c5",  title: "'Totally under control': COVID will disappear", hint: "February 2020. It did not disappear.", year: 2020 },
+    { id: "c6",  title: "Suggests injecting bleach as a COVID cure", hint: "Bleach manufacturers issued safety warnings", year: 2020 },
+    { id: "c7",  title: "Tear-gases protesters for a Bible photo-op", hint: "Lafayette Square. A moment of disbelief.", year: 2020 },
+    { id: "c8",  title: "Won't commit to a peaceful transfer of power", hint: "Asked directly. Did not answer.", year: 2020 },
+    { id: "c9",  title: "Fires Defense Secretary Esper by tweet", hint: "Esper refused to use troops on protesters", year: 2020 },
+    { id: "c10", title: "Signs USMCA, replacing 'worst deal ever'", hint: "His signature legislative win of the first term", year: 2020 },
   ],
 
   // Era D: 2021–2022, Jan 6 & Aftermath
   D: [
-    { id: "d1", title: "January 6: A mob of Trump supporters storms the US Capitol as Congress certifies the 2020 election results", hint: "The first breach of the Capitol since 1814", year: 2021 },
-    { id: "d2", title: "Trump is impeached for the second time, for incitement of insurrection following January 6", hint: "First president in history to be impeached twice", year: 2021 },
-    { id: "d3", title: "Trump calls Putin 'very savvy' and 'a genius' after Russia recognises breakaway Ukrainian regions", hint: "Days before the full invasion of Ukraine", year: 2022 },
-    { id: "d4", title: "FBI raids Mar-a-Lago and recovers over 300 classified documents Trump took from the White House", hint: "Including documents marked Top Secret/SCI", year: 2022 },
-    { id: "d5", title: "Trump announces his 2024 presidential campaign from Mar-a-Lago, three days after the midterms", hint: "Two federal indictments still to come at that point", year: 2022 },
-    { id: "d6", title: "Trump calls for the 'termination' of parts of the US Constitution to reinstate him after the 2020 election", hint: "Even senior Republicans distanced themselves", year: 2022 },
-    { id: "d7", title: "Elon Musk acquires Twitter and immediately reinstates Trump's account, banned since January 7, 2021", hint: "Trump returns to the platform he helped build", year: 2022 },
+    { id: "d1",  title: "Jan 6: Supporters storm the US Capitol", hint: "First breach of the Capitol since 1814", year: 2021 },
+    { id: "d2",  title: "Impeached a second time for inciting Jan 6", hint: "First in history. Acquitted again.", year: 2021 },
+    { id: "d3",  title: "Calls Putin 'a genius' as Russia invades", hint: "Days before the full invasion of Ukraine", year: 2022 },
+    { id: "d4",  title: "Takes the Fifth 440 times in NY deposition", hint: "New York Attorney General fraud case, 2022", year: 2022 },
+    { id: "d5",  title: "FBI raids Mar-a-Lago, finds 300+ classified docs", hint: "Including Top Secret/SCI documents", year: 2022 },
+    { id: "d6",  title: "Launches 2024 run three days after midterms", hint: "Two federal indictments still to come", year: 2022 },
+    { id: "d7",  title: "Calls to 'terminate' parts of the Constitution", hint: "Even senior Republicans distanced themselves", year: 2022 },
+    { id: "d8",  title: "Musk reinstates Trump's banned Twitter account", hint: "Trump had helped build the platform he lost", year: 2022 },
+    { id: "d9",  title: "'I am your retribution' at CPAC", hint: "March 2023. The grievance tour continues.", year: 2023 },
   ],
 
   // Era E: 2023–2024, Indictments & Return
   E: [
-    { id: "e1", title: "Trump becomes the first former US president to be criminally indicted, hush money payments to Stormy Daniels", hint: "Manhattan DA Alvin Bragg. 34 counts.", year: 2023 },
-    { id: "e2", title: "Trump is indicted a second time, for allegedly mishandling classified documents at Mar-a-Lago", hint: "The boxes in the bathroom. The pool in the background.", year: 2023 },
-    { id: "e3", title: "Trump is indicted a third time, for allegedly conspiring to overturn the 2020 election results", hint: "Jack Smith. Four federal counts.", year: 2023 },
-    { id: "e4", title: "Trump is indicted a fourth time in Georgia, for allegedly conspiring to overturn the state's 2020 results", hint: "RICO charges. 18 co-defendants.", year: 2023 },
-    { id: "e5", title: "Trump wins the Iowa caucuses with over 51%, a record margin for a non-incumbent Republican", hint: "The primary was effectively over that night", year: 2024 },
-    { id: "e6", title: "Supreme Court rules presidents have broad immunity from criminal prosecution for official acts", hint: "A landmark ruling that reshapes the presidency forever", year: 2024 },
-    { id: "e7", title: "Trump survives an assassination attempt at a Pennsylvania rally, a bullet grazes his right ear", hint: "He pumps his fist. The photo goes around the world.", year: 2024 },
-    { id: "e8", title: "Trump becomes the first former US president convicted of felony crimes, guilty on all 34 counts", hint: "Hush money. Manhattan. Unanimous verdict.", year: 2024 },
-    { id: "e9", title: "Trump wins the 2024 presidential election, defeating Kamala Harris decisively", hint: "Only the second president in history to serve non-consecutive terms", year: 2024 },
+    { id: "e1",  title: "Indicted over hush money to Stormy Daniels", hint: "Manhattan DA. 34 counts.", year: 2023 },
+    { id: "e2",  title: "Second indictment: classified docs at Mar-a-Lago", hint: "The boxes in the bathroom. The pool photo.", year: 2023 },
+    { id: "e3",  title: "Third indictment: conspired to overturn 2020", hint: "Jack Smith. Four federal counts.", year: 2023 },
+    { id: "e4",  title: "Fourth indictment: RICO charges in Georgia", hint: "18 co-defendants. Mugshot released.", year: 2023 },
+    { id: "e5",  title: "Confuses Nikki Haley with Nancy Pelosi", hint: "At a New Hampshire rally. Twice.", year: 2024 },
+    { id: "e6",  title: "Falls asleep during his own criminal trial", hint: "New York. Court reporters noticed.", year: 2024 },
+    { id: "e7",  title: "Wins Iowa with 51%, record for non-incumbent", hint: "The primary was effectively over that night", year: 2024 },
+    { id: "e8",  title: "Supreme Court grants presidents broad immunity", hint: "A landmark ruling that reshapes the presidency", year: 2024 },
+    { id: "e9",  title: "Survives assassination attempt, ear grazed", hint: "He pumps his fist. The photo goes around the world.", year: 2024 },
+    { id: "e10", title: "Convicted on all 34 felony counts", hint: "Hush money. Manhattan. Unanimous verdict.", year: 2024 },
+    { id: "e11", title: "Wins 2024, defeats Kamala Harris", hint: "Only second president to serve non-consecutive terms", year: 2024 },
   ],
 
   // Era F: 2025, Second Term (2 always drawn per week)
   F: [
-    { id: "f1",  title: "Trump is sentenced to 'unconditional discharge' in the hush money case, no jail, no fine, no probation", hint: "The most anticlimactic sentencing in legal history", year: 2025 },
-    { id: "f2",  title: "Trump pardons approximately 1,500 January 6 defendants on his first day back in office", hint: "Including those convicted of violent offences", year: 2025 },
-    { id: "f3",  title: "Trump signs an executive order attempting to end birthright citizenship, courts block it within hours", hint: "14th Amendment. Still applies.", year: 2025 },
-    { id: "f4",  title: "Trump fires six inspectors general in an overnight purge with no warning or explanation", hint: "The government's own internal watchdogs, gone", year: 2025 },
-    { id: "f5",  title: "Elon Musk's DOGE team is granted access to sensitive US Treasury payment systems", hint: "Controlling the flow of $6 trillion in federal payments", year: 2025 },
-    { id: "f6",  title: "USAID is effectively dissolved, thousands of employees placed on leave overnight", hint: "Decades of foreign aid infrastructure dismantled in days", year: 2025 },
-    { id: "f7",  title: "Trump imposes sweeping 25% tariffs on Canada and Mexico, America's two largest trading partners", hint: "Ottawa and Mexico City were blindsided", year: 2025 },
-    { id: "f8",  title: "Trump and Vance publicly ambush and berate Zelensky in the Oval Office on live television", hint: "'You're gambling with World War Three'", year: 2025 },
-    { id: "f9",  title: "SignalGate: Defense Secretary Hegseth accidentally adds The Atlantic's editor to a classified chat about Yemen strikes", hint: "The journalist published every word of it", year: 2025 },
-    { id: "f10", title: "Trump unveils tariffs on nearly every country on 'Liberation Day', global markets immediately crater", hint: "April 2, 2025. Nobody felt liberated.", year: 2025 },
-    { id: "f11", title: "Trump announces a 90-day pause on most tariffs after stock markets lose trillions in two days", hint: "'It takes courage and strength to be flexible'", year: 2025 },
-    { id: "f12", title: "The US deports migrants to El Salvador, paying the country to house them in a notorious mega-prison", hint: "President Bukele was happy to oblige", year: 2025 },
-    { id: "f13", title: "Trump fires General CQ Brown, Chairman of the Joint Chiefs, and the other Joint Chiefs along with him", hint: "Unprecedented mass firing of the entire military leadership", year: 2025 },
-    { id: "f14", title: "Trump administration freezes $2.2 billion in federal grants to Harvard University", hint: "The largest funding freeze of any American university", year: 2025 },
-    { id: "f15", title: "Harvard refuses to comply with the Trump administration's demands and sues to block the funding freeze", hint: "President Garber: 'We will not surrender'", year: 2025 },
-    { id: "f16", title: "US and China agree to a 90-day tariff truce, dramatically reducing rates on both sides", hint: "Markets surge. Economists exhale.", year: 2025 },
-    { id: "f17", title: "Trump visits Saudi Arabia, Qatar and the UAE, his first foreign trip of the second term", hint: "Hundreds of billions in investment deals announced", year: 2025 },
-    { id: "f18", title: "Trump signs the 'One Big Beautiful Bill', sweeping tax cuts paired with major spending reductions", hint: "Critics say it adds trillions to the national debt", year: 2025 },
-    { id: "f19", title: "Musk publicly falls out with Trump over the 'Big Beautiful Bill', calling it a 'betrayal'", hint: "The DOGE bromance ends loudly on social media", year: 2025 },
-    { id: "f20", title: "Trump renames the Gulf of Mexico the 'Gulf of America' by executive order", hint: "Apple Maps updated it within days", year: 2025 },
+    { id: "f1",  title: "Sentenced to unconditional discharge", hint: "No jail, no fine. History's most anticlimactic sentencing.", year: 2025 },
+    { id: "f2",  title: "Pardons 1,500 Jan 6 rioters on day one", hint: "Including those convicted of violent offences", year: 2025 },
+    { id: "f3",  title: "Courts block birthright citizenship order fast", hint: "14th Amendment. Still applies.", year: 2025 },
+    { id: "f4",  title: "Posts AI image of himself dressed as the pope", hint: "Uploaded to Truth Social. Vatican did not comment.", year: 2025 },
+    { id: "f5",  title: "Fires six inspectors general overnight", hint: "The government's internal watchdogs, gone", year: 2025 },
+    { id: "f6",  title: "DOGE gains access to US Treasury payments", hint: "Controlling the flow of $6 trillion in federal funds", year: 2025 },
+    { id: "f7",  title: "USAID dissolved, thousands placed on leave", hint: "Decades of foreign aid dismantled in days", year: 2025 },
+    { id: "f8",  title: "Demands Canada become America's 51st state", hint: "In calls with Trudeau. Not joking.", year: 2025 },
+    { id: "f9",  title: "Canada and Mexico hit with 25% tariffs", hint: "Ottawa and Mexico City were blindsided", year: 2025 },
+    { id: "f10", title: "Berates Zelensky live in the Oval Office", hint: "'You're gambling with World War Three'", year: 2025 },
+    { id: "f11", title: "SignalGate: Hegseth texts a journalist war plans", hint: "The journalist published every word of it", year: 2025 },
+    { id: "f12", title: "'Liberation Day': tariffs on almost every country", hint: "April 2. Nobody felt liberated.", year: 2025 },
+    { id: "f13", title: "Pauses most tariffs after markets lose trillions", hint: "'It takes courage and strength to be flexible'", year: 2025 },
+    { id: "f14", title: "Pays El Salvador to jail deported migrants", hint: "President Bukele was happy to oblige", year: 2025 },
+    { id: "f15", title: "Fires the entire Joint Chiefs of Staff", hint: "Unprecedented mass firing of military leadership", year: 2025 },
+    { id: "f16", title: "Freezes $2.2B in federal grants to Harvard", hint: "The largest funding freeze of any US university", year: 2025 },
+    { id: "f17", title: "Harvard sues, refuses to comply with freeze", hint: "President Garber: 'We will not surrender'", year: 2025 },
+    { id: "f18", title: "US and China agree to a 90-day tariff truce", hint: "Markets surge. Economists exhale.", year: 2025 },
+    { id: "f19", title: "First foreign trip: Saudi, Qatar and UAE", hint: "Hundreds of billions in investment deals announced", year: 2025 },
+    { id: "f20", title: "'Big Beautiful Bill' passes: tax cuts, debt rises", hint: "Critics say it adds trillions to the national debt", year: 2025 },
+    { id: "f21", title: "Musk calls 'Big Beautiful Bill' a betrayal", hint: "The DOGE bromance ends loudly on social media", year: 2025 },
+    { id: "f22", title: "Renames Gulf of Mexico the 'Gulf of America'", hint: "Apple Maps updated it within days", year: 2025 },
   ],
 
 };
@@ -137,16 +156,23 @@ function buildWeeklyPuzzle(weekNum) {
   const d = pickForWeek(POOL.D, 4, weekNum);
   const e = pickForWeek(POOL.E, 5, weekNum);
 
-  // For F (20 items, 2 needed): offset second pick by half the pool size
+  // For F (22 items, 2 needed): offset second pick by half the pool size
   const f1 = pickForWeek(POOL.F, 6, weekNum);
   const f2 = pickForWeek(POOL.F, 6, weekNum + Math.floor(POOL.F.length / 2));
 
-  // Sort oldest → newest = correct answer order
+  // Sort oldest to newest = correct answer order
   const events = [a, b, c, d, e, f1, f2].sort((x, y) =>
     x.year !== y.year ? x.year - y.year : (x.id < y.id ? -1 : 1)
   );
 
-  // Renumber ids 1–7 for the game engine
+  // Warn loudly in dev if any title sneaks past 50 chars
+  if (process.env.NODE_ENV !== "production") {
+    events.forEach(ev => {
+      if (ev.title.length > 50) console.warn(`[TRUMPLE] Title too long (${ev.title.length} chars): "${ev.title}"`);
+    });
+  }
+
+  // Renumber ids 1-7 for the game engine
   return events.map((ev, i) => ({ ...ev, id: i + 1 }));
 }
 
