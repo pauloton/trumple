@@ -89,12 +89,13 @@ function useTimer() {
   return { time, start, stop };
 }
 
-const WORDS_3 = ["Beautiful!", "Tremendous!", "Like nobody's ever seen!", "The greatest in history!", "Unbelievable!", "Phenomenal!", "Record-breaking!"];
-const WORDS_2 = ["Terrific!", "Outstanding!", "Brilliant!", "Incredible!", "Fantastic!", "Huge!", "The best!"];
-const WORDS_1 = ["Amazing!", "Winning!", "Never before!"];
-function getCelebWord(stars) {
-  const list = stars === 3 ? WORDS_3 : stars === 2 ? WORDS_2 : WORDS_1;
-  return list[Math.floor(Math.random() * list.length)];
+const TRUMP_WORDS = [
+  "HUGE!", "THE BEST!", "JUST BEAUTIFUL!", "UNBELIEVABLE!", "BIG LEAGUE!",
+  "INCREDIBLE!", "FANTASTIC!", "SO GOOD!", "VERY, VERY SPECIAL!",
+  "A BEAUTIFUL THING!", "HISTORIC!", "TOTAL SUCCESS!", "THE GREATEST!", "ABSOLUTELY PERFECT!",
+];
+function getCelebWord() {
+  return TRUMP_WORDS[Math.floor(Math.random() * TRUMP_WORDS.length)];
 }
 
 const SHARE_CTAS = ["Share your score!", "Spread the chaos!", "Tell them!", "Pass it on!", "Think you can beat this?"];
@@ -591,27 +592,86 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
 
 function ShareIcons({ time }) {
   const { display } = formatTime(time);
-  const msg = "Huge win! I solved Trumple in " + display + ". Can you? \u2014 trumple.vercel.app";
-  const waUrl = "https://wa.me/?text=" + encodeURIComponent(msg);
-  const xUrl  = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(msg);
-  const fbUrl = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://trumple.vercel.app") + "&quote=" + encodeURIComponent(msg);
-  const igUrl = "https://www.instagram.com/";
-  const iconBtn = (href, svg) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{
-      flex:1, display:"flex", alignItems:"center", justifyContent:"center",
-      background:C.card, border:"1px solid "+C.border, borderRadius:"14px",
-      padding:"0.9rem 0", textDecoration:"none", transition:"background 0.15s, transform 0.15s",
-    }}
-      onMouseEnter={e => { e.currentTarget.style.background=C.cardOver; e.currentTarget.style.transform="scale(1.07)"; }}
-      onMouseLeave={e => { e.currentTarget.style.background=C.card; e.currentTarget.style.transform="scale(1)"; }}
-    >{svg}</a>
-  );
+  const msg = "I solved Trumple in " + display + ". Nobody's ever seen anything like it! https://trumple.vercel.app";
+
+  async function generateTimeImage() {
+    const canvas = document.createElement("canvas");
+    const scale = 2;
+    canvas.width  = 480 * scale;
+    canvas.height = 200 * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+
+    // Background
+    ctx.fillStyle = "#0b0f18";
+    ctx.fillRect(0, 0, 480, 200);
+
+    // Border
+    ctx.strokeStyle = "#2a2e3e";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(12, 12, 456, 176);
+
+    // Label
+    ctx.fillStyle = "#888";
+    ctx.font = "700 13px 'JetBrains Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("TRUMPLE", 240, 48);
+
+    // Time
+    ctx.fillStyle = "#f0f0f5";
+    ctx.font = "700 72px 'JetBrains Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(display, 240, 115);
+
+    // Tagline
+    ctx.fillStyle = "#f5c518";
+    ctx.font = "700 13px 'DM Sans', sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText("trumple.vercel.app", 240, 178);
+
+    return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  }
+
+  async function handleShare() {
+    const blob = await generateTimeImage();
+    const file = new File([blob], "trumple-score.png", { type: "image/png" });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], text: msg });
+        return;
+      } catch (_) { /* fall through */ }
+    }
+    // Fallback: copy text to clipboard
+    try {
+      await navigator.clipboard.writeText(msg);
+      alert("Score copied to clipboard!");
+    } catch (_) {
+      window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(msg), "_blank");
+    }
+  }
+
   return (
     <div style={{ display:"flex", gap:"0.6rem", width:"100%" }}>
-      {iconBtn(igUrl, <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="1.8"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="17.5" cy="6.5" r="1" fill={C.text} stroke="none"/></svg>)}
-      {iconBtn(waUrl, <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>)}
-      {iconBtn(xUrl,  <svg width="22" height="22" viewBox="0 0 24 24" fill={C.text}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>)}
-      {iconBtn(fbUrl, <svg width="22" height="22" viewBox="0 0 24 24" fill={C.text}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>)}
+      <button onClick={handleShare} style={{
+        flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"0.55rem",
+        background:C.card, border:"1px solid "+C.border, borderRadius:"14px",
+        padding:"0.9rem 0", cursor:"pointer", fontFamily:"'DM Sans', sans-serif",
+        fontSize:"0.95rem", fontWeight:700, color:C.text, transition:"background 0.15s, transform 0.15s",
+      }}
+        onMouseEnter={e => { e.currentTarget.style.background=C.cardOver; e.currentTarget.style.transform="scale(1.03)"; }}
+        onMouseLeave={e => { e.currentTarget.style.background=C.card; e.currentTarget.style.transform="scale(1)"; }}
+      >
+        {/* Classic share icon: box with arrow */}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        Share Score
+      </button>
     </div>
   );
 }
@@ -619,7 +679,7 @@ function ShareIcons({ time }) {
 function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount }) {
   const stars = getStars(failedAttempts);
   const { display } = formatTime(time);
-  const [celebWord] = useState(() => getCelebWord(stars));
+  const [celebWord] = useState(() => getCelebWord());
   const [showConfetti, setShowConfetti] = useState(false);
   const [stats, setStats] = useState({ played: 0, perfects: 0, best: null });
   const hasRun = useRef(false);
@@ -653,8 +713,8 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
           ))}
         </div>
         <button onClick={onViewChain} style={{ marginTop:"0.75rem", background:"transparent", border:"1px solid "+C.border, borderRadius:"10px", padding:"0.5rem 1.25rem", color:C.dim, fontFamily:"'DM Sans', sans-serif", fontSize:"0.8rem", cursor:"pointer", display:"flex", alignItems:"center", gap:"0.4rem" }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          See correct order
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          See Your Winning Timeline
         </button>
         <div style={{ fontSize:"0.95rem", fontWeight:700, color:C.text, fontFamily:"'Space Grotesk', sans-serif", marginTop:"1.5rem", marginBottom:"0.6rem" }}>{shareCta}</div>
         <ShareIcons time={time}/>
