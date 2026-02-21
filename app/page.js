@@ -276,47 +276,53 @@ function IntroScreen({ onStart, puzzle }) {
       backgroundImage: "url(" + BG_IMG + ")",
       backgroundSize:"cover", backgroundPosition:"center bottom",
       display:"flex", flexDirection:"column", alignItems:"center",
-      opacity: show ? 1 : 0,
-      transition:"opacity 0.8s ease",
     }}>
       {/* subtle dark overlay */}
       <div style={{ position:"absolute", inset:0, background:"rgba(10,22,40,0.45)", pointerEvents:"none" }}/>
 
-      {/* Date — very top, centered */}
+      {/* Fading content: date + logo + taglines */}
       <div style={{
-        position:"relative", zIndex:1, width:"100%", textAlign:"center",
-        paddingTop:"clamp(2rem, 7vh, 3.5rem)",
-        fontSize:"0.72rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace",
-        letterSpacing:"0.06em",
+        position:"relative", zIndex:1, flex:1, width:"100%",
+        display:"flex", flexDirection:"column", alignItems:"center",
+        opacity: show ? 1 : 0,
+        transition:"opacity 0.8s ease",
       }}>
-        {dateLabel}
-      </div>
+        {/* Date — very top, centered */}
+        <div style={{
+          width:"100%", textAlign:"center",
+          paddingTop:"clamp(2rem, 7vh, 3.5rem)",
+          fontSize:"0.72rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace",
+          letterSpacing:"0.06em",
+        }}>
+          {dateLabel}
+        </div>
 
-      {/* Logo + taglines — centered vertically in remaining space */}
-      <div style={{
-        position:"relative", zIndex:1, flex:1,
-        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-        gap:"clamp(1rem, 3vh, 1.8rem)",
-      }}>
-        <AnimatedLogo onSolved={() => setLogoSolved(true)} />
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
-          {taglines.map((t, i) => (
-            <div key={i} style={{
-              fontSize:t.size, fontWeight:t.weight, color:t.color,
-              fontFamily:"'Space Grotesk', sans-serif",
-              opacity: i < taglineCount ? 1 : 0,
-              transform: i < taglineCount ? "translateY(0)" : "translateY(10px)",
-              transition:"opacity 0.45s ease, transform 0.45s ease",
-            }}>{t.text}</div>
-          ))}
+        {/* Logo + taglines — centered, nudged up to clear the button */}
+        <div style={{
+          flex:1,
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+          gap:"clamp(1rem, 3vh, 1.8rem)",
+          paddingBottom:"clamp(6rem, 16vh, 10rem)",
+        }}>
+          <AnimatedLogo onSolved={() => setLogoSolved(true)} />
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
+            {taglines.map((t, i) => (
+              <div key={i} style={{
+                fontSize:t.size, fontWeight:t.weight, color:t.color,
+                fontFamily:"'Space Grotesk', sans-serif",
+                opacity: i < taglineCount ? 1 : 0,
+                transform: i < taglineCount ? "translateY(0)" : "translateY(10px)",
+                transition:"opacity 0.45s ease, transform 0.45s ease",
+              }}>{t.text}</div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Button — pushed toward bottom */}
+      {/* Button — always visible from the start, anchored near the bottom */}
       <div style={{
-        position:"relative", zIndex:1, width:"100%",
-        display:"flex", justifyContent:"center",
-        paddingBottom:"clamp(3.5rem, 10vh, 6rem)",
+        position:"absolute", bottom:"clamp(4rem, 11vh, 7rem)", zIndex:2,
+        display:"flex", justifyContent:"center", width:"100%",
       }}>
         <button onClick={onStart} style={{
           background:C.red, color:"#ffffff", border:"none", borderRadius:"14px",
