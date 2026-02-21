@@ -508,7 +508,7 @@ function GameOverScreen({ events, onViewChain, onMount }) {
       <img src={LOSER_IMG} alt="" style={{ position:"absolute", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:"440px", objectFit:"contain", objectPosition:"bottom", pointerEvents:"none", userSelect:"none" }} />
 
       {/* Overlay gradient so text is readable at top */}
-      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, #0b0f18 38%, rgba(11,15,24,0.4) 60%, transparent 100%)", pointerEvents:"none" }} />
+
 
       {/* Content */}
       <div style={{ position:"relative", zIndex:2, width:"100%", maxWidth:"440px", padding:"0 1.5rem", display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"12%", paddingBottom:0 }}>
