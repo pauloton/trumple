@@ -614,7 +614,15 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
 
 function ShareIcons({ time }) {
   const { display } = formatTime(time);
-  const msg = "I solved Trumple in " + display + ". Nobody's ever seen anything like it! https://trumple.vercel.app";
+  const WIN_MSGS = [
+    `I solved Trumple in ${display}. A tremendous success. The BEST.\nhttps://trumple.vercel.app`,
+    `I solved Trumple in ${display}. HUGE win. Absolutely incredible.\nhttps://trumple.vercel.app`,
+    `I solved Trumple in ${display}. Total victory. Record-breaking.\nhttps://trumple.vercel.app`,
+    `I solved Trumple in ${display}. Big league. We're winning.\nhttps://trumple.vercel.app`,
+    `I solved Trumple in ${display}. Very, very special. Historic.\nhttps://trumple.vercel.app`,
+    `I solved Trumple in ${display}. Many people are saying it's the fastest ever.\nhttps://trumple.vercel.app`,
+  ];
+  const msg = WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)];
 
   async function generateAndShare() {
     // Build the score card image
