@@ -710,8 +710,12 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
 
   useEffect(() => {
     if (!hasRun.current) {
-      hasRun.current = true; onMount(); saveStats(time, stars); setStats(getStats());
-      if (firstVisit) { setShowConfetti(true); setTimeout(() => setShowConfetti(false), 4000); }
+      hasRun.current = true;
+      if (firstVisit) {
+        onMount(); saveStats(time, stars);
+        setShowConfetti(true); setTimeout(() => setShowConfetti(false), 4000);
+      }
+      setStats(getStats());
     }
   }, [firstVisit, onMount, time, stars]);
 
