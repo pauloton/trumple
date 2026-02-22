@@ -528,13 +528,13 @@ function GameOverScreen({ events, onViewChain, onMount }) {
         <button
           onClick={async () => {
             const LOSER_MSGS = [
-              "I got absolutely crushed by Trumple today. Total disaster. Think you can do better? https://trumple.vercel.app",
-              "Trumple beat me today. Rigged? Very suspicious. Think you can do better? https://trumple.vercel.app",
-              "Trumple got me. Sad! Very unfair. Think you can do better? https://trumple.vercel.app",
-              "I lost Trumple today. A disaster the likes of which we've never seen. Think you can do better? https://trumple.vercel.app",
-              "Trumple defeated me. Many people are saying its rigged. https://trumple.vercel.app",
-              "I lost Trumple today. Nobody thought it could happen. Think you can do better? https://trumple.vercel.app",
-              "Trumple beat me. Sad! Very sad. Think you can do better? https://trumple.vercel.app",
+              "I got absolutely crushed by Trumple today. Total disaster. Think you can do better? https://trumple.app",
+              "Trumple beat me today. Rigged? Very suspicious. Think you can do better? https://trumple.app",
+              "Trumple got me. Sad! Very unfair. Think you can do better? https://trumple.app",
+              "I lost Trumple today. A disaster the likes of which we've never seen. Think you can do better? https://trumple.app",
+              "Trumple defeated me. Many people are saying its rigged. https://trumple.app",
+              "I lost Trumple today. Nobody thought it could happen. Think you can do better? https://trumple.app",
+              "Trumple beat me. Sad! Very sad. Think you can do better? https://trumple.app",
             ];
             const msg = LOSER_MSGS[Math.floor(Math.random() * LOSER_MSGS.length)];
             if (navigator.share) {
@@ -615,12 +615,12 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
 function ShareIcons({ time }) {
   const { display } = formatTime(time);
   const WIN_MSGS = [
-    `I solved Trumple in ${display}. A tremendous success. The BEST.\nhttps://trumple.vercel.app`,
-    `I solved Trumple in ${display}. HUGE win. Absolutely incredible.\nhttps://trumple.vercel.app`,
-    `I solved Trumple in ${display}. Total victory. Record-breaking.\nhttps://trumple.vercel.app`,
-    `I solved Trumple in ${display}. Big league. We're winning.\nhttps://trumple.vercel.app`,
-    `I solved Trumple in ${display}. Very, very special. Historic.\nhttps://trumple.vercel.app`,
-    `I solved Trumple in ${display}. Many people are saying it's the fastest ever.\nhttps://trumple.vercel.app`,
+    `I solved Trumple in ${display}. A tremendous success. The BEST.\nhttps://trumple.app`,
+    `I solved Trumple in ${display}. HUGE win. Absolutely incredible.\nhttps://trumple.app`,
+    `I solved Trumple in ${display}. Total victory. Record-breaking.\nhttps://trumple.app`,
+    `I solved Trumple in ${display}. Big league. We're winning.\nhttps://trumple.app`,
+    `I solved Trumple in ${display}. Very, very special. Historic.\nhttps://trumple.app`,
+    `I solved Trumple in ${display}. Many people are saying it's the fastest ever.\nhttps://trumple.app`,
   ];
   const msg = WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)];
 
@@ -656,7 +656,7 @@ function ShareIcons({ time }) {
       ctx.font = "700 13px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "alphabetic";
-      ctx.fillText("trumple.vercel.app", 240, 178);
+      ctx.fillText("trumple.app", 240, 178);
 
       const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
       const file = new File([blob], "trumple-score.png", { type: "image/png" });
