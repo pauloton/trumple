@@ -264,7 +264,6 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
       setTimeout(() => setTaglineCount(1), 350),
       setTimeout(() => setTaglineCount(2), 750),
       setTimeout(() => setTaglineCount(3), 1150),
-      setTimeout(() => setTaglineCount(4), 1550),
     ];
     return () => timers.forEach(clearTimeout);
   }, [logoSolved]);
@@ -273,10 +272,9 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
     weekday:"long", month:"long", day:"numeric", year:"numeric"
   });
   const taglines = isWeekly ? [
-    { text:"FRESH CHAOS",              size:"1.3rem",  weight:900, color:C.gold },
-    { text:"This Actually Happened.",  size:"1.05rem", weight:600, color:C.dim },
-    { text:"This Week.",               size:"1.05rem", weight:600, color:C.dim },
-    { text:"Can You Sort It?",         size:"1.05rem", weight:600, color:C.dim },
+    { text:"This Actually Happened.",  size:"1.05rem", weight:600, color:C.text },
+    { text:"This Week.",               size:"1.05rem", weight:600, color:C.text },
+    { text:"Can You Sort It?",         size:"1.05rem", weight:600, color:C.text },
   ] : [
     { text:"The Chaos Never Ends!", size:"1.05rem", weight:600, color:C.dim },
     { text:"Think You Can Sort It?", size:"1.05rem", weight:600, color:C.dim },
@@ -320,7 +318,7 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
           <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           {isWeekly && (
             <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"20px", padding:"0.25rem 0.9rem", fontSize:"1.95rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em" }}>
-              ⚡ WEEKLY EDITION
+              WEEKLY EDITION
             </div>
           )}
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
