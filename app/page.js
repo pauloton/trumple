@@ -319,7 +319,7 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
         }}>
           <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           {isWeekly && (
-            <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"20px", padding:"0.25rem 0.9rem", fontSize:"0.65rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em" }}>
+            <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"20px", padding:"0.25rem 0.9rem", fontSize:"1.95rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em" }}>
               ⚡ WEEKLY EDITION
             </div>
           )}
