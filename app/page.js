@@ -251,7 +251,7 @@ function ErrorScreen() {
   );
 }
 
-function IntroScreen({ onStart, puzzle }) {
+function IntroScreen({ onStart, puzzle, isWeekly }) {
   const [show, setShow] = useState(false);
   const [logoSolved, setLogoSolved] = useState(false);
   const [taglineCount, setTaglineCount] = useState(0);
@@ -271,7 +271,11 @@ function IntroScreen({ onStart, puzzle }) {
   const dateLabel = new Date(puzzle.date + "T12:00:00").toLocaleDateString("en-US", {
     weekday:"long", month:"long", day:"numeric", year:"numeric"
   });
-  const taglines = [
+  const taglines = isWeekly ? [
+    { text:"Fresh Chaos. This Week Only.", size:"1.05rem", weight:600, color:C.dim },
+    { text:"7 Real Events. Last 7 Days.",  size:"1.05rem", weight:600, color:C.dim },
+    { text:"Can You Sort Them In Time?",   size:"1.05rem", weight:600, color:C.dim },
+  ] : [
     { text:"The Chaos Never Ends!", size:"1.05rem", weight:600, color:C.dim },
     { text:"Think You Can Sort It?", size:"1.05rem", weight:600, color:C.dim },
     { text:"Beat The Clock",         size:"1.05rem", weight:600, color:C.dim },
@@ -311,6 +315,11 @@ function IntroScreen({ onStart, puzzle }) {
           gap:"clamp(1rem, 3vh, 1.8rem)",
           paddingBottom:"clamp(6rem, 16vh, 10rem)",
         }}>
+          {isWeekly && (
+            <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"20px", padding:"0.25rem 0.9rem", fontSize:"0.65rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em" }}>
+              ⚡ WEEKLY EDITION
+            </div>
+          )}
           <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
             {taglines.map((t, i) => (
@@ -578,7 +587,7 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
               <div style={{ textAlign:"center" }}>
                 <div style={{ fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18 }}>{event.title}</div>
                 <div style={{ fontSize:"clamp(0.6rem,1.6vw,0.72rem)", color:"rgba(10,22,40,0.6)", marginTop:"0.15rem", fontFamily:"'JetBrains Mono', monospace" }}>{event.hint}</div>
-                <div style={{ fontSize:"clamp(0.6rem,1.6vw,0.7rem)", color:"rgba(10,22,40,0.4)", marginTop:"0.08rem", fontFamily:"'JetBrains Mono', monospace", fontWeight:700 }}>{event.year}</div>
+                {event.year != null && <div style={{ fontSize:"clamp(0.6rem,1.6vw,0.7rem)", color:"rgba(10,22,40,0.4)", marginTop:"0.08rem", fontFamily:"'JetBrains Mono', monospace", fontWeight:700 }}>{event.year}</div>}
               </div>
             </div>
           ))}
@@ -794,6 +803,7 @@ export default function TrumpleApp() {
   const [puzzle, setPuzzle]             = useState(null);
   const [answerOrder, setAnswerOrder]   = useState([]);
   const [yearMap, setYearMap]           = useState({});
+  const [isWeekly, setIsWeekly]         = useState(false);
   const [events, setEvents]             = useState([]);
   const [revealEvents, setRevealEvents] = useState([]);
   const [failedAttempts, setFailedAttempts] = useState(0);
@@ -808,7 +818,7 @@ export default function TrumpleApp() {
     const localDate = new Date().toLocaleDateString("en-CA");
     fetch("/api/trump-puzzle?date=" + localDate)
       .then(r => { if (!r.ok) throw new Error("No puzzle"); return r.json(); })
-      .then(data => { setPuzzle(data.puzzle); setAnswerOrder(data.answerOrder); setYearMap(data.yearMap); setScreen(SCREENS.INTRO); })
+      .then(data => { setPuzzle(data.puzzle); setAnswerOrder(data.answerOrder); setYearMap(data.yearMap); setIsWeekly(!!data.isWeekly); setScreen(SCREENS.INTRO); })
       .catch(() => setScreen(SCREENS.ERROR));
   }, []);
 
@@ -866,7 +876,7 @@ export default function TrumpleApp() {
       <style>{globalStyles}</style>
       {screen === SCREENS.LOADING    && <LoadingScreen/>}
       {screen === SCREENS.ERROR      && <ErrorScreen/>}
-      {screen === SCREENS.INTRO      && puzzle && <IntroScreen puzzle={puzzle} onStart={handleStart}/>}
+      {screen === SCREENS.INTRO      && puzzle && <IntroScreen puzzle={puzzle} onStart={handleStart} isWeekly={isWeekly}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
