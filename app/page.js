@@ -264,6 +264,7 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
       setTimeout(() => setTaglineCount(1), 350),
       setTimeout(() => setTaglineCount(2), 750),
       setTimeout(() => setTaglineCount(3), 1150),
+      setTimeout(() => setTaglineCount(4), 1550),
     ];
     return () => timers.forEach(clearTimeout);
   }, [logoSolved]);
@@ -272,9 +273,10 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
     weekday:"long", month:"long", day:"numeric", year:"numeric"
   });
   const taglines = isWeekly ? [
-    { text:"Fresh Chaos. This Week Only.", size:"1.05rem", weight:600, color:C.dim },
-    { text:"7 Real Events. Last 7 Days.",  size:"1.05rem", weight:600, color:C.dim },
-    { text:"Can You Sort Them In Time?",   size:"1.05rem", weight:600, color:C.dim },
+    { text:"FRESH CHAOS",              size:"1.3rem",  weight:900, color:C.gold },
+    { text:"This Actually Happened.",  size:"1.05rem", weight:600, color:C.dim },
+    { text:"This Week.",               size:"1.05rem", weight:600, color:C.dim },
+    { text:"Can You Sort It?",         size:"1.05rem", weight:600, color:C.dim },
   ] : [
     { text:"The Chaos Never Ends!", size:"1.05rem", weight:600, color:C.dim },
     { text:"Think You Can Sort It?", size:"1.05rem", weight:600, color:C.dim },
