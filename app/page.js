@@ -317,12 +317,12 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
           gap:"clamp(1rem, 3vh, 1.8rem)",
           paddingBottom:"clamp(6rem, 16vh, 10rem)",
         }}>
+          <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           {isWeekly && (
             <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"20px", padding:"0.25rem 0.9rem", fontSize:"0.65rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em" }}>
               ⚡ WEEKLY EDITION
             </div>
           )}
-          <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
             {taglines.map((t, i) => (
               <div key={i} style={{
