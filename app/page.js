@@ -754,7 +754,7 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
             <div style={{ width:"100%", marginTop:"1.25rem" }}>
               <div style={{ fontSize:"0.6rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"0.6rem" }}>YOUR LAST 5</div>
               {history.map((t, i) => {
-                const pct = maxTime > 0 ? (minTime / t) * 100 : 100;
+                const pct = t > 0 ? (minTime / t) * 100 : 100;
                 const isCurrent = i === 0 && history.length === stats.history.length;
                 return (
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:"0.5rem", marginBottom:"0.35rem" }}>
