@@ -760,7 +760,7 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:"0.5rem", marginBottom:"0.35rem" }}>
                     <div style={{ width:"1rem", fontSize:"0.6rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", textAlign:"right", flexShrink:0 }}>{history.length - i}</div>
                     <div style={{ flex:1, background:C.card, borderRadius:"6px", height:"2rem", position:"relative", overflow:"hidden" }}>
-                      <div style={{ position:"absolute", left:0, top:0, height:"100%", width:pct+"%", background: isCurrent ? C.gold : "rgba(255,255,255,0.12)", borderRadius:"6px", transition:"width 0.6s ease" }}/>
+                      <div style={{ position:"absolute", left:0, top:0, height:"100%", width:pct+"%", background: "rgba(255,255,255,0.08)", borderRadius:"6px", transition:"width 0.6s ease" }}/>
                       <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color: C.text }}>{formatTime(t).display}</div>
                     </div>
                   </div>
@@ -770,7 +770,7 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
                 <div style={{ display:"flex", alignItems:"center", gap:"0.5rem", marginTop:"0.5rem" }}>
                   <div style={{ width:"1rem", fontSize:"0.6rem", color:C.gold, fontFamily:"'JetBrains Mono', monospace", textAlign:"right", flexShrink:0 }}>★</div>
                   <div style={{ flex:1, background:C.gold, borderRadius:"6px", height:"2rem", position:"relative", overflow:"hidden" }}>
-                    <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:"#1a1a2e" }}>{formatTime(stats.best).display}&nbsp;&nbsp;BEST</div>
+                    <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:"#1a1a2e" }}>BEST&nbsp;&nbsp;{formatTime(stats.best).display}</div>
                   </div>
                 </div>
               )}
@@ -781,7 +781,6 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           View the "BEAUTIFUL" Trump Timeline
         </button>
-        <div style={{ fontSize:"0.95rem", fontWeight:700, color:C.text, fontFamily:"'Space Grotesk', sans-serif", marginTop:"1.5rem", marginBottom:"0.6rem" }}>{shareCta}</div>
         <ShareIcons time={time}/>
       </div>
     </>
