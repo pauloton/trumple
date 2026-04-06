@@ -20,17 +20,16 @@ import { NextResponse } from "next/server";
 // Same rules as POOL: max 50 chars, no em dashes, punchy.
 // To skip weekly edition on a given Sunday, set to null.
 // ============================================================
-const WEEKLY_EVENTS = null;
-// Uncomment and fill in each Saturday:
-// const WEEKLY_EVENTS = [
-//   { id: 1, title: "First thing he did this week",  hint: "Context clue" },
-//   { id: 2, title: "Second thing",                  hint: "Context clue" },
-//   { id: 3, title: "Third thing",                   hint: "Context clue" },
-//   { id: 4, title: "Fourth thing",                  hint: "Context clue" },
-//   { id: 5, title: "Fifth thing",                   hint: "Context clue" },
-//   { id: 6, title: "Sixth thing",                   hint: "Context clue" },
-//   { id: 7, title: "Seventh thing",                 hint: "Context clue" },
-// ];
+// const WEEKLY_EVENTS = null; // <- uncomment this line to disable weekly edition
+const WEEKLY_EVENTS = [
+  { id: 1, title: "Says he hangs out with 'losers' to feel better", hint: "Mar 27. His words. About his friends." },
+  { id: 2, title: "Shows off ballroom pics while troops deploy",      hint: "Mar 30. War raging. Renovation updates." },
+  { id: 3, title: "Claims he got '93% bad publicity'",               hint: "Mar 31. Blamed Karoline. On camera." },
+  { id: 4, title: "Promises speech to say 'how great I am'",         hint: "Apr 1. He actually said this. Out loud." },
+  { id: 5, title: "'I love bad people if they're nice to me'",       hint: "Apr 1. Different moment, same speech." },
+  { id: 6, title: "Says war beats day care. Chooses war.",           hint: "Apr 2. Easter lunch. Rambling speech." },
+  { id: 7, title: "Posts 'Open the F**kin Strait, Praise Allah'",    hint: "Apr 5. Easter morning. Truth Social." },
+];
 
 const POOL = {
 
