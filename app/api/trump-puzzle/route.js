@@ -14,6 +14,24 @@ import { NextResponse } from "next/server";
 //   • Mix: policy events, gaffes, scandals and personal moments.
 //   • Test: count the chars before you commit.
 // ============================================================
+// ============================================================
+// WEEKLY EVENTS — updated every Saturday for Sunday's edition
+// Events must be in chronological order (earliest = id 1).
+// Same rules as POOL: max 50 chars, no em dashes, punchy.
+// To skip weekly edition on a given Sunday, set to null.
+// ============================================================
+const WEEKLY_EVENTS = null;
+// Uncomment and fill in each Saturday:
+// const WEEKLY_EVENTS = [
+//   { id: 1, title: "First thing he did this week",  hint: "Context clue" },
+//   { id: 2, title: "Second thing",                  hint: "Context clue" },
+//   { id: 3, title: "Third thing",                   hint: "Context clue" },
+//   { id: 4, title: "Fourth thing",                  hint: "Context clue" },
+//   { id: 5, title: "Fifth thing",                   hint: "Context clue" },
+//   { id: 6, title: "Sixth thing",                   hint: "Context clue" },
+//   { id: 7, title: "Seventh thing",                 hint: "Context clue" },
+// ];
+
 const POOL = {
 
   // Era A: 2015–2016, The Rise
@@ -371,9 +389,26 @@ export async function GET(req) {
   }
 
   // Strip em dashes automatically at serve time
-  // No future event can sneak one through, no matter who edits the pool.
   const clean = (str) => str.replace(/ \u2014 /g, ", ").replace(/\u2014/g, "-");
 
+  // ── Weekly edition: served every Sunday if WEEKLY_EVENTS is populated ──
+  const isSunday = d.getUTCDay() === 0;
+  if (isSunday && Array.isArray(WEEKLY_EVENTS) && WEEKLY_EVENTS.length === 7) {
+    const answerOrder = WEEKLY_EVENTS.map(e => e.id);          // already sorted
+    const shuffled    = seededShuffle(
+      WEEKLY_EVENTS.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
+      dayNum * 999983 + 7
+    );
+    const yearMap = Object.fromEntries(WEEKLY_EVENTS.map(e => [e.id, null])); // no years
+    return NextResponse.json({
+      puzzle:      { id: "w" + dayNum, dayNum, date: dateParam, events: shuffled },
+      answerOrder,
+      yearMap,
+      isWeekly:    true,
+    });
+  }
+
+  // ── Normal daily puzzle ──
   const events      = buildDailyPuzzle(dayNum);
   const answerOrder = events.map(e => e.id);
   const shuffled    = seededShuffle(
@@ -383,8 +418,9 @@ export async function GET(req) {
   const yearMap     = Object.fromEntries(events.map(e => [e.id, e.year]));
 
   return NextResponse.json({
-    puzzle: { id: "d" + dayNum, dayNum, date: dateParam, events: shuffled },
+    puzzle:   { id: "d" + dayNum, dayNum, date: dateParam, events: shuffled },
     answerOrder,
     yearMap,
+    isWeekly: false,
   });
 }
