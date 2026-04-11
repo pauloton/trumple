@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from 'fs';
 
 const API_KEY = process.env.ANTHROPIC_API_KEY;
 const EDITION = process.env.EDITION || 'both';
-const ROUTE_PATH = 'app/api/puzzle/route.js';
+const ROUTE_PATH = 'app/api/trump-puzzle/route.js';
 
 if (!API_KEY) {
   console.error('ERROR: ANTHROPIC_API_KEY is not set.');
