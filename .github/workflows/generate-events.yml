@@ -1,0 +1,8 @@
+your-repo/
+├── .github/
+│   └── workflows/
+│       └── generate-events.yml   ← new file
+├── scripts/
+│   └── generate-events.mjs       ← new file
+├── app/
+│   └── ...your existing code...
