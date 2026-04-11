@@ -825,7 +825,8 @@ export default function TrumpleApp() {
   const timer = useTimer();
 
   useEffect(() => {
-    const localDate = new Date().toLocaleDateString("en-CA");
+    const urlDate = new URLSearchParams(window.location.search).get("date");
+    const localDate = urlDate || new Date().toLocaleDateString("en-CA");
     fetch("/api/trump-puzzle?date=" + localDate)
       .then(r => { if (!r.ok) throw new Error("No puzzle"); return r.json(); })
       .then(data => { setPuzzle(data.puzzle); setAnswerOrder(data.answerOrder); setYearMap(data.yearMap); setIsWeekly(!!data.isWeekly); setIsSecondTerm(!!data.isSecondTerm); setEditionMeta(data.editionMeta || null); setScreen(SCREENS.INTRO); })
