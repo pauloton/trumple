@@ -1,1 +1,1 @@
-const ROUTE_PATH = resolve('app/api/puzzle/route.js');
+const ROUTE_PATH = 'app/api/puzzle/route.js';
