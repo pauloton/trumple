@@ -335,16 +335,26 @@ function IntroScreen({ onStart, puzzle, isWeekly, isSecondTerm, editionMeta }) {
           {dateLabel}
         </div>
 
-        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom:"clamp(6rem, 16vh, 10rem)" }}>
+        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom: bgTheme === "red" ? "0" : "clamp(6rem, 16vh, 10rem)" }}>
           <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           {renderBadge()}
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
-            {taglines.map((t, i) => (
-              <div key={i} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif", opacity: i < taglineCount ? 1 : 0, transform: i < taglineCount ? "translateY(0)" : "translateY(10px)", transition:"opacity 0.45s ease, transform 0.45s ease" }}>{t.text}</div>
-            ))}
-          </div>
+          {bgTheme !== "red" && (
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
+              {taglines.map((t, i) => (
+                <div key={i} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif", opacity: i < taglineCount ? 1 : 0, transform: i < taglineCount ? "translateY(0)" : "translateY(10px)", transition:"opacity 0.45s ease, transform 0.45s ease" }}>{t.text}</div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+
+      {bgTheme === "red" && (
+        <div style={{ position:"absolute", bottom:"clamp(8rem, 18vh, 12rem)", zIndex:2, display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem", width:"100%" }}>
+          {taglines.map((t, i) => (
+            <div key={i} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif", opacity: i < taglineCount ? 1 : 0, transform: i < taglineCount ? "translateY(0)" : "translateY(10px)", transition:"opacity 0.45s ease, transform 0.45s ease" }}>{t.text}</div>
+          ))}
+        </div>
+      )}
 
       <div style={{ position:"absolute", bottom:"clamp(4rem, 11vh, 7rem)", zIndex:2, display:"flex", justifyContent:"center", width:"100%" }}>
         <button onClick={onStart} style={{
