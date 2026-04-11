@@ -251,7 +251,7 @@ function ErrorScreen() {
   );
 }
 
-function IntroScreen({ onStart, puzzle, isWeekly }) {
+function IntroScreen({ onStart, puzzle, isWeekly, isSecondTerm, editionMeta }) {
   const [show, setShow] = useState(false);
   const [logoSolved, setLogoSolved] = useState(false);
   const [taglineCount, setTaglineCount] = useState(0);
@@ -271,80 +271,91 @@ function IntroScreen({ onStart, puzzle, isWeekly }) {
   const dateLabel = new Date(puzzle.date + "T12:00:00").toLocaleDateString("en-US", {
     weekday:"long", month:"long", day:"numeric", year:"numeric"
   });
-  const taglines = isWeekly ? [
-    { text:"This Actually Happened.",  size:"1.05rem", weight:600, color:C.text },
-    { text:"This Week.",               size:"1.05rem", weight:600, color:C.text },
-    { text:"Can You Sort It?",         size:"1.05rem", weight:600, color:C.text },
-  ] : [
-    { text:"The Chaos Never Ends!", size:"1.05rem", weight:600, color:C.dim },
-    { text:"Think You Can Sort It?", size:"1.05rem", weight:600, color:C.dim },
-    { text:"Beat The Clock",         size:"1.05rem", weight:600, color:C.dim },
-  ];
+
+  // Per-edition theming driven by editionMeta from the API
+  const meta          = editionMeta || {};
+  const buttonColor   = meta.buttonColor || C.red;
+  const bgTheme       = meta.bgTheme     || "default";
+  const badgeStyle    = meta.badgeStyle  || null;
+  const editionLabel  = meta.label       || null;
+  const editionTaglines = meta.taglines  || null;
+
+  const taglines = editionTaglines
+    ? editionTaglines.map(t => ({ text: t, size: "1.05rem", weight: 600, color: C.text }))
+    : isWeekly
+    ? [
+        { text:"This Actually Happened.",  size:"1.05rem", weight:600, color:C.text },
+        { text:"This Week.",               size:"1.05rem", weight:600, color:C.text },
+        { text:"Can You Sort It?",         size:"1.05rem", weight:600, color:C.text },
+      ]
+    : [
+        { text:"The Chaos Never Ends!", size:"1.05rem", weight:600, color:C.dim },
+        { text:"Think You Can Sort It?", size:"1.05rem", weight:600, color:C.dim },
+        { text:"Beat The Clock",         size:"1.05rem", weight:600, color:C.dim },
+      ];
+
+  // Background: red theme uses deep-red gradient.
+  // Swap the gradient for a base64 image once Background Red.png is confirmed:
+  //   const BG_RED_IMG = "data:image/..."; // paste base64 here
+  //   backgroundImage: "url(" + BG_RED_IMG + ")"
+  const bgStyle = bgTheme === "red"
+    ? { background: "radial-gradient(ellipse at 50% 110%, #8b0000 0%, #3d0000 40%, #1a0000 100%)", backgroundSize:"cover", backgroundPosition:"center bottom" }
+    : { backgroundImage: "url(" + BG_IMG + ")", backgroundSize:"cover", backgroundPosition:"center bottom" };
+
+  const overlayOpacity = bgTheme === "red" ? 0.15 : 0.45;
+
+  const renderBadge = () => {
+    if (!editionLabel) return null;
+    if (badgeStyle === "dark") {
+      return (
+        <div style={{ background:"rgba(10,10,20,0.75)", border:"1.5px solid rgba(255,255,255,0.22)", color:"#ffffff", borderRadius:"20px", padding:"0.28rem 1rem", fontSize:"1.3rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.1em" }}>
+          {editionLabel}
+        </div>
+      );
+    }
+    // gold badge (weekly, or any badgeStyle:"gold")
+    return (
+      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"20px", padding:"0.25rem 0.9rem", fontSize:"1.95rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em" }}>
+        {editionLabel}
+      </div>
+    );
+  };
 
   return (
     <div style={{
       position:"fixed", inset:0,
-      backgroundImage: "url(" + BG_IMG + ")",
-      backgroundSize:"cover", backgroundPosition:"center bottom",
+      ...bgStyle,
       display:"flex", flexDirection:"column", alignItems:"center",
     }}>
-      {/* subtle dark overlay */}
-      <div style={{ position:"absolute", inset:0, background:"rgba(10,22,40,0.45)", pointerEvents:"none" }}/>
+      <div style={{ position:"absolute", inset:0, background:"rgba(10,22,40,"+overlayOpacity+")", pointerEvents:"none" }}/>
 
-      {/* Fading content: date + logo + taglines */}
       <div style={{
         position:"relative", zIndex:1, flex:1, width:"100%",
         display:"flex", flexDirection:"column", alignItems:"center",
-        opacity: show ? 1 : 0,
-        transition:"opacity 0.8s ease",
+        opacity: show ? 1 : 0, transition:"opacity 0.8s ease",
       }}>
-        {/* Date — very top, centered */}
-        <div style={{
-          width:"100%", textAlign:"center",
-          paddingTop:"clamp(2rem, 7vh, 3.5rem)",
-          fontSize:"0.72rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace",
-          letterSpacing:"0.06em",
-        }}>
+        <div style={{ width:"100%", textAlign:"center", paddingTop:"clamp(2rem, 7vh, 3.5rem)", fontSize:"0.72rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.06em" }}>
           {dateLabel}
         </div>
 
-        {/* Logo + taglines — centered, nudged up to clear the button */}
-        <div style={{
-          flex:1,
-          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-          gap:"clamp(1rem, 3vh, 1.8rem)",
-          paddingBottom:"clamp(6rem, 16vh, 10rem)",
-        }}>
+        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom:"clamp(6rem, 16vh, 10rem)" }}>
           <AnimatedLogo onSolved={() => setLogoSolved(true)} />
-          {isWeekly && (
-            <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"20px", padding:"0.25rem 0.9rem", fontSize:"1.95rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em" }}>
-              WEEKLY EDITION
-            </div>
-          )}
+          {renderBadge()}
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
             {taglines.map((t, i) => (
-              <div key={i} style={{
-                fontSize:t.size, fontWeight:t.weight, color:t.color,
-                fontFamily:"'Space Grotesk', sans-serif",
-                opacity: i < taglineCount ? 1 : 0,
-                transform: i < taglineCount ? "translateY(0)" : "translateY(10px)",
-                transition:"opacity 0.45s ease, transform 0.45s ease",
-              }}>{t.text}</div>
+              <div key={i} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif", opacity: i < taglineCount ? 1 : 0, transform: i < taglineCount ? "translateY(0)" : "translateY(10px)", transition:"opacity 0.45s ease, transform 0.45s ease" }}>{t.text}</div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Button — always visible from the start, anchored near the bottom */}
-      <div style={{
-        position:"absolute", bottom:"clamp(4rem, 11vh, 7rem)", zIndex:2,
-        display:"flex", justifyContent:"center", width:"100%",
-      }}>
+      <div style={{ position:"absolute", bottom:"clamp(4rem, 11vh, 7rem)", zIndex:2, display:"flex", justifyContent:"center", width:"100%" }}>
         <button onClick={onStart} style={{
-          background:C.red, color:"#ffffff", border:"none", borderRadius:"14px",
+          background:buttonColor, color:"#ffffff", border:"none", borderRadius:"14px",
           padding:"1rem 3rem", fontSize:"1.05rem", fontWeight:700, cursor:"pointer",
           fontFamily:"'Space Grotesk', sans-serif", letterSpacing:"0.05em",
-          transition:"transform 0.2s ease", boxShadow:"0 4px 24px rgba(178,34,52,0.5)",
+          transition:"transform 0.2s ease",
+          boxShadow: bgTheme === "red" ? "0 4px 24px rgba(10,22,40,0.6)" : "0 4px 24px rgba(178,34,52,0.5)",
           width:"clamp(220px, 65vw, 280px)",
         }}
           onMouseEnter={e => e.target.style.transform="scale(1.05)"}
@@ -804,6 +815,8 @@ export default function TrumpleApp() {
   const [answerOrder, setAnswerOrder]   = useState([]);
   const [yearMap, setYearMap]           = useState({});
   const [isWeekly, setIsWeekly]         = useState(false);
+  const [isSecondTerm, setIsSecondTerm] = useState(false);
+  const [editionMeta, setEditionMeta]   = useState(null);
   const [events, setEvents]             = useState([]);
   const [revealEvents, setRevealEvents] = useState([]);
   const [failedAttempts, setFailedAttempts] = useState(0);
@@ -818,7 +831,7 @@ export default function TrumpleApp() {
     const localDate = new Date().toLocaleDateString("en-CA");
     fetch("/api/trump-puzzle?date=" + localDate)
       .then(r => { if (!r.ok) throw new Error("No puzzle"); return r.json(); })
-      .then(data => { setPuzzle(data.puzzle); setAnswerOrder(data.answerOrder); setYearMap(data.yearMap); setIsWeekly(!!data.isWeekly); setScreen(SCREENS.INTRO); })
+      .then(data => { setPuzzle(data.puzzle); setAnswerOrder(data.answerOrder); setYearMap(data.yearMap); setIsWeekly(!!data.isWeekly); setIsSecondTerm(!!data.isSecondTerm); setEditionMeta(data.editionMeta || null); setScreen(SCREENS.INTRO); })
       .catch(() => setScreen(SCREENS.ERROR));
   }, []);
 
@@ -876,7 +889,7 @@ export default function TrumpleApp() {
       <style>{globalStyles}</style>
       {screen === SCREENS.LOADING    && <LoadingScreen/>}
       {screen === SCREENS.ERROR      && <ErrorScreen/>}
-      {screen === SCREENS.INTRO      && puzzle && <IntroScreen puzzle={puzzle} onStart={handleStart} isWeekly={isWeekly}/>}
+      {screen === SCREENS.INTRO      && puzzle && <IntroScreen puzzle={puzzle} onStart={handleStart} isWeekly={isWeekly} isSecondTerm={isSecondTerm} editionMeta={editionMeta}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
