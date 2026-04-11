@@ -31,6 +31,101 @@ const WEEKLY_EVENTS = [
   { id: 7, title: "Posts 'Open the F**kin Strait, Praise Allah'",    hint: "Apr 5. Easter morning. Truth Social." },
 ];
 
+// ============================================================
+// SECOND TERM EVENTS — used every Wednesday
+// Ordered chronologically (Jan 20, 2025 → present).
+// All are 2025, so years are hidden on cards.
+// TO ADD AN EVENT: append in the correct date order.
+// MAX 50 chars per title, no em dashes, sardonic voice.
+// ============================================================
+const SECOND_TERM_EVENTS = [
+  { id: "st1",  title: "Musk's odd arm gesture at inauguration goes viral",         hint: "Some called it a Roman salute. Musk said it was enthusiasm." },
+  { id: "st2",  title: "Bans trans girls from school sports on day one",             hint: "Day one. Executive order number four." },
+  { id: "st3",  title: "Bans the word 'diversity' across all agencies",              hint: "Day one. Executive order number two." },
+  { id: "st4",  title: "Pardons a drug kingpin to impress Libertarians",             hint: "Promised it at a Libertarian convention. Delivered on day one." },
+  { id: "st5",  title: "Quits the Paris climate deal. For the second time.",         hint: "First time: 2017. Second time: 2025. Same pen." },
+  { id: "st6",  title: "Pulls US out of the WHO. Also for the second time.",         hint: "Second time doing this. Same executive order, new date." },
+  { id: "st7",  title: "Renames Gulf of Mexico the 'Gulf of America'",               hint: "Apple Maps updated it within days." },
+  { id: "st8",  title: "Changes Denali back to Mount McKinley",                      hint: "Obama renamed it in 2015. He renamed it back in 2025." },
+  { id: "st9",  title: "Threatens to withhold fire aid from California",             hint: "While the LA fires were still burning." },
+  { id: "st10", title: "Sends active duty troops to the US southern border",         hint: "Sent active-duty troops. Called it an invasion." },
+  { id: "st11", title: "Claims personal credit for keeping TikTok alive",            hint: "App was hours from shutting down. He gave an extension." },
+  { id: "st12", title: "$MELANIA coin crashes days after launching",                 hint: "Launched the day before inauguration. Peak: $13. One week later: $2." },
+  { id: "st13", title: "Fires the FBI director, puts a loyalist in charge",          hint: "Kash Patel. Who had a list of perceived enemies." },
+  { id: "st14", title: "Designates Mexican drug cartels as terror groups",           hint: "Mexico sent 10,000 troops to the border within days." },
+  { id: "st15", title: "Vows to 'take back' the Panama Canal from Panama",           hint: "Panama pointed out they own it. He was unmoved." },
+  { id: "st16", title: "Names himself chairman of the Kennedy Center",               hint: "Fired the existing board first. Then moved in." },
+  { id: "st17", title: "Sends a delegation to Greenland to 'look around'",           hint: "Both in one afternoon. No replacements named." },
+  { id: "st18", title: "Threatens Denmark with tariffs over Greenland",              hint: "Denmark said no again. He threatened again." },
+  { id: "st19", title: "Says he'll acquire Greenland 'one way or another'",          hint: "Did not clarify what the other way was." },
+  { id: "st20", title: "Invokes 1798 wartime act to deport Venezuelans",             hint: "The Alien Enemies Act. Last used in World War II." },
+  { id: "st21", title: "Describes mass deportations as going 'beautifully'",         hint: "Said this at the White House. Several times." },
+  { id: "st22", title: "Bills taxpayers to stay at his own Mar-a-Lago",              hint: "Secret Service rents golf carts at full rate." },
+  { id: "st23", title: "DOGE fires 200,000+ federal workers in weeks",               hint: "Probationary employees first. Then everyone else." },
+  { id: "st24", title: "Calls King Charles to brag about his election win",          hint: "Framework only. Details to follow. Still following." },
+  { id: "st25", title: "Calls Putin 'a genius' as Russia invades",                   hint: "Said on Fox News. Repeated later." },
+  { id: "st26", title: "Announces military ceasefire via Truth Social post",         hint: "The Pentagon confirmed it after he posted." },
+  { id: "st27", title: "Orders the Department of Education to close",                hint: "Signs the executive order. Congress would need to agree." },
+  { id: "st28", title: "Fires the Librarian of Congress, Carla Hayden",              hint: "First Black woman in the role. No reason given." },
+  { id: "st29", title: "Bans Associated Press from White House",                     hint: "AP refused to call it the 'Gulf of America'." },
+  { id: "st30", title: "Proposes exporting US prisoners to El Salvador",             hint: "Bukele said yes immediately. ACLU said no." },
+  { id: "st31", title: "Lets Elon sit in on classified Cabinet meetings",            hint: "Invited them all to Mar-a-Lago. They came." },
+  { id: "st32", title: "Reopens national monuments to oil and gas drilling",         hint: "To speed up 'energy dominance'. Courts intervened." },
+  { id: "st33", title: "Calls judges 'Trump haters' for ruling against him",         hint: "Every judge. Every ruling. Every time." },
+  { id: "st34", title: "Sells Mar-a-Lago memberships to foreign diplomats",          hint: "Donors also got a photo. And presumably a Diet Coke." },
+  { id: "st35", title: "Deports legal US resident by mistake, refuses fix",          hint: "Kilmar Abrego Garcia. Courts ordered his return. He said no." },
+  { id: "st36", title: "Fires hundreds of NOAA weather forecasters",                 hint: "During hurricane season prep. Meteorologists were alarmed." },
+  { id: "st37", title: "Threatens to quit NATO if allies refuse to pay up",          hint: "Then paused them. Then threatened again." },
+  { id: "st38", title: "Holds Ukraine peace talks without inviting Ukraine",         hint: "Kyiv found out from the press. They were not pleased." },
+  { id: "st39", title: "Sells US green cards to millionaires for $5M each",          hint: "Pay $5M, skip the line. Green card included." },
+  { id: "st40", title: "Threatens to fire Fed Chair for not cutting rates",          hint: "Jerome Powell declined to cut rates. Trump declined to accept this." },
+  { id: "st41", title: "Calls newly elected Canadian PM 'Governor Carney'",          hint: "He called Trudeau 'Governor Trudeau' for two years." },
+  { id: "st42", title: "Claims credit for lowering egg prices to Congress",          hint: "Eggs hit record highs the same week he said this." },
+  { id: "st43", title: "Egg prices hit record highs despite his promises",            hint: "Bird flu and tariffs contributed. He blamed Biden." },
+  { id: "st44", title: "Posts AI image of himself as a buff military hero",          hint: "Multiple times. On Truth Social. Sincerely." },
+  { id: "st45", title: "Mandates schools teach his version of history",              hint: "Executive order. Teachers were given updated guidelines." },
+  { id: "st46", title: "Proposes the US government buy and run TikTok",              hint: "He offered Oracle a stake. Congress had questions." },
+  { id: "st47", title: "Threatens to revoke Harvard's tax-exempt status",            hint: "After Harvard won its first lawsuit against him." },
+  { id: "st48", title: "Harvard sues, refuses to comply with freeze",                hint: "President Garber: 'We will not surrender'" },
+  { id: "st49", title: "Targets Columbia after Harvard refuses to comply",           hint: "Columbia agreed to most demands. Harvard did not." },
+  { id: "st50", title: "Claims he has 'total authority' over every state",           hint: "Schedule F. Signed, rescinded by Obama, resigned by Trump." },
+  { id: "st51", title: "Proposes reopening Alcatraz as a federal prison",            hint: "The island prison closed in 1963." },
+  { id: "st52", title: "Proposes movie tariffs, Hollywood has questions",            hint: "100% tariff on foreign-made films. Studios began doing math." },
+  { id: "st53", title: "Threatens to withhold hurricane aid from red states",        hint: "Governors said they hadn't complained. He disagreed." },
+  { id: "st54", title: "Gives himself an A-plus for his first 100 days",             hint: "Unprompted. In an interview. Very sincerely." },
+  { id: "st55", title: "Pitches $175B missile shield. Canada not included.",         hint: "Estimated cost: $175 billion. Canada was not included." },
+];
+
+// ============================================================
+// SPECIAL EDITIONS — keyed by UTC day-of-week (0=Sun, 3=Wed…)
+// Each edition defines: key, label, taglines, buttonColor,
+//   badgeStyle ("gold"|"dark"), and either a static events
+//   array (weekly curation) or build:"auto" (date-seeded draw).
+// To add a new edition: slot it in here. Zero route changes.
+// ============================================================
+const SPECIAL_EDITIONS = {
+  0: {
+    key: "weekly",
+    label: "WEEKLY EDITION",
+    taglines: ["This Actually Happened.", "This Week.", "Can You Sort It?"],
+    badgeStyle: "gold",    // gold bg, dark text
+    buttonColor: null,     // uses default red
+    bgTheme: "default",    // uses default background
+    events: WEEKLY_EVENTS, // null/empty → skip this Sunday
+    build: "static",       // serve events array directly
+  },
+  3: {
+    key: "2nd-term",
+    label: "2ND TERM EDITION",
+    taglines: ["He's Back.", "Same Chaos, New Term.", "Can You Sort It."],
+    badgeStyle: "dark",    // dark pill, white text
+    buttonColor: "#0A1628", // navy (red bg already)
+    bgTheme: "red",        // signals red background to frontend
+    events: SECOND_TERM_EVENTS,
+    build: "auto",         // date-seeded draw from pool
+  },
+};
+
 const POOL = {
 
   // Era A: 2015–2016, The Rise
@@ -344,6 +439,29 @@ function pickForDay(pool, eraOffset, dayNum) {
   return shuffled[dayNum % shuffled.length];
 }
 
+// Auto-draw 7 unique events from SECOND_TERM_EVENTS, seeded by dayNum.
+// Pool is shuffled once per season so the rotation order is stable.
+// We then pick 7 consecutive items (wrapping) and re-sort by canonical
+// position in the array so the correct answer is chronological order.
+function pickSecondTermEvents(dayNum) {
+  const pool = seededShuffle(SECOND_TERM_EVENTS, SEASON * 777);
+  const n    = pool.length;
+  const seen = new Set();
+  const picks = [];
+  let offset = 0;
+  while (picks.length < 7) {
+    const item = pool[(dayNum * 7 + offset) % n];
+    if (!seen.has(item.id)) { seen.add(item.id); picks.push(item); }
+    offset++;
+  }
+  // Sort by original array position = chronological order
+  picks.sort((a, b) =>
+    SECOND_TERM_EVENTS.findIndex(e => e.id === a.id) -
+    SECOND_TERM_EVENTS.findIndex(e => e.id === b.id)
+  );
+  return picks.map((ev, i) => ({ ...ev, id: i + 1 }));
+}
+
 function buildDailyPuzzle(dayNum) {
   const a = pickForDay(POOL.A, 1, dayNum);
   const b = pickForDay(POOL.B, 2, dayNum);
@@ -380,7 +498,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const dateParam = searchParams.get("date") || new Date().toISOString().split("T")[0];
 
-  const d = new Date(dateParam + "T12:00:00Z");
+  const d      = new Date(dateParam + "T12:00:00Z");
   const dayNum = Math.round((d - EPOCH_DAY) / (24 * 3600 * 1000));
 
   if (dayNum < 0) {
@@ -390,21 +508,56 @@ export async function GET(req) {
   // Strip em dashes automatically at serve time
   const clean = (str) => str.replace(/ \u2014 /g, ", ").replace(/\u2014/g, "-");
 
-  // ── Weekly edition: served every Sunday if WEEKLY_EVENTS is populated ──
-  const isSunday = d.getUTCDay() === 0;
-  if (isSunday && Array.isArray(WEEKLY_EVENTS) && WEEKLY_EVENTS.length === 7) {
-    const answerOrder = WEEKLY_EVENTS.map(e => e.id);          // already sorted
-    const shuffled    = seededShuffle(
-      WEEKLY_EVENTS.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
-      dayNum * 999983 + 7
-    );
-    const yearMap = Object.fromEntries(WEEKLY_EVENTS.map(e => [e.id, null])); // no years
-    return NextResponse.json({
-      puzzle:      { id: "w" + dayNum, dayNum, date: dateParam, events: shuffled },
-      answerOrder,
-      yearMap,
-      isWeekly:    true,
-    });
+  // ── Special edition check (keyed by UTC day-of-week) ──
+  const edition = SPECIAL_EDITIONS[d.getUTCDay()];
+
+  if (edition) {
+    // ── WEEKLY EDITION (static manual events) ──
+    if (
+      edition.build === "static" &&
+      Array.isArray(edition.events) &&
+      edition.events.length === 7
+    ) {
+      const answerOrder = edition.events.map(e => e.id);
+      const shuffled    = seededShuffle(
+        edition.events.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
+        dayNum * 999983 + 7
+      );
+      const yearMap = Object.fromEntries(edition.events.map(e => [e.id, null]));
+      return NextResponse.json({
+        puzzle:       { id: "w" + dayNum, dayNum, date: dateParam, events: shuffled },
+        answerOrder,
+        yearMap,
+        isWeekly:     true,
+        isSecondTerm: false,
+        edition:      edition.key,
+        editionMeta:  { label: edition.label, taglines: edition.taglines, badgeStyle: edition.badgeStyle, buttonColor: edition.buttonColor, bgTheme: edition.bgTheme },
+      });
+    }
+
+    // ── SECOND TERM EDITION (auto date-seeded draw) ──
+    if (
+      edition.build === "auto" &&
+      Array.isArray(edition.events) &&
+      edition.events.length >= 7
+    ) {
+      const events      = pickSecondTermEvents(dayNum);
+      const answerOrder = events.map(e => e.id);
+      const shuffled    = seededShuffle(
+        events.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
+        dayNum * 999983 + 3
+      );
+      const yearMap = Object.fromEntries(events.map(e => [e.id, null])); // years hidden
+      return NextResponse.json({
+        puzzle:       { id: "2t" + dayNum, dayNum, date: dateParam, events: shuffled },
+        answerOrder,
+        yearMap,
+        isWeekly:     false,
+        isSecondTerm: true,
+        edition:      edition.key,
+        editionMeta:  { label: edition.label, taglines: edition.taglines, badgeStyle: edition.badgeStyle, buttonColor: edition.buttonColor, bgTheme: edition.bgTheme },
+      });
+    }
   }
 
   // ── Normal daily puzzle ──
@@ -414,12 +567,15 @@ export async function GET(req) {
     events.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
     dayNum * 999983 + 7
   );
-  const yearMap     = Object.fromEntries(events.map(e => [e.id, e.year]));
+  const yearMap = Object.fromEntries(events.map(e => [e.id, e.year]));
 
   return NextResponse.json({
-    puzzle:   { id: "d" + dayNum, dayNum, date: dateParam, events: shuffled },
+    puzzle:       { id: "d" + dayNum, dayNum, date: dateParam, events: shuffled },
     answerOrder,
     yearMap,
-    isWeekly: false,
+    isWeekly:     false,
+    isSecondTerm: false,
+    edition:      "daily",
+    editionMeta:  null,
   });
 }
