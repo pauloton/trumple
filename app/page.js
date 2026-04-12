@@ -362,15 +362,16 @@ const bgStyle = bgTheme === "red"
 
       <div style={{ position:"absolute", bottom:"clamp(4rem, 11vh, 7rem)", zIndex:2, display:"flex", justifyContent:"center", width:"100%" }}>
         <button onClick={onStart} style={{
-          background:buttonColor, color:"#ffffff", border:"none", borderRadius:"14px",
-          padding:"1rem 3rem", fontSize:"1.05rem", fontWeight:700, cursor:"pointer",
+          background:buttonColor, color:"#ffffff", border:"none", borderRadius:"7px",
+          padding:"0.5rem 1.5rem", fontSize:"0.525rem", fontWeight:700, cursor:"pointer",
           fontFamily:"'Space Grotesk', sans-serif", letterSpacing:"0.05em",
           transition:"transform 0.2s ease",
           boxShadow: bgTheme === "red" ? "0 4px 24px rgba(10,22,40,0.6)" : "0 4px 24px rgba(178,34,52,0.5)",
-          width:"clamp(220px, 65vw, 280px)",
+          width:"clamp(110px, 32.5vw, 140px)",
+          transform:"rotate(33deg)",
         }}
-          onMouseEnter={e => e.target.style.transform="scale(1.05)"}
-          onMouseLeave={e => e.target.style.transform="scale(1)"}
+          onMouseEnter={e => e.target.style.transform="rotate(33deg) scale(1.05)"}
+          onMouseLeave={e => e.target.style.transform="rotate(33deg) scale(1)"}
         >SORT THE CHAOS!</button>
       </div>
     </div>
