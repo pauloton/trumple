@@ -120,7 +120,7 @@ const SPECIAL_EDITIONS = {
     taglines: ["This Actually Happened.", "This Week.", "Can You Sort It?"],
     badgeStyle: "gold",    // gold bg, dark text
     buttonColor: null,     // uses default red
-    bgTheme: "default",    // uses default background
+    bgTheme: "weekly-war",
     events: WEEKLY_EVENTS, // null/empty → skip this Sunday
     build: "static",       // serve events array directly
   },
