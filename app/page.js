@@ -316,7 +316,7 @@ const bgStyle = bgTheme === "red"
     }
     // gold badge (weekly, or any badgeStyle:"gold")
     return (
-      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform:"rotate(-10deg)", display:"inline-block" }}>
+      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform:"rotate(-10deg)", display:"inline-block", marginTop:"-2rem", position:"relative", zIndex:3 }}>
         {editionLabel}
       </div>
     );
