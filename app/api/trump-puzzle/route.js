@@ -22,13 +22,13 @@ import { NextResponse } from "next/server";
 // ============================================================
 // const WEEKLY_EVENTS = null; // <- uncomment this line to disable weekly edition
 const WEEKLY_EVENTS = [
-  { id: 1, title: "Says he hangs out with 'losers' to feel better", hint: "Mar 27. His words. About his friends." },
-  { id: 2, title: "Shows off ballroom pics while troops deploy",      hint: "Mar 30. War raging. Renovation updates." },
-  { id: 3, title: "Claims he got '93% bad publicity'",               hint: "Mar 31. Blamed Karoline. On camera." },
-  { id: 4, title: "Promises speech to say 'how great I am'",         hint: "Apr 1. He actually said this. Out loud." },
-  { id: 5, title: "'I love bad people if they're nice to me'",       hint: "Apr 1. Different moment, same speech." },
-  { id: 6, title: "Says war beats day care. Chooses war.",           hint: "Apr 2. Easter lunch. Rambling speech." },
-  { id: 7, title: "Posts 'Open the F**kin Strait, Praise Allah'",    hint: "Apr 5. Easter morning. Truth Social." },
+  { id: 1, title: "Trump's Easter F-bomb to Iran, hails Allah", hint: "Apr 5. Skipped church. Posted a profanity-laced threat to Iran on Truth Social, signed off: 'Praise be to Allah.'" },
+  { id: 2, title: "Trump mimes shooting reporters with sniper", hint: "Apr 6. At a White House press conference, paused Iran war talk to pretend-aim a sniper rifle at the press pool." },
+  { id: 3, title: "Trump claims Iran begged 'keep bombing'", hint: "Apr 6. At a press conference, cited 'intercepted' Iranian communications supposedly begging for more strikes." },
+  { id: 4, title: "Trump: 'A whole civilization dies tonight'", hint: "Apr 7. Posted apocalyptic threat on Truth Social hours before his self-imposed 8 p.m. Iran deadline." },
+  { id: 5, title: "Trump's Iran ceasefire brokered via Pakistan", hint: "Apr 7. Same evening: complete reversal. Two-week ceasefire arranged through Pakistani intermediaries." },
+  { id: 6, title: "Trump: NATO allies 'tested and failed'", hint: "Apr 8. Declared allies inadequate for not joining his war. Also posted: 'A big day for World Peace!'" },
+  { id: 7, title: "Mid-war Trump flies to $1M winery gala", hint: "Apr 10. Flew to a $1M-per-plate fundraiser at Trump Winery in Charlottesville during active ceasefire talks." },
 ];
 
 // ============================================================
@@ -94,6 +94,16 @@ const SECOND_TERM_EVENTS = [
   { id: "st53", title: "Threatens to withhold hurricane aid from red states",        hint: "Governors said they hadn't complained. He disagreed." },
   { id: "st54", title: "Gives himself an A-plus for his first 100 days",             hint: "Unprompted. In an interview. Very sincerely." },
   { id: "st55", title: "Pitches $175B missile shield. Canada not included.",         hint: "Estimated cost: $175 billion. Canada was not included." },
+  { id: "st56", title: "Admits 59 white S. Africans as refugees", hint: "May 2025. While capping refugee admissions near-zero globally, fast-tracked 59 white Afrikaners." },
+  { id: "st57", title: "Signs 'One Big Beautiful Bill' on July 4", hint: "Jul 4, 2025. Cut Medicaid and food stamps on Independence Day, then threw a party on the White House lawn." },
+  { id: "st58", title: "Proposes IQ test for AOC and Crockett", hint: "Jul 2025. After Rep. Crockett insulted him, offered to settle it scientifically with a live IQ contest." },
+  { id: "st59", title: "Invents tale of uncle teaching Unabomber", hint: "Jul 2025. During an AI speech, detoured into a fabricated story about his uncle and Ted Kaczynski at MIT." },
+  { id: "st60", title: "Tours Federal Reserve with Powell in tow", hint: "Jul 24, 2025. After years of demanding Powell be fired, toured his $2.5B renovation project alongside him." },
+  { id: "st61", title: "Calls jobs data 'RIGGED,' fires stats chief", hint: "Aug 1, 2025. A weak jobs report prompted a Truth Social tantrum and the firing of the Bureau of Labor Statistics head." },
+  { id: "st62", title: "Tells UN climate science is 'greatest con job'", hint: "Sep 23, 2025. Addressed the UN General Assembly to announce that climate scientists are stupid and it's all a scam." },
+  { id: "st63", title: "Demolishes White House East Wing for ballroom", hint: "Oct 23, 2025. An excavator tore into the historic East Wing to make room for Trump's personal party venue." },
+  { id: "st64", title: "Sets refugee cap favoring white Afrikaners", hint: "Nov 2025. Capped annual refugee admissions at 7,500, with white South Africans given explicit priority." },
+  { id: "st65", title: "Launches bombing campaign on Iran", hint: "Apr 2, 2026. Initiated Operation Epic Fury: the first direct US military assault on Iran in history." },
 ];
 
 // ============================================================
