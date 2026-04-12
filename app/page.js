@@ -254,6 +254,7 @@ function ErrorScreen() {
 function IntroScreen({ onStart, puzzle, isWeekly, isSecondTerm, editionMeta }) {
   const [show, setShow] = useState(false);
   const [logoSolved, setLogoSolved] = useState(false);
+  const [badgeVisible, setBadgeVisible] = useState(false);
   const [taglineCount, setTaglineCount] = useState(0);
 
   useEffect(() => { setTimeout(() => setShow(true), 100); }, []);
@@ -261,6 +262,7 @@ function IntroScreen({ onStart, puzzle, isWeekly, isSecondTerm, editionMeta }) {
   useEffect(() => {
     if (!logoSolved) return;
     const timers = [
+      setTimeout(() => setBadgeVisible(true), 0),
       setTimeout(() => setTaglineCount(1), 350),
       setTimeout(() => setTaglineCount(2), 750),
       setTimeout(() => setTaglineCount(3), 1150),
@@ -316,7 +318,7 @@ const bgStyle = bgTheme === "red"
     }
     // gold badge (weekly, or any badgeStyle:"gold")
     return (
-      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform:"rotate(-10deg)", display:"inline-block", marginTop:"-2rem", position:"relative", zIndex:3 }}>
+      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform: badgeVisible ? "rotate(-10deg) scale(1)" : "rotate(-10deg) scale(0.7)", display:"inline-block", marginTop:"-2rem", position:"relative", zIndex:3, opacity: badgeVisible ? 1 : 0, transition:"opacity 0.35s ease, transform 0.35s ease" }}>
         {editionLabel}
       </div>
     );
