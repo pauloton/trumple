@@ -651,15 +651,19 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
   );
 }
 
-function ShareIcons({ time }) {
+function ShareIcons({ time, meta }) {
   const { display } = formatTime(time);
+  const editionLabel = meta && meta.label;
+  const subject = editionLabel
+    ? `the ${editionLabel} of Trumple`
+    : "Trumple";
   const WIN_MSGS = [
-    `I solved Trumple in ${display}. A tremendous success. The BEST.\nhttps://trumple.app`,
-    `I solved Trumple in ${display}. HUGE win. Absolutely incredible.\nhttps://trumple.app`,
-    `I solved Trumple in ${display}. Total victory. Record-breaking.\nhttps://trumple.app`,
-    `I solved Trumple in ${display}. Big league. We're winning.\nhttps://trumple.app`,
-    `I solved Trumple in ${display}. Very, very special. Historic.\nhttps://trumple.app`,
-    `I solved Trumple in ${display}. Many people are saying it's the fastest ever.\nhttps://trumple.app`,
+    `I solved ${subject} in ${display}. A tremendous success. The BEST.\nhttps://trumple.app`,
+    `I solved ${subject} in ${display}. HUGE win. Absolutely incredible.\nhttps://trumple.app`,
+    `I solved ${subject} in ${display}. Total victory. Record-breaking.\nhttps://trumple.app`,
+    `I solved ${subject} in ${display}. Big league. We're winning.\nhttps://trumple.app`,
+    `I solved ${subject} in ${display}. Very, very special. Historic.\nhttps://trumple.app`,
+    `I solved ${subject} in ${display}. Many people are saying it's the fastest ever.\nhttps://trumple.app`,
   ];
   const msg = WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)];
 
@@ -739,7 +743,7 @@ function ShareIcons({ time }) {
   );
 }
 
-function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount }) {
+function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount, meta }) {
   const stars = getStars(failedAttempts);
   const { display } = formatTime(time);
   const [celebWord] = useState(() => getCelebWord(stars));
@@ -814,7 +818,7 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           View the "BEAUTIFUL" Trump Timeline
         </button>
-        <ShareIcons time={time}/>
+        <ShareIcons time={time} meta={meta}/>
       </div>
     </>
   );
@@ -907,7 +911,7 @@ export default function TrumpleApp() {
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
-      {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }}/>}
+      {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={meta}/>}
       {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} onMount={() => { gameOverShown.current = true; }}/>}
     </div>
   );
