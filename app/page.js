@@ -318,7 +318,7 @@ const bgStyle = bgTheme === "red"
     }
     // gold badge (weekly, or any badgeStyle:"gold")
     return (
-      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform: badgeVisible ? "rotate(-10deg) scale(1)" : "rotate(-10deg) scale(0.7)", display:"inline-block", marginTop:"-2rem", position:"relative", zIndex:3, opacity: badgeVisible ? 1 : 0, transition:"opacity 0.35s ease, transform 0.35s ease" }}>
+      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform: badgeVisible ? "rotate(-10deg) scale(1)" : "rotate(-10deg) scale(0.7)", display:"inline-block", marginTop:"-3.5rem", position:"relative", zIndex:3, opacity: badgeVisible ? 1 : 0, transition:"opacity 0.35s ease, transform 0.35s ease" }}>
         {editionLabel}
       </div>
     );
@@ -531,7 +531,7 @@ function LiveStars({ failedAttempts }) {
 }
 
 // Game Over screen, shows correct answer with hints
-function GameOverScreen({ events, onViewChain, onMount }) {
+function GameOverScreen({ events, onViewChain, onMount, meta }) {
   const hasRun = useRef(false);
   useEffect(() => {
     if (!hasRun.current) {
@@ -566,14 +566,16 @@ function GameOverScreen({ events, onViewChain, onMount }) {
         {/* Share your horrible score */}
         <button
           onClick={async () => {
+            const editionLabel = meta && meta.label;
+            const subject = editionLabel ? `the ${editionLabel} of Trumple` : "Trumple";
             const LOSER_MSGS = [
-              "I got absolutely crushed by Trumple today. Total disaster. Think you can do better? https://trumple.app",
-              "Trumple beat me today. Rigged? Very suspicious. Think you can do better? https://trumple.app",
-              "Trumple got me. Sad! Very unfair. Think you can do better? https://trumple.app",
-              "I lost Trumple today. A disaster the likes of which we've never seen. Think you can do better? https://trumple.app",
-              "Trumple defeated me. Many people are saying its rigged. https://trumple.app",
-              "I lost Trumple today. Nobody thought it could happen. Think you can do better? https://trumple.app",
-              "Trumple beat me. Sad! Very sad. Think you can do better? https://trumple.app",
+              `I got absolutely crushed by ${subject} today. Total disaster. Think you can do better? https://trumple.app`,
+              `${subject} beat me today. Rigged? Very suspicious. Think you can do better? https://trumple.app`,
+              `${subject} got me. Sad! Very unfair. Think you can do better? https://trumple.app`,
+              `I lost ${subject} today. A disaster the likes of which we've never seen. Think you can do better? https://trumple.app`,
+              `${subject} defeated me. Many people are saying its rigged. https://trumple.app`,
+              `I lost ${subject} today. Nobody thought it could happen. Think you can do better? https://trumple.app`,
+              `${subject} beat me. Sad! Very sad. Think you can do better? https://trumple.app`,
             ];
             const msg = LOSER_MSGS[Math.floor(Math.random() * LOSER_MSGS.length)];
             if (navigator.share) {
@@ -912,7 +914,7 @@ export default function TrumpleApp() {
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
       {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={meta}/>}
-      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} onMount={() => { gameOverShown.current = true; }}/>}
+      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} onMount={() => { gameOverShown.current = true; }} meta={meta}/>}
     </div>
   );
 }
