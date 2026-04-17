@@ -127,7 +127,7 @@ const SPECIAL_EDITIONS = {
   3: {
     key: "2nd-term",
     label: "2ND TERM EDITION",
-    taglines: ["He's Back.", "Same Chaos, New Term.", "Can You Sort It."],
+    taglines: ["New Term.", "More Mayhem.", "Can You Sort It?"],
     badgeStyle: "dark",    // dark pill, white text
     buttonColor: "#0A1628", // navy (red bg already)
     bgTheme: "red",        // signals red background to frontend
