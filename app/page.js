@@ -913,8 +913,8 @@ export default function TrumpleApp() {
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
-      {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={meta}/>}
-      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} onMount={() => { gameOverShown.current = true; }} meta={meta}/>}
+      {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta}/>}
+      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} onMount={() => { gameOverShown.current = true; }} meta={editionMeta}/>}
     </div>
   );
 }
