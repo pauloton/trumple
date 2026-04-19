@@ -107,34 +107,67 @@ const SECOND_TERM_EVENTS = [
 ];
 
 // ============================================================
-// SPECIAL EDITIONS — keyed by UTC day-of-week (0=Sun, 3=Wed…)
-// Each edition defines: key, label, taglines, buttonColor,
-//   badgeStyle ("gold"|"dark"), and either a static events
-//   array (weekly curation) or build:"auto" (date-seeded draw).
-// To add a new edition: slot it in here. Zero route changes.
+// EDITIONS — each one is fully self-describing so clients
+// (web + native) render from data alone, no hardcoded theme
+// tables. SPECIAL_EDITIONS is keyed by UTC day-of-week
+// (0=Sun, 3=Wed). Any other weekday falls back to DAILY_EDITION.
+//
+// Schema:
+//   key, label (null = no badge), taglines[3],
+//   badgeStyle ("gold"|"dark"|null),
+//   buttonColor (hex), bgImageUrl (absolute path under /public),
+//   bgOverlayOpacity (0..1), layoutVariant ("default"|"taglines-below"),
+//   events OR pool draw (build: "static"|"auto").
 // ============================================================
+const DAILY_EDITION = {
+  key: "daily",
+  label: null,
+  taglines: ["The Chaos Never Ends!", "Think You Can Sort It?", "Beat The Clock"],
+  badgeStyle: null,
+  buttonColor: "#B22234",
+  bgImageUrl: "/bg/default.jpg",
+  bgOverlayOpacity: 0.45,
+  layoutVariant: "default",
+};
+
 const SPECIAL_EDITIONS = {
   0: {
     key: "weekly",
     label: "WEEKLY EDITION",
     taglines: ["This Actually Happened.", "This Week.", "Can You Sort It?"],
-    badgeStyle: "gold",    // gold bg, dark text
-    buttonColor: null,     // uses default red
-    bgTheme: "weekly-war",
+    badgeStyle: "gold",
+    buttonColor: "#B22234",
+    bgImageUrl: "/weekly-war.png",
+    bgOverlayOpacity: 0.45,
+    layoutVariant: "default",
     events: WEEKLY_EVENTS, // null/empty → skip this Sunday
-    build: "static",       // serve events array directly
+    build: "static",
   },
   3: {
     key: "2nd-term",
     label: "2ND TERM EDITION",
     taglines: ["New Term.", "More Mayhem.", "Can You Sort It?"],
-    badgeStyle: "dark",    // dark pill, white text
-    buttonColor: "#0A1628", // navy (red bg already)
-    bgTheme: "red",        // signals red background to frontend
+    badgeStyle: "dark",
+    buttonColor: "#0A1628",
+    bgImageUrl: "/bg/red.jpg",
+    bgOverlayOpacity: 0.15, // lower: red backdrop stays vivid
+    layoutVariant: "taglines-below",
     events: SECOND_TERM_EVENTS,
-    build: "auto",         // date-seeded draw from pool
+    build: "auto",
   },
 };
+
+function buildEditionMeta(e) {
+  return {
+    label:            e.label,
+    taglines:         e.taglines,
+    badgeStyle:       e.badgeStyle,
+    buttonColor:      e.buttonColor,
+    bgImageUrl:       e.bgImageUrl,
+    bgOverlayOpacity: e.bgOverlayOpacity,
+    layoutVariant:    e.layoutVariant,
+  };
+}
 
 const POOL = {
 
@@ -541,7 +574,7 @@ export async function GET(req) {
         isWeekly:     true,
         isSecondTerm: false,
         edition:      edition.key,
-        editionMeta:  { label: edition.label, taglines: edition.taglines, badgeStyle: edition.badgeStyle, buttonColor: edition.buttonColor, bgTheme: edition.bgTheme },
+        editionMeta:  buildEditionMeta(edition),
       });
     }
 
@@ -565,7 +598,7 @@ export async function GET(req) {
         isWeekly:     false,
         isSecondTerm: true,
         edition:      edition.key,
-        editionMeta:  { label: edition.label, taglines: edition.taglines, badgeStyle: edition.badgeStyle, buttonColor: edition.buttonColor, bgTheme: edition.bgTheme },
+        editionMeta:  buildEditionMeta(edition),
       });
     }
   }
@@ -586,6 +619,6 @@ export async function GET(req) {
     isWeekly:     false,
     isSecondTerm: false,
     edition:      "daily",
-    editionMeta:  null,
+    editionMeta:  buildEditionMeta(DAILY_EDITION),
   });
 }
