@@ -708,6 +708,7 @@ function ShareIcons({ time, meta }) {
 
   return (
     <button onClick={generateAndShare} style={{
+      marginTop:"0.6rem",
       width:"100%", display:"flex", alignItems:"center", justifyContent:"center", gap:"0.55rem",
       background:C.card, border:"1px solid "+C.border, borderRadius:"14px",
       padding:"0.9rem 0", cursor:"pointer", fontFamily:"'DM Sans', sans-serif",
