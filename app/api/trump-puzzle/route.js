@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server.js";
 
 // ============================================================
 // EVENT POOL, spanning 2015–2025
@@ -20,22 +20,16 @@ import { NextResponse } from "next/server";
 // Same rules as POOL: max 50 chars, no em dashes, punchy.
 // To skip weekly edition on a given Sunday, set to null.
 // ============================================================
-// const WEEKLY_EVENTS = null; // <- uncomment this line to disable weekly edition
-const WEEKLY_EVENTS = [
-  { id: 1, title: "Trump's Easter F-bomb to Iran, hails Allah", hint: "Apr 5. Skipped church. Posted a profanity-laced threat to Iran on Truth Social, signed off: 'Praise be to Allah.'" },
-  { id: 2, title: "Trump mimes shooting reporters with sniper", hint: "Apr 6. At a White House press conference, paused Iran war talk to pretend-aim a sniper rifle at the press pool." },
-  { id: 3, title: "Trump claims Iran begged 'keep bombing'", hint: "Apr 6. At a press conference, cited 'intercepted' Iranian communications supposedly begging for more strikes." },
-  { id: 4, title: "Trump: 'A whole civilization dies tonight'", hint: "Apr 7. Posted apocalyptic threat on Truth Social hours before his self-imposed 8 p.m. Iran deadline." },
-  { id: 5, title: "Trump's Iran ceasefire brokered via Pakistan", hint: "Apr 7. Same evening: complete reversal. Two-week ceasefire arranged through Pakistani intermediaries." },
-  { id: 6, title: "Trump: NATO allies 'tested and failed'", hint: "Apr 8. Declared allies inadequate for not joining his war. Also posted: 'A big day for World Peace!'" },
-  { id: 7, title: "Mid-war Trump flies to $1M winery gala", hint: "Apr 10. Flew to a $1M-per-plate fundraiser at Trump Winery in Charlottesville during active ceasefire talks." },
-];
+// Disabled while the weekly editorial workflow is paused. Leaving this null
+// makes Sundays fall back to the normal daily puzzle instead of replaying stale
+// stories. Restore exactly 7 freshly verified events to re-enable the edition.
+const WEEKLY_EVENTS = null;
 
 // ============================================================
-// SECOND TERM EVENTS — used every Wednesday
-// Ordered chronologically (Jan 20, 2025 → present).
-// All are 2025, so years are hidden on cards.
-// TO ADD AN EVENT: append in the correct date order.
+// SECOND TERM DRAFT EVENTS — currently paused
+// This recovered pool needs a source-and-date audit before it can safely power
+// a chronology game. Keep the draft here, but do not serve it until every item
+// has a verified date and the array is sorted by that date.
 // MAX 50 chars per title, no em dashes, sardonic voice.
 // ============================================================
 const SECOND_TERM_EVENTS = [
@@ -91,7 +85,7 @@ const SECOND_TERM_EVENTS = [
   { id: "st50", title: "Claims he has 'total authority' over every state",           hint: "Schedule F. Signed, rescinded by Obama, resigned by Trump." },
   { id: "st51", title: "Proposes reopening Alcatraz as a federal prison",            hint: "The island prison closed in 1963." },
   { id: "st52", title: "Proposes movie tariffs, Hollywood has questions",            hint: "100% tariff on foreign-made films. Studios began doing math." },
-  { id: "st53", title: "Threatens to withhold hurricane aid from red states",        hint: "Governors said they hadn't complained. He disagreed." },
+  { id: "st53", title: "Threatens to withhold hurricane aid from states",            hint: "Governors said they hadn't complained. He disagreed." },
   { id: "st54", title: "Gives himself an A-plus for his first 100 days",             hint: "Unprompted. In an interview. Very sincerely." },
   { id: "st55", title: "Pitches $175B missile shield. Canada not included.",         hint: "Estimated cost: $175 billion. Canada was not included." },
   { id: "st56", title: "Admits 59 white S. Africans as refugees", hint: "May 2025. While capping refugee admissions near-zero globally, fast-tracked 59 white Afrikaners." },
@@ -152,7 +146,9 @@ const SPECIAL_EDITIONS = {
     bgImageUrl: "/bg/red.jpg",
     bgOverlayOpacity: 0.15, // lower: red backdrop stays vivid
     layoutVariant: "taglines-below",
-    events: SECOND_TERM_EVENTS,
+    // Paused until SECOND_TERM_EVENTS has been fully date-audited. A null pool
+    // makes Wednesdays fall back to the reliable daily edition.
+    events: null,
     build: "auto",
   },
 };
@@ -475,7 +471,7 @@ function seededShuffle(arr, seed) {
 }
 
 // Season seed, change once per year to refresh the rotation order
-const SEASON = 2025;
+const SEASON = 2026;
 
 function pickForDay(pool, eraOffset, dayNum) {
   const shuffled = seededShuffle(pool, SEASON * 1000 + eraOffset);
@@ -537,15 +533,38 @@ function buildDailyPuzzle(dayNum) {
 // ============================================================
 const EPOCH_DAY = new Date("2025-01-20T12:00:00Z"); // Inauguration day = day 0
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin":  "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
+}
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const dateParam = searchParams.get("date") || new Date().toISOString().split("T")[0];
+  const requestedDate = searchParams.get("date");
+  const dateParam = requestedDate === null
+    ? new Date().toISOString().split("T")[0]
+    : requestedDate;
 
-  const d      = new Date(dateParam + "T12:00:00Z");
+  // Fail cleanly for malformed or impossible dates instead of allowing NaN
+  // to flow into the seeded selectors and produce a server error.
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+    return NextResponse.json({ error: "Invalid date. Use YYYY-MM-DD." }, { status: 400, headers: CORS_HEADERS });
+  }
+
+  const d = new Date(dateParam + "T12:00:00Z");
+  if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== dateParam) {
+    return NextResponse.json({ error: "Invalid date. Use YYYY-MM-DD." }, { status: 400, headers: CORS_HEADERS });
+  }
+
   const dayNum = Math.round((d - EPOCH_DAY) / (24 * 3600 * 1000));
 
   if (dayNum < 0) {
-    return NextResponse.json({ error: "No puzzle before launch" }, { status: 404 });
+    return NextResponse.json({ error: "No puzzle before launch" }, { status: 404, headers: CORS_HEADERS });
   }
 
   // Strip em dashes automatically at serve time
@@ -575,7 +594,7 @@ export async function GET(req) {
         isSecondTerm: false,
         edition:      edition.key,
         editionMeta:  buildEditionMeta(edition),
-      });
+      }, { headers: CORS_HEADERS });
     }
 
     // ── SECOND TERM EDITION (auto date-seeded draw) ──
@@ -599,7 +618,7 @@ export async function GET(req) {
         isSecondTerm: true,
         edition:      edition.key,
         editionMeta:  buildEditionMeta(edition),
-      });
+      }, { headers: CORS_HEADERS });
     }
   }
 
@@ -620,5 +639,5 @@ export async function GET(req) {
     isSecondTerm: false,
     edition:      "daily",
     editionMeta:  buildEditionMeta(DAILY_EDITION),
-  });
+  }, { headers: CORS_HEADERS });
 }
