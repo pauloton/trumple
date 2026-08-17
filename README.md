@@ -42,7 +42,7 @@ npm audit
 - `data/generated-events.js` contains approved weekly additions.
 - `lib/event-library.js` validates and combines both libraries and selects Sunday events.
 - `scripts/refresh-event-library.mjs` collects and curates weekly candidates.
-- `.github/workflows/refresh-event-library.yml` runs the refresh each weekend and opens a review pull request.
+- `.github/workflows/refresh-event-library.yml` runs the refresh each weekend, pushes a candidate branch, and opens a review issue with a one-click comparison link.
 - `tests/` protects the game, schedule, library, and refresh contracts.
 - `public/` contains the edition backgrounds and game artwork.
 
@@ -57,7 +57,7 @@ At 02:00 UTC every Sunday (Saturday evening in US time zones), GitHub Actions:
 3. Groups coverage by day and prepares up to four sourced editorial candidates per day.
 4. Rejects invalid dates, malformed events, untrusted sources, and likely duplicates.
 5. Runs the complete game test and production-build check.
-6. Opens a pull request for human editorial review.
+6. Pushes a candidate branch and opens a GitHub issue with a one-click comparison link for human editorial review.
 
 The workflow needs no purchased API key. New cards are marked `candidate`, which excludes them from the playable library even if a review branch is merged accidentally. An editor must verify the date and sources, rewrite the placeholder hint, change the status to `approved`, and delete rejected cards before merging.
 
