@@ -6,16 +6,13 @@ Trumple is a daily timeline game. Players drag seven Trump-related events into c
 - Production repository: https://github.com/pauloton/trumple
 - Hosting: Vercel, deployed from `main`
 
-## Current schedule
+## Edition schedule
 
-The reliable daily edition is served every day.
+- **Daily:** seven exactly dated events from Trump's second term (January 20, 2025 to today). The draw favors recent additions while retaining variety.
+- **Sunday — This Week:** one event from each of the previous seven completed days. If a week is incomplete, Sunday safely falls back to the second-term daily game instead of inventing or replaying news.
+- **First Saturday — Legacy Edition:** seven events spanning 2016 to today.
 
-The recovered Sunday and Wednesday special editions are intentionally paused:
-
-- Sunday's manual weekly list had not been refreshed since April 2026 and was replaying stale stories.
-- Wednesday's second-term draft pool was not consistently ordered by event date, which could produce an incorrect answer key.
-
-Both now fall back to the normal daily puzzle. Their draft data and visual themes remain in the code for a future sourced editorial rebuild.
+The starting second-term library contains more than 50 hand-reviewed events and grows through the weekly refresh workflow.
 
 ## Run locally
 
@@ -35,16 +32,40 @@ npm run check
 npm audit
 ```
 
-`npm run check` runs the API contract tests and creates a production build. The test suite checks daily determinism, invalid dates, CORS, edition fallbacks, and every puzzle date in 2026.
+`npm run check` runs the API and library tests and creates a production build. The suite checks determinism, schedule boundaries, invalid dates, CORS, editorial validation, refresh-source mapping, and every puzzle date in 2026.
 
 ## Project map
 
 - `app/page.js` contains the game screens, drag-and-drop interaction, timer, local statistics, results, and sharing.
-- `app/api/trump-puzzle/route.js` contains the editorial pools, deterministic puzzle selection, answer key, edition metadata, date validation, and CORS response.
-- `tests/puzzle-api.test.mjs` protects the puzzle API contract.
+- `app/api/trump-puzzle/route.js` contains deterministic puzzle selection, the Legacy pool, answer keys, edition metadata, date validation, and CORS response.
+- `data/seed-events.js` is the reviewed starting library.
+- `data/generated-events.js` contains approved weekly additions.
+- `lib/event-library.js` validates and combines both libraries and selects Sunday events.
+- `scripts/refresh-event-library.mjs` collects and curates weekly candidates.
+- `.github/workflows/refresh-event-library.yml` runs the refresh each weekend and opens a review pull request.
+- `tests/` protects the game, schedule, library, and refresh contracts.
 - `public/` contains the edition backgrounds and game artwork.
 
 Player statistics remain in the browser under the `trumple_*` local-storage keys. There is no account or server-side player database.
+
+## Automated weekly library
+
+At 02:00 UTC every Sunday (Saturday evening in US time zones), GitHub Actions:
+
+1. Collects up to 250 recent English-language Trump articles through GDELT, with Google News RSS as a rate-limit and outage fallback.
+2. Keeps reporting from an allowlist of established news and primary-government domains.
+3. Groups coverage by day and prepares up to four sourced editorial candidates per day.
+4. Rejects invalid dates, malformed events, untrusted sources, and likely duplicates.
+5. Runs the complete game test and production-build check.
+6. Opens a pull request for human editorial review.
+
+The workflow needs no purchased API key. New cards are marked `candidate`, which excludes them from the playable library even if a review branch is merged accidentally. An editor must verify the date and sources, rewrite the placeholder hint, change the status to `approved`, and delete rejected cards before merging.
+
+To rehearse the refresh without network access or changing the library:
+
+```bash
+npm run library:refresh -- --today 2026-08-16 --fixture tests/fixtures/refresh.json --dry-run
+```
 
 ## Editorial rules
 
@@ -55,16 +76,15 @@ Before publishing an event:
 3. Do not use em dashes.
 4. Keep Trump as the focus of the event.
 5. Use a concise, sardonic hint without inventing details.
-6. Ensure the answer order is unambiguous; avoid multiple events on the same date unless their order is independently verifiable.
-
-To restore a special edition, provide a fully verified chronological pool and replace its `events: null` value in `SPECIAL_EDITIONS`.
+6. Check every automated source link and confirm that the event happened on the stated date before merging.
+7. Keep Sunday fair by approving one strong event per calendar day where possible.
 
 ## Release
 
 Changes pushed to `main` are deployed by Vercel. Always run `npm run check` and `npm audit` first, then verify these endpoints after deployment:
 
-- `/api/trump-puzzle?date=2026-08-17` (daily)
-- `/api/trump-puzzle?date=2026-08-16` (Sunday fallback)
-- `/api/trump-puzzle?date=2026-08-19` (Wednesday fallback)
+- `/api/trump-puzzle?date=2026-08-17` (second-term daily)
+- `/api/trump-puzzle?date=2026-08-16` (safe Sunday fallback when the prior week is incomplete)
+- `/api/trump-puzzle?date=2026-08-01` (Legacy Edition)
 
 All successful API responses should include complete `editionMeta` data and the `Access-Control-Allow-Origin: *` header needed by the native client.

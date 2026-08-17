@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server.js";
+import {
+  SECOND_TERM_EVENTS as DATED_SECOND_TERM_EVENTS,
+  isFirstSaturday,
+  weeklyEventsForSunday,
+} from "../../../lib/event-library.js";
 
 // ============================================================
 // EVENT POOL, spanning 2015–2025
@@ -113,10 +118,10 @@ const SECOND_TERM_EVENTS = [
 //   bgOverlayOpacity (0..1), layoutVariant ("default"|"taglines-below"),
 //   events OR pool draw (build: "static"|"auto").
 // ============================================================
-const DAILY_EDITION = {
-  key: "daily",
+const SECOND_TERM_EDITION = {
+  key: "second-term",
   label: null,
-  taglines: ["The Chaos Never Ends!", "Think You Can Sort It?", "Beat The Clock"],
+  taglines: ["The Second Term.", "The Chaos Continues.", "Can You Sort It?"],
   badgeStyle: null,
   buttonColor: "#B22234",
   bgImageUrl: "/bg/default.jpg",
@@ -124,33 +129,26 @@ const DAILY_EDITION = {
   layoutVariant: "default",
 };
 
-const SPECIAL_EDITIONS = {
-  0: {
-    key: "weekly",
-    label: "WEEKLY EDITION",
-    taglines: ["This Actually Happened.", "This Week.", "Can You Sort It?"],
-    badgeStyle: "gold",
-    buttonColor: "#B22234",
-    bgImageUrl: "/weekly-war.png",
-    bgOverlayOpacity: 0.45,
-    layoutVariant: "default",
-    events: WEEKLY_EVENTS, // null/empty → skip this Sunday
-    build: "static",
-  },
-  3: {
-    key: "2nd-term",
-    label: "2ND TERM EDITION",
-    taglines: ["New Term.", "More Mayhem.", "Can You Sort It?"],
-    badgeStyle: "dark",
-    buttonColor: "#0A1628",
-    bgImageUrl: "/bg/red.jpg",
-    bgOverlayOpacity: 0.15, // lower: red backdrop stays vivid
-    layoutVariant: "taglines-below",
-    // Paused until SECOND_TERM_EVENTS has been fully date-audited. A null pool
-    // makes Wednesdays fall back to the reliable daily edition.
-    events: null,
-    build: "auto",
-  },
+const WEEKLY_EDITION = {
+  key: "weekly",
+  label: "THIS WEEK",
+  taglines: ["Seven Days.", "Seven Shenanigans.", "Can You Sort It?"],
+  badgeStyle: "gold",
+  buttonColor: "#B22234",
+  bgImageUrl: "/weekly-war.png",
+  bgOverlayOpacity: 0.45,
+  layoutVariant: "default",
+};
+
+const LEGACY_EDITION = {
+  key: "legacy",
+  label: "LEGACY EDITION",
+  taglines: ["2016 To Today.", "One Long Timeline.", "Can You Sort It?"],
+  badgeStyle: "dark",
+  buttonColor: "#0A1628",
+  bgImageUrl: "/bg/red.jpg",
+  bgOverlayOpacity: 0.18,
+  layoutVariant: "taglines-below",
 };
 
 function buildEditionMeta(e) {
@@ -478,54 +476,55 @@ function pickForDay(pool, eraOffset, dayNum) {
   return shuffled[dayNum % shuffled.length];
 }
 
-// Auto-draw 7 unique events from SECOND_TERM_EVENTS, seeded by dayNum.
-// Pool is shuffled once per season so the rotation order is stable.
-// We then pick 7 consecutive items (wrapping) and re-sort by canonical
-// position in the array so the correct answer is chronological order.
+// Daily puzzles lean toward recent stories while retaining enough of the
+// second-term back catalogue to keep the sequence surprising.
 function pickSecondTermEvents(dayNum) {
-  const pool = seededShuffle(SECOND_TERM_EVENTS, SEASON * 777);
-  const n    = pool.length;
-  const seen = new Set();
-  const picks = [];
-  let offset = 0;
-  while (picks.length < 7) {
-    const item = pool[(dayNum * 7 + offset) % n];
-    if (!seen.has(item.id)) { seen.add(item.id); picks.push(item); }
-    offset++;
-  }
-  // Sort by original array position = chronological order
-  picks.sort((a, b) =>
-    SECOND_TERM_EVENTS.findIndex(e => e.id === a.id) -
-    SECOND_TERM_EVENTS.findIndex(e => e.id === b.id)
+  const recent = DATED_SECOND_TERM_EVENTS.slice(-28);
+  const selected = [];
+  const dates = new Set();
+
+  const addUniqueDates = (candidates, limit) => {
+    for (const event of candidates) {
+      if (selected.length >= limit) break;
+      if (dates.has(event.date)) continue;
+      dates.add(event.date);
+      selected.push(event);
+    }
+  };
+
+  addUniqueDates(seededShuffle(recent, SEASON * 777 + dayNum), 4);
+  addUniqueDates(
+    seededShuffle(DATED_SECOND_TERM_EVENTS, SEASON * 997 + dayNum),
+    7
   );
-  return picks.map((ev, i) => ({ ...ev, id: i + 1 }));
+
+  return selected
+    .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
+    .map((event, index) => ({ ...event, id: index + 1 }));
 }
 
-function buildDailyPuzzle(dayNum) {
-  const a = pickForDay(POOL.A, 1, dayNum);
-  const b = pickForDay(POOL.B, 2, dayNum);
-  const c = pickForDay(POOL.C, 3, dayNum);
-  const d = pickForDay(POOL.D, 4, dayNum);
-  const e = pickForDay(POOL.E, 5, dayNum);
-
-  // For F (22 items, 2 needed): offset second pick by half the pool size
-  const f1 = pickForDay(POOL.F, 6, dayNum);
-  const f2 = pickForDay(POOL.F, 6, dayNum + Math.floor(POOL.F.length / 2));
-
-  // Sort oldest to newest = correct answer order
-  const events = [a, b, c, d, e, f1, f2].sort((x, y) =>
-    x.year !== y.year ? x.year - y.year : (x.id < y.id ? -1 : 1)
+function buildLegacyPuzzle(dayNum) {
+  const historicalPools = [POOL.A, POOL.B, POOL.C, POOL.D, POOL.E]
+    .map((pool) => pool.filter((event) => event.year >= 2016));
+  const historical = historicalPools.map((pool, index) =>
+    pickForDay(pool, index + 1, dayNum)
   );
 
-  // Warn loudly in dev if any title sneaks past 50 chars
-  if (process.env.NODE_ENV !== "production") {
-    events.forEach(ev => {
-      if (ev.title.length > 50) console.warn(`[TRUMPLE] Title too long (${ev.title.length} chars): "${ev.title}"`);
-    });
-  }
+  const current = seededShuffle(
+    DATED_SECOND_TERM_EVENTS,
+    SEASON * 1291 + dayNum
+  ).slice(0, 2).map((event) => ({
+    ...event,
+    year: Number(event.date.slice(0, 4)),
+  }));
 
-  // Renumber ids 1-7 for the game engine
-  return events.map((ev, i) => ({ ...ev, id: i + 1 }));
+  return [...historical, ...current]
+    .sort((a, b) => {
+      const aDate = a.date || `${a.year}-06-30`;
+      const bDate = b.date || `${b.year}-06-30`;
+      return aDate.localeCompare(bDate) || String(a.id).localeCompare(String(b.id));
+    })
+    .map((event, index) => ({ ...event, id: index + 1 }));
 }
 
 // ============================================================
@@ -570,74 +569,48 @@ export async function GET(req) {
   // Strip em dashes automatically at serve time
   const clean = (str) => str.replace(/ \u2014 /g, ", ").replace(/\u2014/g, "-");
 
-  // ── Special edition check (keyed by UTC day-of-week) ──
-  const edition = SPECIAL_EDITIONS[d.getUTCDay()];
+  let edition = SECOND_TERM_EDITION;
+  let events;
+  let puzzlePrefix = "d";
 
-  if (edition) {
-    // ── WEEKLY EDITION (static manual events) ──
-    if (
-      edition.build === "static" &&
-      Array.isArray(edition.events) &&
-      edition.events.length === 7
-    ) {
-      const answerOrder = edition.events.map(e => e.id);
-      const shuffled    = seededShuffle(
-        edition.events.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
-        dayNum * 999983 + 7
-      );
-      const yearMap = Object.fromEntries(edition.events.map(e => [e.id, null]));
-      return NextResponse.json({
-        puzzle:       { id: "w" + dayNum, dayNum, date: dateParam, events: shuffled },
-        answerOrder,
-        yearMap,
-        isWeekly:     true,
-        isSecondTerm: false,
-        edition:      edition.key,
-        editionMeta:  buildEditionMeta(edition),
-      }, { headers: CORS_HEADERS });
-    }
-
-    // ── SECOND TERM EDITION (auto date-seeded draw) ──
-    if (
-      edition.build === "auto" &&
-      Array.isArray(edition.events) &&
-      edition.events.length >= 7
-    ) {
-      const events      = pickSecondTermEvents(dayNum);
-      const answerOrder = events.map(e => e.id);
-      const shuffled    = seededShuffle(
-        events.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
-        dayNum * 999983 + 3
-      );
-      const yearMap = Object.fromEntries(events.map(e => [e.id, null])); // years hidden
-      return NextResponse.json({
-        puzzle:       { id: "2t" + dayNum, dayNum, date: dateParam, events: shuffled },
-        answerOrder,
-        yearMap,
-        isWeekly:     false,
-        isSecondTerm: true,
-        edition:      edition.key,
-        editionMeta:  buildEditionMeta(edition),
-      }, { headers: CORS_HEADERS });
+  // Sundays use the previous seven completed calendar days. Requiring one
+  // event per day keeps the answer fair: no invisible ordering within a date.
+  if (d.getUTCDay() === 0) {
+    const weeklyEvents = weeklyEventsForSunday(d);
+    if (weeklyEvents.length === 7) {
+      edition = WEEKLY_EDITION;
+      events = weeklyEvents.map((event, index) => ({ ...event, id: index + 1 }));
+      puzzlePrefix = "w";
     }
   }
 
-  // ── Normal daily puzzle ──
-  const events      = buildDailyPuzzle(dayNum);
+  // The first Saturday of each month is the long-range 2016-present game.
+  if (!events && isFirstSaturday(d)) {
+    edition = LEGACY_EDITION;
+    events = buildLegacyPuzzle(dayNum);
+    puzzlePrefix = "l";
+  }
+
+  if (!events) events = pickSecondTermEvents(dayNum);
+
   const answerOrder = events.map(e => e.id);
   const shuffled    = seededShuffle(
     events.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
     dayNum * 999983 + 7
   );
-  const yearMap = Object.fromEntries(events.map(e => [e.id, e.year]));
+  const yearMap = Object.fromEntries(events.map(e => [
+    e.id,
+    e.year || (e.date ? Number(e.date.slice(0, 4)) : null),
+  ]));
 
   return NextResponse.json({
-    puzzle:       { id: "d" + dayNum, dayNum, date: dateParam, events: shuffled },
+    puzzle:       { id: puzzlePrefix + dayNum, dayNum, date: dateParam, events: shuffled },
     answerOrder,
     yearMap,
-    isWeekly:     false,
-    isSecondTerm: false,
-    edition:      "daily",
-    editionMeta:  buildEditionMeta(DAILY_EDITION),
+    isWeekly:     edition.key === "weekly",
+    isSecondTerm: edition.key === "second-term",
+    isLegacy:     edition.key === "legacy",
+    edition:      edition.key,
+    editionMeta:  buildEditionMeta(edition),
   }, { headers: CORS_HEADERS });
 }

@@ -31,35 +31,43 @@ function assertPuzzleShape(body, expectedEdition) {
   );
 }
 
-test("daily edition is complete and deterministic", async () => {
+test("second-term daily edition is complete and deterministic", async () => {
   const first = await getPuzzle("2026-08-17");
   const second = await getPuzzle("2026-08-17");
 
   assert.equal(first.response.status, 200);
   assert.equal(first.response.headers.get("access-control-allow-origin"), "*");
-  assertPuzzleShape(first.body, "daily");
+  assertPuzzleShape(first.body, "second-term");
   assert.equal(first.body.isWeekly, false);
-  assert.equal(first.body.isSecondTerm, false);
+  assert.equal(first.body.isSecondTerm, true);
+  assert.equal(first.body.isLegacy, false);
+  assert.ok(Object.values(first.body.yearMap).every((year) => year >= 2025));
   assert.deepEqual(first.body, second.body);
 });
 
-test("Sunday falls back to daily while weekly editorial updates are paused", async () => {
+test("Sunday safely falls back to second-term daily without seven dated events", async () => {
   const { response, body } = await getPuzzle("2026-08-16");
 
   assert.equal(response.status, 200);
-  assertPuzzleShape(body, "daily");
+  assertPuzzleShape(body, "second-term");
   assert.equal(body.isWeekly, false);
-  assert.equal(body.isSecondTerm, false);
+  assert.equal(body.isSecondTerm, true);
 });
 
-test("Wednesday falls back to daily while its draft chronology is audited", async () => {
-  const { response, body } = await getPuzzle("2026-08-19");
+test("first Saturday of the month is the 2016-present legacy edition", async () => {
+  const { response, body } = await getPuzzle("2026-08-01");
 
   assert.equal(response.status, 200);
-  assertPuzzleShape(body, "daily");
+  assertPuzzleShape(body, "legacy");
+  assert.equal(body.isLegacy, true);
   assert.equal(body.isWeekly, false);
-  assert.equal(body.isSecondTerm, false);
-  assert.ok(Object.values(body.yearMap).every((year) => Number.isInteger(year)));
+  assert.ok(Math.min(...Object.values(body.yearMap)) >= 2016);
+  assert.ok(Math.max(...Object.values(body.yearMap)) >= 2025);
+});
+
+test("other Saturdays remain second-term daily editions", async () => {
+  const { body } = await getPuzzle("2026-08-08");
+  assertPuzzleShape(body, "second-term");
 });
 
 test("invalid dates fail cleanly", async () => {
@@ -83,15 +91,18 @@ test("preflight response exposes the API to the native client", async () => {
   assert.equal(response.headers.get("access-control-allow-methods"), "GET, OPTIONS");
 });
 
-test("every 2026 puzzle satisfies the game contract", async () => {
+test("every 2026 puzzle satisfies the game contract and schedule", async () => {
   const start = Date.UTC(2026, 0, 1);
   const end = Date.UTC(2027, 0, 1);
 
   for (let time = start; time < end; time += 24 * 60 * 60 * 1000) {
-    const date = new Date(time).toISOString().slice(0, 10);
+    const current = new Date(time);
+    const date = current.toISOString().slice(0, 10);
     const { response, body } = await getPuzzle(date);
     assert.equal(response.status, 200, date);
-    assertPuzzleShape(body, "daily");
+
+    const firstSaturday = current.getUTCDay() === 6 && current.getUTCDate() <= 7;
+    assertPuzzleShape(body, firstSaturday ? "legacy" : "second-term");
 
     for (const event of body.puzzle.events) {
       assert.ok(event.title.length <= 50, `${date}: ${event.title}`);

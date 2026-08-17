@@ -1,0 +1,68 @@
+name: Refresh Trumple event library
+
+on:
+  schedule:
+    # Saturday evening in US time zones; Sunday 02:00 UTC.
+    - cron: "0 2 * * 0"
+  workflow_dispatch:
+    inputs:
+      today:
+        description: "Optional YYYY-MM-DD date used for a backfill or test run"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-event-library
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Collect and curate the week
+        env:
+          REQUESTED_TODAY: ${{ inputs.today }}
+        run: |
+          if [ -n "$REQUESTED_TODAY" ]; then
+            npm run library:refresh -- --today "$REQUESTED_TODAY"
+          else
+            npm run library:refresh
+          fi
+
+      - run: npm run check
+
+      - name: Open an editorial review pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet; then
+            echo "No new verified candidates this week."
+            exit 0
+          fi
+          branch="automation/event-library-${GITHUB_RUN_ID}"
+          git config user.name "trumple-editor-bot"
+          git config user.email "trumple-editor-bot@users.noreply.github.com"
+          git switch -c "$branch"
+          git add data/generated-events.js
+          git commit -m "Refresh event library"
+          git push origin "$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Weekly event library refresh" \
+            --body "Automated, sourced Trumple candidates for editorial review. Edit approved cards, replace the placeholder hint, confirm the exact event date, and change status from candidate to approved. Delete the rest before merging. Candidate cards never enter the game."

@@ -1,0 +1,38 @@
+{
+  "articles": [
+    {
+      "title": "Trump orders a giant gold statue for the Rose Garden",
+      "domain": "apnews.com",
+      "url": "https://apnews.com/article/example-one",
+      "seendate": "20260810120000"
+    },
+    {
+      "title": "Trump's Rose Garden statue order draws scrutiny",
+      "domain": "reuters.com",
+      "url": "https://reuters.com/world/us/example-two",
+      "seendate": "20260810140000"
+    },
+    {
+      "title": "Untrusted rewrite",
+      "domain": "example.com",
+      "url": "https://example.com/rewrite",
+      "seendate": "20260810150000"
+    }
+  ],
+  "events": [
+    {
+      "date": "2026-08-10",
+      "title": "Orders a giant gold Rose Garden statue",
+      "hint": "The fictional fixture tests sourcing without reaching the network.",
+      "significance": 4,
+      "source_indexes": [0, 1]
+    },
+    {
+      "date": "2026-08-01",
+      "title": "Reject this out-of-range fixture",
+      "hint": "Outside the requested seven-day window.",
+      "significance": 2,
+      "source_indexes": [0]
+    }
+  ]
+}

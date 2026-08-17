@@ -11,7 +11,8 @@
     "build": "next build",
     "start": "next start",
     "test": "node --test",
-    "check": "npm run test && npm run build"
+    "check": "npm run test && npm run build",
+    "library:refresh": "node scripts/refresh-event-library.mjs"
   },
   "dependencies": {
     "next": "16.3.1",

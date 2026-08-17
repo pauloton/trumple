@@ -1,0 +1,298 @@
+import { readFile, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+
+import { GENERATED_EVENTS } from "../data/generated-events.js";
+import { EVENT_LIBRARY, isRealDate, validateLibraryEvent } from "../lib/event-library.js";
+
+const ROOT = fileURLToPath(new URL("../", import.meta.url));
+const OUTPUT_PATH = fileURLToPath(new URL("../data/generated-events.js", import.meta.url));
+const TRUSTED_DOMAINS = new Set([
+  "apnews.com", "reuters.com", "bbc.com", "bbc.co.uk", "npr.org",
+  "politico.com", "axios.com", "abcnews.go.com", "cbsnews.com",
+  "nbcnews.com", "cnn.com", "foxnews.com", "theguardian.com",
+  "nytimes.com", "washingtonpost.com", "wsj.com", "usatoday.com",
+  "pbs.org", "time.com", "thehill.com", "whitehouse.gov",
+  "congress.gov", "justice.gov", "defense.gov", "state.gov",
+  "supremecourt.gov", "federalregister.gov",
+]);
+
+function parseArgs(argv) {
+  const options = { today: new Date().toISOString().slice(0, 10), dryRun: false, fixture: null };
+  for (let index = 0; index < argv.length; index++) {
+    if (argv[index] === "--today") options.today = argv[++index];
+    else if (argv[index] === "--fixture") options.fixture = argv[++index];
+    else if (argv[index] === "--dry-run") options.dryRun = true;
+    else throw new Error(`Unknown option: ${argv[index]}`);
+  }
+  if (!isRealDate(options.today)) throw new Error("--today must use YYYY-MM-DD");
+  return options;
+}
+
+function dateWindow(todayText) {
+  const today = new Date(`${todayText}T12:00:00Z`);
+  const end = new Date(today);
+  end.setUTCDate(end.getUTCDate() - 1);
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate() - 6);
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+    startStamp: `${start.toISOString().slice(0, 10).replaceAll("-", "")}000000`,
+    endStamp: `${end.toISOString().slice(0, 10).replaceAll("-", "")}235959`,
+  };
+}
+
+function normalizeDomain(value) {
+  return (value || "").toLowerCase().replace(/^www\./, "");
+}
+
+function trustedDomain(value) {
+  const domain = normalizeDomain(value);
+  return [...TRUSTED_DOMAINS].some((allowed) => domain === allowed || domain.endsWith(`.${allowed}`));
+}
+
+function canonicalTitle(value) {
+  return (value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\b(the|a|an|and|of|to|in|on|for|trump|donald)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function slugify(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 38).replace(/-$/, "");
+}
+
+function dedupeArticles(articles) {
+  const seen = new Set();
+  return articles.filter((article) => {
+    if (!article?.url || !article?.title || !trustedDomain(article.domain)) return false;
+    const key = `${normalizeDomain(article.domain)}:${canonicalTitle(article.title)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 140);
+}
+
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+async function fetchWithRetry(url, options) {
+  const delays = [0, 3000, 9000];
+  let lastResponse;
+  let lastError;
+  for (const delay of delays) {
+    if (delay) await wait(delay);
+    try {
+      lastResponse = await fetch(url, options);
+    } catch (error) {
+      lastError = error;
+      continue;
+    }
+    if (lastResponse.ok) return lastResponse;
+    if (lastResponse.status !== 429 && lastResponse.status < 500) return lastResponse;
+  }
+  if (lastResponse) return lastResponse;
+  throw lastError;
+}
+
+function decodeXml(value) {
+  return (value || "")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">");
+}
+
+function tagValue(item, tag) {
+  const match = item.match(new RegExp(`<${tag}(?:\\s[^>]*)?>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, "i"));
+  return decodeXml(match?.[1]?.trim());
+}
+
+function sourceDomain(item) {
+  const sourceUrl = item.match(/<source[^>]+url="([^"]+)"/i)?.[1];
+  try {
+    return new URL(decodeXml(sourceUrl)).hostname;
+  } catch {
+    return "";
+  }
+}
+
+async function fetchGoogleNews(window) {
+  const after = new Date(`${window.start}T12:00:00Z`);
+  after.setUTCDate(after.getUTCDate() - 1);
+  const before = new Date(`${window.end}T12:00:00Z`);
+  before.setUTCDate(before.getUTCDate() + 1);
+  const query = `Donald Trump after:${after.toISOString().slice(0, 10)} before:${before.toISOString().slice(0, 10)}`;
+  const url = new URL("https://news.google.com/rss/search");
+  url.searchParams.set("q", query);
+  url.searchParams.set("hl", "en-US");
+  url.searchParams.set("gl", "US");
+  url.searchParams.set("ceid", "US:en");
+
+  const response = await fetch(url, { headers: { "User-Agent": "TrumpleEditorialBot/1.0" } });
+  if (!response.ok) throw new Error(`Google News returned ${response.status}`);
+  const xml = await response.text();
+  const articles = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].map((match) => {
+    const item = match[1];
+    const published = new Date(tagValue(item, "pubDate"));
+    return {
+      title: tagValue(item, "title").replace(/\s+-\s+[^-]+$/, ""),
+      url: tagValue(item, "link"),
+      domain: sourceDomain(item),
+      seendate: Number.isNaN(published.getTime())
+        ? null
+        : published.toISOString().replace(/[-:TZ.]/g, "").slice(0, 14),
+    };
+  });
+  return dedupeArticles(articles);
+}
+
+async function fetchArticles(window) {
+  const query = '("Donald Trump" OR "President Trump") sourcelang:english';
+  const url = new URL("https://api.gdeltproject.org/api/v2/doc/doc");
+  url.searchParams.set("query", query);
+  url.searchParams.set("mode", "artlist");
+  url.searchParams.set("format", "json");
+  url.searchParams.set("sort", "datedesc");
+  url.searchParams.set("maxrecords", "250");
+  url.searchParams.set("startdatetime", window.startStamp);
+  url.searchParams.set("enddatetime", window.endStamp);
+
+  try {
+    const response = await fetchWithRetry(url, { headers: { "User-Agent": "TrumpleEditorialBot/1.0" } });
+    if (response.ok) {
+      const body = await response.json();
+      const articles = dedupeArticles(body.articles || []);
+      if (articles.length >= 20) return articles;
+      const supplemental = await fetchGoogleNews(window);
+      return dedupeArticles([...articles, ...supplemental]);
+    }
+    console.warn(`GDELT unavailable (${response.status}); using Google News RSS.`);
+  } catch (error) {
+    console.warn(`GDELT unavailable (${error.cause?.code || error.message}); using Google News RSS.`);
+  }
+  return fetchGoogleNews(window);
+}
+
+function sourceName(article) {
+  const domain = normalizeDomain(article.domain);
+  if (domain === "apnews.com") return "Associated Press";
+  if (domain === "reuters.com") return "Reuters";
+  return domain;
+}
+
+function articleDate(article) {
+  const stamp = String(article.seendate || "").replace(/\D/g, "");
+  if (stamp.length < 8) return null;
+  const date = `${stamp.slice(0, 4)}-${stamp.slice(4, 6)}-${stamp.slice(6, 8)}`;
+  return isRealDate(date) ? date : null;
+}
+
+function candidateTitle(headline) {
+  let title = headline
+    .replaceAll("—", "-")
+    .replace(/^(?:President\s+|Donald\s+)?Trump(?:'s|’s)?\s*[:,-]?\s*/i, "")
+    .trim();
+  title = title ? title[0].toUpperCase() + title.slice(1) : title;
+  if (title.length > 50) title = `${title.slice(0, 47).replace(/\s+\S*$/, "")}...`;
+  return title;
+}
+
+function candidateSignificance(title) {
+  const strong = /war|strike|tariff|pardon|fire[sd]?|order|deploy|ban|court|indict|arrest|ceasefire|emergency|military/i;
+  const medium = /announce|threat|claim|sign|meeting|deal|speech|visit|appoint/i;
+  return strong.test(title) ? 4 : medium.test(title) ? 3 : 2;
+}
+
+function curateArticles(articles, window) {
+  const byDate = new Map();
+  articles.forEach((article, sourceIndex) => {
+    const date = articleDate(article);
+    if (!date || date < window.start || date > window.end) return;
+    const title = candidateTitle(article.title);
+    if (!title) return;
+    const candidates = byDate.get(date) || [];
+    candidates.push({
+      date,
+      title,
+      hint: `${sourceName(article)} reported this candidate. Confirm the event date and rewrite this hint before approval.`,
+      significance: candidateSignificance(title),
+      source_indexes: [sourceIndex],
+    });
+    byDate.set(date, candidates);
+  });
+
+  return [...byDate.values()].flatMap((candidates) =>
+    candidates
+      .sort((a, b) => b.significance - a.significance || a.title.localeCompare(b.title))
+      .slice(0, 4)
+  ).slice(0, 28);
+}
+
+function isNearDuplicate(event, existing) {
+  const candidateWords = new Set(canonicalTitle(event.title).split(" ").filter(Boolean));
+  return existing.some((known) => {
+    if (known.id === event.id) return true;
+    if (known.date !== event.date) return false;
+    const knownWords = new Set(canonicalTitle(known.title).split(" ").filter(Boolean));
+    const overlap = [...candidateWords].filter((word) => knownWords.has(word)).length;
+    return overlap >= Math.min(3, candidateWords.size, knownWords.size);
+  });
+}
+
+function materializeEvents(rawEvents, articles, window) {
+  const accepted = [];
+  for (const raw of rawEvents) {
+    if (!isRealDate(raw.date) || raw.date < window.start || raw.date > window.end) continue;
+    const sources = [...new Set(raw.source_indexes)]
+      .map((index) => articles[index])
+      .filter(Boolean)
+      .map((article) => ({ name: sourceName(article), url: article.url }));
+    const event = {
+      id: `${raw.date}-${slugify(raw.title)}`,
+      date: raw.date,
+      title: raw.title.replaceAll("—", "-").trim(),
+      hint: raw.hint.replaceAll("—", "-").trim(),
+      significance: raw.significance,
+      sources,
+      status: "candidate",
+      addedAt: new Date().toISOString(),
+    };
+    if (validateLibraryEvent(event, { requireSources: true }).length > 0) continue;
+    if (isNearDuplicate(event, [...EVENT_LIBRARY, ...accepted])) continue;
+    accepted.push(event);
+  }
+  return accepted.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+}
+
+function generatedModule(events) {
+  return `// This file is maintained by scripts/refresh-event-library.mjs.\n// Every automated change arrives in a pull request for human review.\nexport const GENERATED_EVENTS = ${JSON.stringify(events, null, 2)};\n`;
+}
+
+export async function refreshLibrary(options) {
+  const window = dateWindow(options.today);
+  let articles;
+  let rawEvents;
+
+  if (options.fixture) {
+    const fixturePath = new URL(options.fixture, `file://${ROOT}/`);
+    const fixture = JSON.parse(await readFile(fixturePath, "utf8"));
+    articles = dedupeArticles(fixture.articles || []);
+    rawEvents = fixture.events || [];
+  } else {
+    articles = await fetchArticles(window);
+    rawEvents = curateArticles(articles, window);
+  }
+
+  const additions = materializeEvents(rawEvents, articles, window);
+  const merged = [...GENERATED_EVENTS, ...additions].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  if (!options.dryRun && additions.length > 0) await writeFile(OUTPUT_PATH, generatedModule(merged));
+  return { window, articleCount: articles.length, additions, total: EVENT_LIBRARY.length + additions.length };
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const result = await refreshLibrary(parseArgs(process.argv.slice(2)));
+  console.log(JSON.stringify(result, null, 2));
+}
