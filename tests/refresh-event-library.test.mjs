@@ -92,3 +92,17 @@ test("generated library removes near-duplicate stories", () => {
 
   assert.equal(merged.length, 1);
 });
+
+test("hand-curated events take priority over generated events for a date", () => {
+  const merged = mergeApprovedGenerated([], [{
+    id: "generated-aug-16",
+    date: "2026-08-16",
+    title: "Orders Pentagon to reduce military drills",
+    significance: 4,
+    sources: [{ name: "Reuters", url: "https://reuters.com/example" }],
+    status: "approved",
+    addedAt: "2026-08-17T00:00:00.000Z",
+  }]);
+
+  assert.deepEqual(merged, []);
+});

@@ -326,7 +326,7 @@ function generatedModule(events) {
 
 export function mergeApprovedGenerated(existing, additions) {
   const merged = [];
-  const dates = new Set();
+  const dates = new Set(SEED_EVENTS.map((event) => event.date));
   for (const event of [...existing, ...additions].sort((a, b) =>
     a.date.localeCompare(b.date) || b.significance - a.significance || a.id.localeCompare(b.id)
   )) {
