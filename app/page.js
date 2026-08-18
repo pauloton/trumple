@@ -763,12 +763,11 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
         <StarDisplay stars={stars} size={32} celebrate={firstVisit}/>
         <div style={{ marginTop:"0.6rem", fontSize:"1.6rem", fontWeight:900, fontFamily:"'Space Grotesk', sans-serif", color:C.gold, letterSpacing:"-0.01em" }}>{celebWord}</div>
         <div style={{ marginTop:"1rem", fontSize:"clamp(3rem,12vw,4.5rem)", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text, letterSpacing:"-0.02em", lineHeight:1 }}>{display}</div>
-        <div style={{ marginTop:"1rem", display:"grid", gridTemplateColumns:"repeat(4, minmax(0, 1fr))", gap:"0.5rem", width:"100%" }}>
+        <div style={{ marginTop:"1rem", display:"grid", gridTemplateColumns:"repeat(3, minmax(0, 1fr))", gap:"0.5rem", width:"100%" }}>
           {[
             { label:"PLAYED",         val: stats.played   || 1 },
             { label:"PERFECT SCORES", val: stats.perfects || 0 },
             { label:"STREAK",         val: "🔥 " + (stats.streak || 1) },
-            { label:"BEST",           val: bestDisplay },
           ].map(({ label, val }) => (
             <div key={label} style={{ minWidth:0, background:C.card, border:"1px solid "+C.border, borderRadius:"12px", padding:"0.75rem 0.35rem", textAlign:"center" }}>
               <div style={{ fontSize:"0.48rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"0.3rem", lineHeight:1.3 }}>{label}</div>
