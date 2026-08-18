@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { curateArticles, refreshLibrary } from "../scripts/refresh-event-library.mjs";
+import {
+  curateArticles,
+  mergeApprovedGenerated,
+  refreshLibrary,
+} from "../scripts/refresh-event-library.mjs";
 
 test("weekly refresh maps trusted sources and rejects bad candidates", async () => {
   const result = await refreshLibrary({
@@ -22,7 +26,7 @@ test("weekly refresh maps trusted sources and rejects bad candidates", async () 
   ]);
 });
 
-test("automatic curation publishes one direct Trump action per day", () => {
+test("automatic curation marks direct Trump actions as publishable", () => {
   const articles = [
     {
       title: "Trump orders a giant gold statue for the Rose Garden",
@@ -51,8 +55,40 @@ test("automatic curation publishes one direct Trump action per day", () => {
   ];
   const events = curateArticles(articles, { start: "2026-08-09", end: "2026-08-15" });
 
-  assert.equal(events.filter((event) => event.status === "approved").length, 2);
+  assert.equal(events.filter((event) => event.status === "approved").length, 3);
   assert.equal(events.find((event) => event.date === "2026-08-10" && event.status === "approved").title, "Orders a giant gold statue for the Rose Garden");
-  assert.ok(events.filter((event) => event.date === "2026-08-10").slice(1).every((event) => event.status === "candidate"));
   assert.ok(events.every((event) => event.title.length <= 50));
+});
+
+test("automatic refresh selects one distinct event per day", async () => {
+  const result = await refreshLibrary({
+    today: "2026-09-04",
+    fixture: "tests/fixtures/automatic-refresh.json",
+    dryRun: true,
+  });
+  const approved = result.additions.filter((event) => event.status === "approved");
+
+  assert.deepEqual(approved.map((event) => event.date), [
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+  ]);
+  assert.equal(approved[1].title, "Refuses to back down as court blocks plan");
+});
+
+test("generated library removes near-duplicate stories", () => {
+  const shared = {
+    significance: 3,
+    difficulty: "medium",
+    category: "Policy",
+    sources: [{ name: "Reuters", url: "https://reuters.com/example" }],
+    status: "approved",
+    addedAt: "2026-09-04T00:00:00.000Z",
+  };
+  const merged = mergeApprovedGenerated([], [
+    { ...shared, id: "sep-1-vaccine", date: "2026-09-01", title: "Signs order limiting childhood vaccines" },
+    { ...shared, id: "sep-2-vaccine", date: "2026-09-02", title: "Signs orders to limit childhood vaccine" },
+  ]);
+
+  assert.equal(merged.length, 1);
 });

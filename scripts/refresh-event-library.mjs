@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 import { GENERATED_EVENTS } from "../data/generated-events.js";
+import { SEED_EVENTS } from "../data/seed-events.js";
 import { EVENT_LIBRARY, isRealDate, validateLibraryEvent } from "../lib/event-library.js";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
@@ -56,6 +57,7 @@ function canonicalTitle(value) {
     .toLowerCase()
     .replace(/[^a-z0-9 ]/g, " ")
     .replace(/\b(the|a|an|and|of|to|in|on|for|trump|donald)\b/g, " ")
+    .replace(/\b([a-z]{4,})s\b/g, "$1")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -225,7 +227,7 @@ function automaticTitle(headline) {
     .replace(/\bmilitary exercises\b/gi, "military drills")
     .split(/[,;]\s/)[0]
     .trim();
-  action = action.split(/\s+(?:about|after|amid|as|because|that|while|which|who)\s+/i)[0].trim();
+  action = action.split(/\s+(?:because|that|while|which|who)\s+/i)[0].trim();
   if (!DIRECT_ACTION.test(action) || action.includes("?")) return null;
   action = shortText(action, 50);
   return action[0].toUpperCase() + action.slice(1);
@@ -259,28 +261,23 @@ export function curateArticles(articles, window) {
     byDate.set(date, candidates);
   });
 
-  return [...byDate.values()].flatMap((candidates) => {
-    const ranked = candidates.sort((a, b) =>
+  return [...byDate.values()].flatMap((candidates) =>
+    candidates.sort((a, b) =>
       Number(b.status === "approved") - Number(a.status === "approved") ||
       b.significance - a.significance ||
       a.title.localeCompare(b.title)
-    ).slice(0, 4);
-    let approvedForDate = false;
-    return ranked.map((candidate) => {
-      if (candidate.status === "approved" && !approvedForDate) {
-        approvedForDate = true;
-        return candidate;
-      }
-      return { ...candidate, status: "candidate" };
-    });
-  }).slice(0, 28);
+    ).slice(0, 4)
+  ).slice(0, 28);
 }
 
 function isNearDuplicate(event, existing) {
   const candidateWords = new Set(canonicalTitle(event.title).split(" ").filter(Boolean));
   return existing.some((known) => {
     if (known.id === event.id) return true;
-    if (known.date !== event.date) return false;
+    const dayDistance = Math.abs(
+      new Date(`${known.date}T12:00:00Z`) - new Date(`${event.date}T12:00:00Z`)
+    ) / (24 * 60 * 60 * 1000);
+    if (dayDistance > 2) return false;
     const knownWords = new Set(canonicalTitle(known.title).split(" ").filter(Boolean));
     const overlap = [...candidateWords].filter((word) => knownWords.has(word)).length;
     return overlap >= Math.min(3, candidateWords.size, knownWords.size);
@@ -289,7 +286,13 @@ function isNearDuplicate(event, existing) {
 
 function materializeEvents(rawEvents, articles, window) {
   const accepted = [];
-  for (const raw of rawEvents) {
+  const approvedDates = new Set();
+  const rankedRawEvents = [...rawEvents].sort((a, b) =>
+    a.date.localeCompare(b.date) ||
+    Number(b.status === "approved") - Number(a.status === "approved") ||
+    b.significance - a.significance
+  );
+  for (const raw of rankedRawEvents) {
     if (!isRealDate(raw.date) || raw.date < window.start || raw.date > window.end) continue;
     const sources = [...new Set(raw.source_indexes)]
       .map((index) => articles[index])
@@ -306,7 +309,12 @@ function materializeEvents(rawEvents, articles, window) {
       addedAt: new Date().toISOString(),
     };
     if (validateLibraryEvent(event, { requireSources: true }).length > 0) continue;
-    if (isNearDuplicate(event, [...EVENT_LIBRARY, ...accepted])) continue;
+    const acceptedApproved = accepted.filter((known) => known.status === "approved");
+    if (isNearDuplicate(event, [...EVENT_LIBRARY, ...acceptedApproved])) continue;
+    if (event.status === "approved" && approvedDates.has(event.date)) {
+      event.status = "candidate";
+    }
+    if (event.status === "approved") approvedDates.add(event.date);
     accepted.push(event);
   }
   return accepted.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
@@ -314,6 +322,20 @@ function materializeEvents(rawEvents, articles, window) {
 
 function generatedModule(events) {
   return `// This file is maintained by scripts/refresh-event-library.mjs.\n// Only events that pass automatic publication checks are written here.\nexport const GENERATED_EVENTS = ${JSON.stringify(events, null, 2)};\n`;
+}
+
+export function mergeApprovedGenerated(existing, additions) {
+  const merged = [];
+  const dates = new Set();
+  for (const event of [...existing, ...additions].sort((a, b) =>
+    a.date.localeCompare(b.date) || b.significance - a.significance || a.id.localeCompare(b.id)
+  )) {
+    if (dates.has(event.date)) continue;
+    if (isNearDuplicate(event, [...SEED_EVENTS, ...merged])) continue;
+    dates.add(event.date);
+    merged.push(event);
+  }
+  return merged;
 }
 
 export async function refreshLibrary(options) {
@@ -335,15 +357,18 @@ export async function refreshLibrary(options) {
 
   const additions = materializeEvents(rawEvents, articles, window);
   const approvedAdditions = additions.filter((event) => event.status === "approved");
-  const merged = [...GENERATED_EVENTS, ...approvedAdditions].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  if (!options.dryRun && approvedAdditions.length > 0) await writeFile(OUTPUT_PATH, generatedModule(merged));
+  const merged = mergeApprovedGenerated(GENERATED_EVENTS, approvedAdditions);
+  const nextModule = generatedModule(merged);
+  if (!options.dryRun && nextModule !== await readFile(OUTPUT_PATH, "utf8")) {
+    await writeFile(OUTPUT_PATH, nextModule);
+  }
   return {
     window,
     articleCount: articles.length,
     approvedCount: approvedAdditions.length,
     rejectedCount: additions.length - approvedAdditions.length,
     additions,
-    total: EVENT_LIBRARY.length + approvedAdditions.length,
+    total: SEED_EVENTS.length + merged.length,
   };
 }
 

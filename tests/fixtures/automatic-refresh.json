@@ -1,0 +1,28 @@
+{
+  "articles": [
+    {
+      "title": "Trump signs order limiting childhood vaccines",
+      "domain": "reuters.com",
+      "url": "https://reuters.com/world/us/vaccine-order",
+      "seendate": "20260901120000"
+    },
+    {
+      "title": "Trump signs orders to limit childhood vaccine",
+      "domain": "bbc.com",
+      "url": "https://bbc.com/news/vaccine-order-followup",
+      "seendate": "20260902110000"
+    },
+    {
+      "title": "Trump refuses to back down as court blocks plan",
+      "domain": "washingtonpost.com",
+      "url": "https://washingtonpost.com/politics/court-plan",
+      "seendate": "20260902150000"
+    },
+    {
+      "title": "Trump empowers US companies to conduct private missions",
+      "domain": "theguardian.com",
+      "url": "https://theguardian.com/us-news/private-missions",
+      "seendate": "20260903120000"
+    }
+  ]
+}
