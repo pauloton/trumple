@@ -4,8 +4,8 @@ export const GENERATED_EVENTS = [
   {
     "id": "2026-08-10-signs-order-on-childhood-vaccine-recom",
     "date": "2026-08-10",
-    "title": "Signs order on childhood vaccine recommendations",
-    "hint": "pbs.org reported: WATCH: Trump signs executive order on childhood vaccine recommendations",
+    "title": "Takes aim at childhood vaccine guidance",
+    "hint": "He signed an order targeting childhood vaccine recommendations. PBS carried the spectacle live.",
     "significance": 4,
     "sources": [
       {
@@ -19,8 +19,8 @@ export const GENERATED_EVENTS = [
   {
     "id": "2026-08-11-refuses-to-back-down-as-supreme-court",
     "date": "2026-08-11",
-    "title": "Refuses to back down as Supreme Court blocks...",
-    "hint": "washingtonpost.com reported: Trump refuses to back down as Supreme Court blocks major policies",
+    "title": "Shrugs off a Supreme Court losing streak",
+    "hint": "The Court had blocked several major policies. He announced that retreat remained off-brand.",
     "significance": 4,
     "sources": [
       {
@@ -34,8 +34,8 @@ export const GENERATED_EVENTS = [
   {
     "id": "2026-08-13-empowers-us-private-companies-to-condu",
     "date": "2026-08-13",
-    "title": "Empowers US private companies to conduct...",
-    "hint": "theguardian.com reported: Donald Trump empowers US private companies to conduct cyber-attacks",
+    "title": "Lets private companies launch cyberattacks",
+    "hint": "Private US firms got wider authority to attack foreign networks. The Guardian had the receipts.",
     "significance": 2,
     "sources": [
       {
@@ -49,8 +49,8 @@ export const GENERATED_EVENTS = [
   {
     "id": "2026-08-14-dismisses-military-families-concerns",
     "date": "2026-08-14",
-    "title": "Dismisses military families’ concerns",
-    "hint": "nbcnews.com reported: Trump dismisses military families’ concerns about grim conditions on USS Lincoln",
+    "title": "Shrugs off grim conditions on USS Lincoln",
+    "hint": "Military families described miserable conditions aboard the carrier. He dismissed their complaints.",
     "significance": 4,
     "sources": [
       {
@@ -64,8 +64,8 @@ export const GENERATED_EVENTS = [
   {
     "id": "2026-08-15-heads-into-general-election-season-wit",
     "date": "2026-08-15",
-    "title": "Heads into general election season with string...",
-    "hint": "politico.com reported: Trump heads into general election season with string of primary losses",
+    "title": "Enters election season on a losing streak",
+    "hint": "A string of primary defeats welcomed him to the general election. Politico kept the scorecard.",
     "significance": 2,
     "sources": [
       {

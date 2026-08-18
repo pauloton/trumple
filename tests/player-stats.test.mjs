@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { calculateCurrentStreak, recordDailyResult } from "../lib/player-stats.js";
+import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
 
 test("streak counts consecutive winning puzzle dates", () => {
   const results = [
@@ -49,4 +49,29 @@ test("invalid calendar dates are ignored", () => {
   const results = recordDailyResult([], "2026-02-30", true);
   assert.deepEqual(results, []);
   assert.equal(calculateCurrentStreak(results), 0);
+});
+
+test("a streak expires after a missed day", () => {
+  const results = [
+    { date: "2026-08-15", won: true },
+    { date: "2026-08-16", won: true },
+  ];
+  assert.equal(calculateCurrentStreak(results, "2026-08-18"), 0);
+  assert.equal(calculateCurrentStreak(results, "2026-08-17"), 2);
+});
+
+test("daily results remember the score needed to restore the result screen", () => {
+  const results = recordDailyResult([], "2026-08-18", true, {
+    timeMs: 15080,
+    stars: 2,
+    edition: "second-term",
+  });
+
+  assert.deepEqual(dailyResultForDate(results, "2026-08-18"), {
+    date: "2026-08-18",
+    won: true,
+    timeMs: 15080,
+    stars: 2,
+    edition: "second-term",
+  });
 });

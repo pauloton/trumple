@@ -182,6 +182,12 @@ function sourceName(article) {
   const domain = normalizeDomain(article.domain);
   if (domain === "apnews.com") return "Associated Press";
   if (domain === "reuters.com") return "Reuters";
+  if (domain === "bbc.com") return "BBC";
+  if (domain === "nbcnews.com") return "NBC News";
+  if (domain === "pbs.org") return "PBS";
+  if (domain === "politico.com") return "Politico";
+  if (domain === "theguardian.com") return "The Guardian";
+  if (domain === "washingtonpost.com") return "The Washington Post";
   return domain;
 }
 
@@ -207,7 +213,7 @@ const NON_EVENT_HEADLINE = /^(analysis|fact[- ]?check|how |inside |opinion|photo
 
 function shortText(value, maxLength) {
   if (value.length <= maxLength) return value;
-  return `${value.slice(0, maxLength - 3).replace(/\s+\S*$/, "")}...`;
+  return `${value.slice(0, maxLength - 1).replace(/\s+\S*$/, "")}.`;
 }
 
 function automaticTitle(headline) {
@@ -229,7 +235,7 @@ function automaticTitle(headline) {
     .trim();
   action = action.split(/\s+(?:because|that|while|which|who)\s+/i)[0].trim();
   if (!DIRECT_ACTION.test(action) || action.includes("?")) return null;
-  action = shortText(action, 50);
+  if (action.length > 50) return null;
   return action[0].toUpperCase() + action.slice(1);
 }
 
@@ -252,7 +258,7 @@ export function curateArticles(articles, window) {
       date,
       title,
       hint: approvedTitle
-        ? shortText(`${sourceName(article)} reported: ${article.title.replaceAll("—", "-")}`, 180)
+        ? shortText(`${sourceName(article)} had to report it: ${article.title.replaceAll("—", "-")}. Yes, really.`, 180)
         : `${sourceName(article)} reported this candidate. It did not pass automatic publication checks.`,
       significance: candidateSignificance(title),
       source_indexes: [sourceIndex],

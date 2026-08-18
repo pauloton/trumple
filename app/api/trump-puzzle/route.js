@@ -121,7 +121,7 @@ const SECOND_TERM_EVENTS = [
 const SECOND_TERM_EDITION = {
   key: "second-term",
   label: null,
-  taglines: ["The Second Term.", "The Chaos Continues.", "Can You Sort It?"],
+  taglines: ["The Second Term.", "Somehow, More Chaos.", "Put It Back In Order."],
   badgeStyle: null,
   buttonColor: "#B22234",
   bgImageUrl: "/bg/red.jpg",
@@ -132,7 +132,7 @@ const SECOND_TERM_EDITION = {
 const WEEKLY_EDITION = {
   key: "weekly",
   label: "THIS WEEK",
-  taglines: ["Seven Days.", "Seven Shenanigans.", "Can You Sort It?"],
+  taglines: ["Seven Days.", "Seven Fresh Disasters.", "Put Them Back In Order."],
   badgeStyle: "gold",
   buttonColor: "#B22234",
   bgImageUrl: "/weekly-war.png",
@@ -143,7 +143,7 @@ const WEEKLY_EDITION = {
 const LEGACY_EDITION = {
   key: "legacy",
   label: "LEGACY EDITION",
-  taglines: ["2016 To Today.", "One Long Timeline.", "Can You Sort It?"],
+  taglines: ["2016 To Today.", "One Very Long Emergency.", "Put It Back In Order."],
   badgeStyle: "dark",
   buttonColor: "#0A1628",
   bgImageUrl: "/bg/red.jpg",
@@ -153,6 +153,7 @@ const LEGACY_EDITION = {
 
 function buildEditionMeta(e) {
   return {
+    key:              e.key,
     label:            e.label,
     taglines:         e.taglines,
     badgeStyle:       e.badgeStyle,

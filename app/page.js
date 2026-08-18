@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { calculateCurrentStreak, recordDailyResult } from "../lib/player-stats.js";
+import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
 
@@ -47,7 +47,7 @@ function getStars(failedAttempts) {
 
 const MAX_ATTEMPTS = 3; // game over after this many failed lock-ins
 
-function getStats() {
+function getStats(referenceDate = null) {
   if (typeof window === "undefined") return { played: 0, perfects: 0, best: null, history: [], results: [], streak: 0 };
   try {
     const history = JSON.parse(localStorage.getItem("trumple_history") || "[]");
@@ -58,14 +58,15 @@ function getStats() {
       best:     parseInt(localStorage.getItem("trumple_best")     || "0", 10) || null,
       history,
       results,
-      streak: calculateCurrentStreak(results),
+      streak: calculateCurrentStreak(results, referenceDate),
     };
   } catch { return { played: 0, perfects: 0, best: null, history: [], results: [], streak: 0 }; }
 }
-function saveStats(timeMs, stars, puzzleDate) {
+function saveStats(timeMs, stars, puzzleDate, edition) {
   if (typeof window === "undefined") return;
   try {
-    const prev = getStats();
+    const prev = getStats(puzzleDate);
+    if (dailyResultForDate(prev.results, puzzleDate)) return;
     localStorage.setItem("trumple_played",   String(prev.played + 1));
     localStorage.setItem("trumple_perfects", String(prev.perfects + (stars === 3 ? 1 : 0)));
     if (timeMs && stars > 0 && (!prev.best || timeMs < prev.best)) localStorage.setItem("trumple_best", String(timeMs));
@@ -73,9 +74,27 @@ function saveStats(timeMs, stars, puzzleDate) {
       const history = [...prev.history, timeMs].slice(-5);
       localStorage.setItem("trumple_history", JSON.stringify(history));
     }
-    const results = recordDailyResult(prev.results, puzzleDate, stars > 0);
+    const results = recordDailyResult(prev.results, puzzleDate, stars > 0, { timeMs, stars, edition });
     localStorage.setItem("trumple_results", JSON.stringify(results));
   } catch {}
+}
+
+function useNextPuzzleCountdown() {
+  const getRemaining = useCallback(() => {
+    const now = new Date();
+    const next = new Date(now);
+    next.setHours(24, 0, 0, 0);
+    return Math.max(0, next.getTime() - now.getTime());
+  }, []);
+  const [remaining, setRemaining] = useState(getRemaining);
+  useEffect(() => {
+    const timerId = setInterval(() => setRemaining(getRemaining()), 1000);
+    return () => clearInterval(timerId);
+  }, [getRemaining]);
+  const hours = Math.floor(remaining / 3600000);
+  const minutes = Math.floor((remaining % 3600000) / 60000);
+  const seconds = Math.floor((remaining % 60000) / 1000);
+  return [hours, minutes, seconds].map(value => String(value).padStart(2, "0")).join(":");
 }
 
 function useTimer() {
@@ -100,15 +119,15 @@ function useTimer() {
   return { time, start, stop };
 }
 
-const WORDS_3 = ["Beautiful!", "Tremendous!", "Like nobody's ever seen!", "The greatest in history!", "Unbelievable!", "Phenomenal!", "Record-breaking!"];
-const WORDS_2 = ["Terrific!", "Outstanding!", "Brilliant!", "Incredible!", "Fantastic!", "Huge!", "The best!"];
-const WORDS_1 = ["Amazing!", "Winning!", "Never before!"];
+const WORDS_3 = ["Democracy survived. Barely.", "You beat the news cycle.", "Fact-checkers applaud politely.", "Chaos never stood a chance.", "The timeline has been indicted."];
+const WORDS_2 = ["Messy, but constitutional.", "Chaos contained. Mostly.", "You found the plot eventually.", "A respectable act of resistance.", "The timeline put up a fight."];
+const WORDS_1 = ["By the skin of democracy.", "That was alarmingly close.", "The timeline nearly won.", "You survived the chaos."];
 function getCelebWord(stars) {
   const list = stars === 3 ? WORDS_3 : stars === 2 ? WORDS_2 : WORDS_1;
   return list[Math.floor(Math.random() * list.length)];
 }
 
-const SHARE_CTAS = ["Spread the chaos!", "Tell them!", "Pass it on!"];
+const SHARE_CTAS = ["Spread the chaos!", "Brag responsibly!", "Make the group chat nervous!"];
 const shareCta = SHARE_CTAS[Math.floor(Math.random() * SHARE_CTAS.length)];
 
 function Confetti({ active }) {
@@ -256,11 +275,12 @@ function ErrorScreen() {
   );
 }
 
-function IntroScreen({ onStart, puzzle, editionMeta }) {
+function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
   const [show, setShow] = useState(false);
   const [logoSolved, setLogoSolved] = useState(false);
   const [badgeVisible, setBadgeVisible] = useState(false);
   const [taglineCount, setTaglineCount] = useState(0);
+  const countdown = useNextPuzzleCountdown();
 
   useEffect(() => { setTimeout(() => setShow(true), 100); }, []);
 
@@ -326,6 +346,11 @@ function IntroScreen({ onStart, puzzle, editionMeta }) {
       }}>
         <div style={{ width:"100%", textAlign:"center", paddingTop:"clamp(2rem, 7vh, 3.5rem)", fontSize:"0.72rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.06em" }}>
           {dateLabel}
+        </div>
+        <div style={{ marginTop:"0.65rem", display:"flex", alignItems:"center", justifyContent:"center", gap:"0.75rem", color:C.text, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.66rem", letterSpacing:"0.05em" }}>
+          {streak > 0 && <span style={{ color:C.gold }}>🔥 {streak} DAY STREAK</span>}
+          {streak > 0 && <span style={{ color:C.dimmer }}>•</span>}
+          <span style={{ color:C.dim }}>NEXT CHAOS IN {countdown}</span>
         </div>
 
         <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom: taglinesBelow ? "0" : "clamp(6rem, 16vh, 10rem)" }}>
@@ -520,15 +545,16 @@ function LiveStars({ failedAttempts }) {
 // Game Over screen, shows correct answer with hints
 function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzleDate }) {
   const hasRun = useRef(false);
+  const countdown = useNextPuzzleCountdown();
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
       if (firstVisit) {
         onMount();
-        saveStats(null, 0, puzzleDate);
+        saveStats(null, 0, puzzleDate, meta?.key);
       }
     }
-  }, [firstVisit, onMount, puzzleDate]);
+  }, [firstVisit, onMount, puzzleDate, meta?.key]);
 
   return (
     <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b0f18", overflow:"hidden" }}>
@@ -556,15 +582,13 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
         <button
           onClick={async () => {
             const editionLabel = meta && meta.label;
-            const subject = editionLabel ? `the ${editionLabel} of Trumple` : "Trumple";
+            const subject = editionLabel ? `the ${editionLabel} of Trumple` : "today's Trumple";
             const LOSER_MSGS = [
-              `I got absolutely crushed by ${subject} today. Total disaster. Think you can do better? https://trumple.app`,
-              `${subject} beat me today. Rigged? Very suspicious. Think you can do better? https://trumple.app`,
-              `${subject} got me. Sad! Very unfair. Think you can do better? https://trumple.app`,
-              `I lost ${subject} today. A disaster the likes of which we've never seen. Think you can do better? https://trumple.app`,
-              `${subject} defeated me. Many people are saying its rigged. https://trumple.app`,
-              `I lost ${subject} today. Nobody thought it could happen. Think you can do better? https://trumple.app`,
-              `${subject} beat me. Sad! Very sad. Think you can do better? https://trumple.app`,
+              `${subject} defeated me. Apparently the news can get worse twice. Think you can do better? https://trumple.app`,
+              `I lost ${subject}. My memory has entered a plea of not guilty. https://trumple.app`,
+              `${subject} beat me. The timeline was hostile and the facts refused to cooperate. https://trumple.app`,
+              `I could not put Trump's chaos in order. In my defense, neither can anyone else. https://trumple.app`,
+              `${subject} won. Democracy remains on a three-attempt limit. https://trumple.app`,
             ];
             const msg = LOSER_MSGS[Math.floor(Math.random() * LOSER_MSGS.length)];
             if (navigator.share) {
@@ -579,7 +603,7 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
 
         {/* Try Again Tomorrow */}
         <div style={{ marginTop:"0.75rem", fontFamily:"'JetBrains Mono', monospace", fontSize:"0.75rem", color:C.dimmer, letterSpacing:"0.06em", textAlign:"center" }}>
-          TRY AGAIN TOMORROW
+          NEXT CHAOS IN {countdown}
         </div>
       </div>
     </div>
@@ -642,21 +666,20 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
   );
 }
 
-function ShareIcons({ time, meta }) {
+function ShareIcons({ time, meta, stars, streak }) {
   const { display } = formatTime(time);
-  const editionLabel = meta && meta.label;
-  const subject = editionLabel
-    ? `the ${editionLabel} of Trumple`
-    : "Trumple";
+  const editionName = meta?.label || meta?.taglines?.[0]?.replace(/\.$/, "") || "Daily";
+  const starLine = "★".repeat(stars) + "☆".repeat(3 - stars);
+  const streakLine = streak > 0 ? `\n🔥 ${streak} day streak` : "";
   const WIN_MSGS = [
-    `I solved ${subject} in ${display}. A tremendous success. The BEST.\nhttps://trumple.app`,
-    `I solved ${subject} in ${display}. HUGE win. Absolutely incredible.\nhttps://trumple.app`,
-    `I solved ${subject} in ${display}. Total victory. Record-breaking.\nhttps://trumple.app`,
-    `I solved ${subject} in ${display}. Big league. We're winning.\nhttps://trumple.app`,
-    `I solved ${subject} in ${display}. Very, very special. Historic.\nhttps://trumple.app`,
-    `I solved ${subject} in ${display}. Many people are saying it's the fastest ever.\nhttps://trumple.app`,
+    `I put Trump's chaos back in order. Somebody had to.`,
+    `Seven Trump stories. One functioning memory. Barely.`,
+    `I survived today's Trump timeline. The facts were not so lucky.`,
+    `I sorted the chaos before the chaos sorted me.`,
+    `Today in democracy: I remembered what happened first.`,
   ];
-  const msg = WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)];
+  const [cheekyLine] = useState(() => WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)]);
+  const msg = `TRUMPLE · ${editionName}\n${starLine}  ⏱ ${display}${streakLine}\n${cheekyLine}\nhttps://trumple.app`;
 
   async function generateAndShare() {
     // Build the score card image
@@ -664,33 +687,41 @@ function ShareIcons({ time, meta }) {
       const canvas = document.createElement("canvas");
       const scale = 2;
       canvas.width  = 480 * scale;
-      canvas.height = 200 * scale;
+      canvas.height = 260 * scale;
       const ctx = canvas.getContext("2d");
       ctx.scale(scale, scale);
 
       ctx.fillStyle = "#0b0f18";
-      ctx.fillRect(0, 0, 480, 200);
+      ctx.fillRect(0, 0, 480, 260);
       ctx.strokeStyle = "#2a2e3e";
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(12, 12, 456, 176);
+      ctx.strokeRect(12, 12, 456, 236);
 
       ctx.fillStyle = "#888";
       ctx.font = "700 13px monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "alphabetic";
-      ctx.fillText("TRUMPLE", 240, 48);
+      ctx.fillText(`TRUMPLE · ${editionName.toUpperCase()}`, 240, 42);
+
+      ctx.fillStyle = "#f5c518";
+      ctx.font = "700 24px sans-serif";
+      ctx.fillText(starLine, 240, 77);
 
       ctx.fillStyle = "#f0f0f5";
       ctx.font = "700 72px monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(display, 240, 115);
+      ctx.fillText(display, 240, 137);
+
+      ctx.fillStyle = "#f0f0f5";
+      ctx.font = "700 16px sans-serif";
+      ctx.fillText(streak > 0 ? `🔥 ${streak} DAY STREAK` : "CHAOS SORTED", 240, 190);
 
       ctx.fillStyle = "#f5c518";
       ctx.font = "700 13px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "alphabetic";
-      ctx.fillText("trumple.app", 240, 178);
+      ctx.fillText("trumple.app", 240, 230);
 
       const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
       const file = new File([blob], "trumple-score.png", { type: "image/png" });
@@ -742,19 +773,18 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
   const [showConfetti, setShowConfetti] = useState(false);
   const [stats, setStats] = useState({ played: 0, perfects: 0, best: null, streak: 0 });
   const hasRun = useRef(false);
+  const countdown = useNextPuzzleCountdown();
 
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
       if (firstVisit) {
-        onMount(); saveStats(time, stars, puzzleDate);
+        onMount(); saveStats(time, stars, puzzleDate, meta?.key);
         setShowConfetti(true); setTimeout(() => setShowConfetti(false), 4000);
       }
-      setStats(getStats());
+      setStats(getStats(puzzleDate));
     }
-  }, [firstVisit, onMount, time, stars, puzzleDate]);
-
-  const bestDisplay = stats.best ? formatTime(stats.best).display : display;
+  }, [firstVisit, onMount, time, stars, puzzleDate, meta?.key]);
 
   return (
     <>
@@ -810,7 +840,10 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           View the "BEAUTIFUL" Trump Timeline
         </button>
-        <ShareIcons time={time} meta={meta}/>
+        <ShareIcons time={time} meta={meta} stars={stars} streak={stats.streak}/>
+        <div style={{ marginTop:"0.75rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.62rem", letterSpacing:"0.06em" }}>
+          NEXT CHAOS IN {countdown}
+        </div>
       </div>
     </>
   );
@@ -831,17 +864,55 @@ export default function TrumpleApp() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockedCorrect, setLockedCorrect] = useState({});
   const [wrongCards, setWrongCards]     = useState({});
+  const [restoredResult, setRestoredResult] = useState(null);
+  const [introStreak, setIntroStreak]   = useState(0);
   const confettiShown = useRef(false);
   const gameOverShown = useRef(false);
   const chainViewSource = useRef(null);
   const timer = useTimer();
 
   useEffect(() => {
-    const urlDate = new URLSearchParams(window.location.search).get("date");
+    const params = new URLSearchParams(window.location.search);
+    const urlDate = params.get("date");
     const localDate = urlDate || new Date().toLocaleDateString("en-CA");
     fetch("/api/trump-puzzle?date=" + localDate)
       .then(r => { if (!r.ok) throw new Error("No puzzle"); return r.json(); })
-      .then(data => { setPuzzle(data.puzzle); setAnswerOrder(data.answerOrder); setYearMap(data.yearMap); setIsWeekly(!!data.isWeekly); setIsSecondTerm(!!data.isSecondTerm); setEditionMeta(data.editionMeta || null); setScreen(SCREENS.INTRO); })
+      .then(data => {
+        setPuzzle(data.puzzle);
+        setAnswerOrder(data.answerOrder);
+        setYearMap(data.yearMap);
+        setIsWeekly(!!data.isWeekly);
+        setIsSecondTerm(!!data.isSecondTerm);
+        setEditionMeta(data.editionMeta || null);
+
+        const stats = getStats(data.puzzle.date);
+        const saved = dailyResultForDate(stats.results, data.puzzle.date);
+        setIntroStreak(stats.streak);
+        if (!saved) {
+          setScreen(SCREENS.INTRO);
+          return;
+        }
+
+        const sorted = data.answerOrder.map(id => {
+          const event = data.puzzle.events.find(item => item.id === id);
+          return event ? { ...event, year: data.yearMap[id] } : null;
+        }).filter(Boolean);
+        setEvents(sorted);
+        setRevealEvents(sorted);
+        setRestoredResult(saved);
+
+        if (saved.won) {
+          const restoredStars = Number.isInteger(saved.stars) && saved.stars > 0 ? saved.stars : 3;
+          const restoredTime = saved.timeMs || stats.history.at(-1) || stats.best || 0;
+          setRestoredResult({ ...saved, stars: restoredStars, timeMs: restoredTime });
+          setFailedAttempts(3 - restoredStars);
+          confettiShown.current = true;
+          setScreen(SCREENS.COMPLETE);
+        } else {
+          gameOverShown.current = true;
+          setScreen(SCREENS.GAME_OVER);
+        }
+      })
       .catch(() => setScreen(SCREENS.ERROR));
   }, []);
 
@@ -899,12 +970,12 @@ export default function TrumpleApp() {
       <style>{globalStyles}</style>
       {screen === SCREENS.LOADING    && <LoadingScreen/>}
       {screen === SCREENS.ERROR      && <ErrorScreen/>}
-      {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta}/>}
+      {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta} streak={introStreak}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
-      {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
-      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!gameOverShown.current} onMount={() => { gameOverShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
+      {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult?.timeMs ?? timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
+      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !gameOverShown.current} onMount={() => { gameOverShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
     </div>
   );
 }

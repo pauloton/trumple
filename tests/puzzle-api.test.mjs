@@ -24,6 +24,7 @@ function assertPuzzleShape(body, expectedEdition) {
       "bgImageUrl",
       "bgOverlayOpacity",
       "buttonColor",
+      "key",
       "label",
       "layoutVariant",
       "taglines",
