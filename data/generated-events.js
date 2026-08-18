@@ -32,21 +32,6 @@ export const GENERATED_EVENTS = [
     "addedAt": "2026-08-18T05:37:35.632Z"
   },
   {
-    "id": "2026-08-12-says-his-plane-faced-greater-risk-in-s",
-    "date": "2026-08-12",
-    "title": "Says his plane faced 'greater risk' in secret...",
-    "hint": "Reuters reported: Trump says his plane faced 'greater risk' in secret flight change",
-    "significance": 2,
-    "sources": [
-      {
-        "name": "Reuters",
-        "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPNnFid0QtMU1uWmc0NjVieldJWFFnU1gzMXp6RlA0UldwUkEtaElnOUZMTmtCQlFWUlFRbFlsWndGREllOU8zWjBqZWpYanF4dGdWRWdkQy1ucGd6aGx5YlNrUXZ6TzhkZ2h5alU2VzYxMThmbHdVNjdjTWJSVjhYR2RMRHpXREZ3clRKM2JmM1AxenBFaVMza0p1TXZ0dFFoRGNLR1MtcVRNdUJOY3o0UnFsdnpFc1U?oc=5"
-      }
-    ],
-    "status": "approved",
-    "addedAt": "2026-08-18T05:32:53.368Z"
-  },
-  {
     "id": "2026-08-13-empowers-us-private-companies-to-condu",
     "date": "2026-08-13",
     "title": "Empowers US private companies to conduct...",
@@ -86,21 +71,6 @@ export const GENERATED_EVENTS = [
       {
         "name": "politico.com",
         "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9Ob1pZNE5jTXNPbWZ4bnhKT1duQWxRXzN6TlhvQ2NTSzVzYnpESGhHVEpnWjRsT3gzenJab0VVbTJJb3RHVVV5eGxhRDhOTVhHYUsxT2FmMWJVb3I1R0NaMG0zc2I0R2dvc1FyRWFjLVJpLXM4NFlQeU5XQlRjY28?oc=5"
-      }
-    ],
-    "status": "approved",
-    "addedAt": "2026-08-18T05:32:53.369Z"
-  },
-  {
-    "id": "2026-08-16-orders-pentagon-to-cut-back-military-d",
-    "date": "2026-08-16",
-    "title": "Orders Pentagon to cut back military drills...",
-    "hint": "Reuters reported: Trump orders Pentagon to cut back military exercises with South Korea",
-    "significance": 4,
-    "sources": [
-      {
-        "name": "Reuters",
-        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQaGdQYThHbnV2b3NnalEycy1sZGpyNGNLaGNYODl2TmhhUnNma2ZhMk1MTURNQWxMalB3OUswYk10R2RJZGlBNnJoUkZzRGxGcE8xQklBZnlZYUs1d004Q09uUWdDeV96aFlJc0o2Nzh1aHZvRVBhZTV2SGU4RnZremZXWkw0YUp3SENRTDNFNkFyOWNVS2ROSEpCaVhpSmV2QWhMUGI5aVo3aUc3Z2pkWDBIQ2lRdw?oc=5"
       }
     ],
     "status": "approved",
