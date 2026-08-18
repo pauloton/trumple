@@ -124,7 +124,7 @@ const SECOND_TERM_EDITION = {
   taglines: ["The Second Term.", "The Chaos Continues.", "Can You Sort It?"],
   badgeStyle: null,
   buttonColor: "#B22234",
-  bgImageUrl: "/bg/default.jpg",
+  bgImageUrl: "/bg/red.jpg",
   bgOverlayOpacity: 0.45,
   layoutVariant: "default",
 };
