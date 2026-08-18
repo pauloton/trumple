@@ -42,7 +42,7 @@ npm audit
 - `data/generated-events.js` contains approved weekly additions.
 - `lib/event-library.js` validates and combines both libraries and selects Sunday events.
 - `scripts/refresh-event-library.mjs` collects and curates weekly candidates.
-- `.github/workflows/refresh-event-library.yml` runs the refresh each weekend, pushes a candidate branch, and opens a review issue with a one-click comparison link.
+- `.github/workflows/refresh-event-library.yml` runs the refresh each weekend and publishes additions that pass every automatic check.
 - `tests/` protects the game, schedule, library, and refresh contracts.
 - `public/` contains the edition backgrounds and game artwork.
 
@@ -54,12 +54,12 @@ At 02:00 UTC every Sunday (Saturday evening in US time zones), GitHub Actions:
 
 1. Collects up to 250 recent English-language Trump articles through GDELT, with Google News RSS as a rate-limit and outage fallback.
 2. Keeps reporting from an allowlist of established news and primary-government domains.
-3. Groups coverage by day and prepares up to four sourced editorial candidates per day.
-4. Rejects invalid dates, malformed events, untrusted sources, and likely duplicates.
+3. Selects at most one direct, clearly worded Trump action per calendar day.
+4. Rejects analysis, opinion, indirect stories, vague or oversized headlines, invalid dates, malformed events, untrusted sources, and likely duplicates.
 5. Runs the complete game test and production-build check.
-6. Pushes a candidate branch and opens a GitHub issue with a one-click comparison link for human editorial review.
+6. Commits approved additions directly to `main`, which refreshes the playable library and deploys through Vercel.
 
-The workflow needs no purchased API key. New cards are marked `candidate`, which excludes them from the playable library even if a review branch is merged accidentally. An editor must verify the date and sources, rewrite the placeholder hint, change the status to `approved`, and delete rejected cards before merging.
+The workflow needs no purchased API key and no weekly human approval. Stories that fail any automatic check are discarded. If fewer than seven calendar dates qualify in a week, Sunday uses the regular second-term game; daily games continue normally.
 
 To rehearse the refresh without network access or changing the library:
 
@@ -76,8 +76,8 @@ Before publishing an event:
 3. Do not use em dashes.
 4. Keep Trump as the focus of the event.
 5. Use a concise, sardonic hint without inventing details.
-6. Check every automated source link and confirm that the event happened on the stated date before merging.
-7. Keep Sunday fair by approving one strong event per calendar day where possible.
+6. Keep Sunday fair by publishing no more than one automatic event per calendar day.
+7. Periodically audit automatic additions and tighten the filters if a weak pattern appears.
 
 ## Release
 

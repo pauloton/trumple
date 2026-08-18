@@ -1,3 +1,3 @@
 // This file is maintained by scripts/refresh-event-library.mjs.
-// Every automated change arrives in a pull request for human review.
+// Only events that pass automatic publication checks are written here.
 export const GENERATED_EVENTS = [];

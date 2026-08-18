@@ -200,35 +200,80 @@ function candidateTitle(headline) {
   return title;
 }
 
+const DIRECT_ACTION = /^(announces?|appoints?|approves?|backs?|bans?|calls?|cancels?|claims?|confirms?|cuts?|demands?|deploys?|dismisses?|empowers?|extends?|fires?|grants?|heads?|hosts?|launches?|orders?|pardons?|pulls?|refuses?|scales?|says?|shows?|signs?|stumps?|sues?|threatens?|travels?|unveils?|visits?|vows?|wears?)\b/i;
+const NON_EVENT_HEADLINE = /^(analysis|fact[- ]?check|how |inside |opinion|photos?|poll|preview|what |why )/i;
+
+function shortText(value, maxLength) {
+  if (value.length <= maxLength) return value;
+  return `${value.slice(0, maxLength - 3).replace(/\s+\S*$/, "")}...`;
+}
+
+function automaticTitle(headline) {
+  const cleaned = headline
+    .replaceAll("—", "-")
+    .replace(/^(?:the latest|news wrap|watch|video):\s*/i, "")
+    .trim();
+  if (NON_EVENT_HEADLINE.test(cleaned)) return null;
+
+  const match = cleaned.match(/^(?:President\s+|Donald\s+)?Trump\s+(.+)$/i);
+  if (!match) return null;
+  let action = match[1]
+    .replace(/\bexecutive order\b/gi, "order")
+    .replace(/\bUnited States\b/g, "US")
+    .replace(/\bU\.S\.\b/g, "US")
+    .replace(/\bjoint military exercises with South Korea\b/gi, "Korea military drills")
+    .replace(/\bmilitary exercises\b/gi, "military drills")
+    .split(/[,;]\s/)[0]
+    .trim();
+  action = action.split(/\s+(?:about|after|amid|as|because|that|while|which|who)\s+/i)[0].trim();
+  if (!DIRECT_ACTION.test(action) || action.includes("?")) return null;
+  action = shortText(action, 50);
+  return action[0].toUpperCase() + action.slice(1);
+}
+
 function candidateSignificance(title) {
   const strong = /war|strike|tariff|pardon|fire[sd]?|order|deploy|ban|court|indict|arrest|ceasefire|emergency|military/i;
   const medium = /announce|threat|claim|sign|meeting|deal|speech|visit|appoint/i;
   return strong.test(title) ? 4 : medium.test(title) ? 3 : 2;
 }
 
-function curateArticles(articles, window) {
+export function curateArticles(articles, window) {
   const byDate = new Map();
   articles.forEach((article, sourceIndex) => {
     const date = articleDate(article);
     if (!date || date < window.start || date > window.end) return;
-    const title = candidateTitle(article.title);
+    const approvedTitle = automaticTitle(article.title);
+    const title = approvedTitle || candidateTitle(article.title);
     if (!title) return;
     const candidates = byDate.get(date) || [];
     candidates.push({
       date,
       title,
-      hint: `${sourceName(article)} reported this candidate. Confirm the event date and rewrite this hint before approval.`,
+      hint: approvedTitle
+        ? shortText(`${sourceName(article)} reported: ${article.title.replaceAll("—", "-")}`, 180)
+        : `${sourceName(article)} reported this candidate. It did not pass automatic publication checks.`,
       significance: candidateSignificance(title),
       source_indexes: [sourceIndex],
+      status: approvedTitle ? "approved" : "candidate",
     });
     byDate.set(date, candidates);
   });
 
-  return [...byDate.values()].flatMap((candidates) =>
-    candidates
-      .sort((a, b) => b.significance - a.significance || a.title.localeCompare(b.title))
-      .slice(0, 4)
-  ).slice(0, 28);
+  return [...byDate.values()].flatMap((candidates) => {
+    const ranked = candidates.sort((a, b) =>
+      Number(b.status === "approved") - Number(a.status === "approved") ||
+      b.significance - a.significance ||
+      a.title.localeCompare(b.title)
+    ).slice(0, 4);
+    let approvedForDate = false;
+    return ranked.map((candidate) => {
+      if (candidate.status === "approved" && !approvedForDate) {
+        approvedForDate = true;
+        return candidate;
+      }
+      return { ...candidate, status: "candidate" };
+    });
+  }).slice(0, 28);
 }
 
 function isNearDuplicate(event, existing) {
@@ -257,7 +302,7 @@ function materializeEvents(rawEvents, articles, window) {
       hint: raw.hint.replaceAll("—", "-").trim(),
       significance: raw.significance,
       sources,
-      status: "candidate",
+      status: raw.status === "approved" ? "approved" : "candidate",
       addedAt: new Date().toISOString(),
     };
     if (validateLibraryEvent(event, { requireSources: true }).length > 0) continue;
@@ -268,7 +313,7 @@ function materializeEvents(rawEvents, articles, window) {
 }
 
 function generatedModule(events) {
-  return `// This file is maintained by scripts/refresh-event-library.mjs.\n// Every automated change arrives in a pull request for human review.\nexport const GENERATED_EVENTS = ${JSON.stringify(events, null, 2)};\n`;
+  return `// This file is maintained by scripts/refresh-event-library.mjs.\n// Only events that pass automatic publication checks are written here.\nexport const GENERATED_EVENTS = ${JSON.stringify(events, null, 2)};\n`;
 }
 
 export async function refreshLibrary(options) {
@@ -280,16 +325,26 @@ export async function refreshLibrary(options) {
     const fixturePath = new URL(options.fixture, `file://${ROOT}/`);
     const fixture = JSON.parse(await readFile(fixturePath, "utf8"));
     articles = dedupeArticles(fixture.articles || []);
-    rawEvents = fixture.events || [];
+    rawEvents = Array.isArray(fixture.events)
+      ? fixture.events
+      : curateArticles(articles, window);
   } else {
     articles = await fetchArticles(window);
     rawEvents = curateArticles(articles, window);
   }
 
   const additions = materializeEvents(rawEvents, articles, window);
-  const merged = [...GENERATED_EVENTS, ...additions].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  if (!options.dryRun && additions.length > 0) await writeFile(OUTPUT_PATH, generatedModule(merged));
-  return { window, articleCount: articles.length, additions, total: EVENT_LIBRARY.length + additions.length };
+  const approvedAdditions = additions.filter((event) => event.status === "approved");
+  const merged = [...GENERATED_EVENTS, ...approvedAdditions].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  if (!options.dryRun && approvedAdditions.length > 0) await writeFile(OUTPUT_PATH, generatedModule(merged));
+  return {
+    window,
+    articleCount: articles.length,
+    approvedCount: approvedAdditions.length,
+    rejectedCount: additions.length - approvedAdditions.length,
+    additions,
+    total: EVENT_LIBRARY.length + approvedAdditions.length,
+  };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

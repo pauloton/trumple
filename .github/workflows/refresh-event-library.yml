@@ -13,7 +13,6 @@ on:
 
 permissions:
   contents: write
-  issues: write
 
 concurrency:
   group: refresh-event-library
@@ -46,22 +45,14 @@ jobs:
 
       - run: npm run check
 
-      - name: Open an editorial review issue
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish approved library additions
         run: |
           if git diff --quiet; then
-            echo "No new verified candidates this week."
+            echo "No new events passed automatic publication checks this week."
             exit 0
           fi
-          branch="automation/event-library-${GITHUB_RUN_ID}"
           git config user.name "trumple-editor-bot"
           git config user.email "trumple-editor-bot@users.noreply.github.com"
-          git switch -c "$branch"
           git add data/generated-events.js
-          git commit -m "Refresh event library"
-          git push origin "$branch"
-          compare_url="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1"
-          gh issue create \
-            --title "Weekly event library refresh" \
-            --body "Automated, sourced Trumple candidates are ready on branch \`${branch}\`. Review them at ${compare_url}. Edit approved cards, replace the placeholder hint, confirm the exact event date, and change status from candidate to approved. Delete the rest before merging. Candidate cards never enter the game."
+          git commit -m "Publish verified weekly events"
+          git push origin HEAD:main
