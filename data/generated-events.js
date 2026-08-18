@@ -17,19 +17,19 @@ export const GENERATED_EVENTS = [
     "addedAt": "2026-08-18T05:32:53.369Z"
   },
   {
-    "id": "2026-08-11-signs-order-to-limit-childhood-vaccine",
+    "id": "2026-08-11-refuses-to-back-down-as-supreme-court",
     "date": "2026-08-11",
-    "title": "Signs order to limit childhood vaccines and...",
-    "hint": "bbc.com reported: Trump signs order to limit childhood vaccines and split MMR shots",
+    "title": "Refuses to back down as Supreme Court blocks...",
+    "hint": "washingtonpost.com reported: Trump refuses to back down as Supreme Court blocks major policies",
     "significance": 4,
     "sources": [
       {
-        "name": "bbc.com",
-        "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9nS0FWUjM1QzMtNlZ6T0t2anBSS1lKalMzRU9lVzkycmo5RXgycmZpLVkyTlI2SGpJd0lOR1FORnBmRVpDN1ZtVnAzX2lNUS1FRlNSWXIzUDZqdw?oc=5"
+        "name": "washingtonpost.com",
+        "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNOXpuRXFHajY5R3E1amZfVVJQNUNqT1UydlVYaEJoYmhHOTJUSE9xZUFZOHgyOUd4NVNFT2JiR3pkbS1EaEpyU05YcU1GZGlZVC1zSTNNOGtFQXpiZVR3OGhrY2ZNUEJfeG11eXU0Yk9Qb0tWN0NDR0FlMUo1NUh4MEtnY25Hd214cnZYbWR6MVhLZEloMmZ0X2I0WTNDZ1F1T2cyZDhacHdWQml5MjExbGl2YnF1dlY1ZHVrdFVrLVE?oc=5"
       }
     ],
     "status": "approved",
-    "addedAt": "2026-08-18T05:32:53.368Z"
+    "addedAt": "2026-08-18T05:37:35.632Z"
   },
   {
     "id": "2026-08-12-says-his-plane-faced-greater-risk-in-s",
