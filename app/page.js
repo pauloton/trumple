@@ -1,6 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { calculateCurrentStreak, recordDailyResult } from "../lib/player-stats.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
 
@@ -47,18 +48,21 @@ function getStars(failedAttempts) {
 const MAX_ATTEMPTS = 3; // game over after this many failed lock-ins
 
 function getStats() {
-  if (typeof window === "undefined") return { played: 0, perfects: 0, best: null, history: [] };
+  if (typeof window === "undefined") return { played: 0, perfects: 0, best: null, history: [], results: [], streak: 0 };
   try {
     const history = JSON.parse(localStorage.getItem("trumple_history") || "[]");
+    const results = JSON.parse(localStorage.getItem("trumple_results") || "[]");
     return {
       played:   parseInt(localStorage.getItem("trumple_played")   || "0", 10),
       perfects: parseInt(localStorage.getItem("trumple_perfects") || "0", 10),
       best:     parseInt(localStorage.getItem("trumple_best")     || "0", 10) || null,
       history,
+      results,
+      streak: calculateCurrentStreak(results),
     };
-  } catch { return { played: 0, perfects: 0, best: null, history: [] }; }
+  } catch { return { played: 0, perfects: 0, best: null, history: [], results: [], streak: 0 }; }
 }
-function saveStats(timeMs, stars) {
+function saveStats(timeMs, stars, puzzleDate) {
   if (typeof window === "undefined") return;
   try {
     const prev = getStats();
@@ -69,6 +73,8 @@ function saveStats(timeMs, stars) {
       const history = [...prev.history, timeMs].slice(-5);
       localStorage.setItem("trumple_history", JSON.stringify(history));
     }
+    const results = recordDailyResult(prev.results, puzzleDate, stars > 0);
+    localStorage.setItem("trumple_results", JSON.stringify(results));
   } catch {}
 }
 
@@ -512,15 +518,17 @@ function LiveStars({ failedAttempts }) {
 }
 
 // Game Over screen, shows correct answer with hints
-function GameOverScreen({ events, onViewChain, onMount, meta }) {
+function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzleDate }) {
   const hasRun = useRef(false);
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
-      onMount();
-      saveStats(null, 0);
+      if (firstVisit) {
+        onMount();
+        saveStats(null, 0, puzzleDate);
+      }
     }
-  }, [onMount]);
+  }, [firstVisit, onMount, puzzleDate]);
 
   return (
     <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b0f18", overflow:"hidden" }}>
@@ -727,24 +735,24 @@ function ShareIcons({ time, meta }) {
   );
 }
 
-function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount, meta }) {
+function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount, meta, puzzleDate }) {
   const stars = getStars(failedAttempts);
   const { display } = formatTime(time);
   const [celebWord] = useState(() => getCelebWord(stars));
   const [showConfetti, setShowConfetti] = useState(false);
-  const [stats, setStats] = useState({ played: 0, perfects: 0, best: null });
+  const [stats, setStats] = useState({ played: 0, perfects: 0, best: null, streak: 0 });
   const hasRun = useRef(false);
 
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
       if (firstVisit) {
-        onMount(); saveStats(time, stars);
+        onMount(); saveStats(time, stars, puzzleDate);
         setShowConfetti(true); setTimeout(() => setShowConfetti(false), 4000);
       }
       setStats(getStats());
     }
-  }, [firstVisit, onMount, time, stars]);
+  }, [firstVisit, onMount, time, stars, puzzleDate]);
 
   const bestDisplay = stats.best ? formatTime(stats.best).display : display;
 
@@ -755,15 +763,16 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
         <StarDisplay stars={stars} size={32} celebrate={firstVisit}/>
         <div style={{ marginTop:"0.6rem", fontSize:"1.6rem", fontWeight:900, fontFamily:"'Space Grotesk', sans-serif", color:C.gold, letterSpacing:"-0.01em" }}>{celebWord}</div>
         <div style={{ marginTop:"1rem", fontSize:"clamp(3rem,12vw,4.5rem)", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text, letterSpacing:"-0.02em", lineHeight:1 }}>{display}</div>
-        <div style={{ marginTop:"1rem", display:"flex", gap:"0.5rem", width:"100%" }}>
+        <div style={{ marginTop:"1rem", display:"grid", gridTemplateColumns:"repeat(4, minmax(0, 1fr))", gap:"0.5rem", width:"100%" }}>
           {[
             { label:"PLAYED",         val: stats.played   || 1 },
             { label:"PERFECT SCORES", val: stats.perfects || 0 },
+            { label:"STREAK",         val: "🔥 " + (stats.streak || 1) },
             { label:"BEST",           val: bestDisplay },
           ].map(({ label, val }) => (
-            <div key={label} style={{ flex:1, background:C.card, border:"1px solid "+C.border, borderRadius:"12px", padding:"0.75rem 0.4rem", textAlign:"center" }}>
+            <div key={label} style={{ minWidth:0, background:C.card, border:"1px solid "+C.border, borderRadius:"12px", padding:"0.75rem 0.35rem", textAlign:"center" }}>
               <div style={{ fontSize:"0.48rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"0.3rem", lineHeight:1.3 }}>{label}</div>
-              <div style={{ fontSize:"1rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text }}>{val}</div>
+              <div style={{ fontSize:"clamp(0.8rem, 3.6vw, 1rem)", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text, whiteSpace:"nowrap" }}>{val}</div>
             </div>
           ))}
         </div>
@@ -895,8 +904,8 @@ export default function TrumpleApp() {
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
-      {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta}/>}
-      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} onMount={() => { gameOverShown.current = true; }} meta={editionMeta}/>}
+      {screen === SCREENS.COMPLETE   && <CompleteScreen time={timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
+      {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!gameOverShown.current} onMount={() => { gameOverShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
     </div>
   );
 }
