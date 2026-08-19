@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server.js";
 import {
-  FEATURED_SECOND_TERM_EVENTS,
+  CLASSIC_SECOND_TERM_EVENTS,
   LEGACY_EVENTS as DATED_LEGACY_EVENTS,
   SECOND_TERM_EVENTS as DATED_SECOND_TERM_EVENTS,
   isFirstSaturday,
@@ -494,7 +494,7 @@ function pickSecondTermEvents(dateText) {
 }
 
 function pickClassicSecondTermEvents(dayNum) {
-  const recent = FEATURED_SECOND_TERM_EVENTS.slice(-28);
+  const recent = CLASSIC_SECOND_TERM_EVENTS.slice(-28);
   const selected = [];
   const dates = new Set();
   const addUniqueDates = (candidates, limit) => {
@@ -506,7 +506,7 @@ function pickClassicSecondTermEvents(dayNum) {
     }
   };
   addUniqueDates(seededShuffle(recent, SEASON * 777 + dayNum), 4);
-  addUniqueDates(seededShuffle(FEATURED_SECOND_TERM_EVENTS, SEASON * 997 + dayNum), 7);
+  addUniqueDates(seededShuffle(CLASSIC_SECOND_TERM_EVENTS, SEASON * 997 + dayNum), 7);
   return selected
     .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
     .map((event, index) => ({ ...event, id: index + 1 }));
@@ -516,7 +516,7 @@ function buildClassicLegacyPuzzle(dayNum) {
   const historicalPools = [POOL.A, POOL.B, POOL.C, POOL.D, POOL.E]
     .map((pool) => pool.filter((event) => event.year >= 2016));
   const historical = historicalPools.map((pool, index) => pickForDay(pool, index + 1, dayNum));
-  const current = seededShuffle(FEATURED_SECOND_TERM_EVENTS, SEASON * 1291 + dayNum)
+  const current = seededShuffle(CLASSIC_SECOND_TERM_EVENTS, SEASON * 1291 + dayNum)
     .slice(0, 2)
     .map((event) => ({ ...event, year: Number(event.date.slice(0, 4)) }));
   return [...historical, ...current]
