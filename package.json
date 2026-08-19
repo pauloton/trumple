@@ -12,6 +12,7 @@
     "start": "next start",
     "test": "node --test",
     "check": "npm run test && npm run build",
+    "library:archive": "node scripts/build-presidential-archive.mjs",
     "library:refresh": "node scripts/refresh-event-library.mjs"
   },
   "dependencies": {

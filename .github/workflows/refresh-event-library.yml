@@ -38,8 +38,10 @@ jobs:
           REQUESTED_TODAY: ${{ inputs.today }}
         run: |
           if [ -n "$REQUESTED_TODAY" ]; then
+            npm run library:archive -- --today "$REQUESTED_TODAY"
             npm run library:refresh -- --today "$REQUESTED_TODAY"
           else
+            npm run library:archive
             npm run library:refresh
           fi
 
@@ -53,6 +55,6 @@ jobs:
           fi
           git config user.name "trumple-editor-bot"
           git config user.email "trumple-editor-bot@users.noreply.github.com"
-          git add data/generated-events.js
+          git add data/generated-events.js data/presidential-events.js
           git commit -m "Publish verified weekly events"
           git push origin HEAD:main

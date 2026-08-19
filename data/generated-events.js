@@ -32,6 +32,21 @@ export const GENERATED_EVENTS = [
     "addedAt": "2026-08-18T05:37:35.632Z"
   },
   {
+    "id": "2026-08-12-confirms-he-switched-planes-after-nato",
+    "date": "2026-08-12",
+    "title": "Changes planes after a possible NATO threat",
+    "hint": "A possible threat followed the NATO summit, so Air Force One got swapped. Even the ride home joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "BBC",
+        "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5rcWVHSndOalZNOExnTy1NN0dGclYweE9HN1l1cGRMeEpwMGo5OVA4VWp1RDc3Vi1YdjA4aVI5R2t2Yk5Od0tKYWJwSlZrRHdLMXUwSWVWdkRNQQ?oc=5"
+      }
+    ],
+    "status": "approved",
+    "addedAt": "2026-08-19T00:25:51.799Z"
+  },
+  {
     "id": "2026-08-13-empowers-us-private-companies-to-condu",
     "date": "2026-08-13",
     "title": "Lets private companies launch cyberattacks",
@@ -75,5 +90,20 @@ export const GENERATED_EVENTS = [
     ],
     "status": "approved",
     "addedAt": "2026-08-18T05:32:53.369Z"
+  },
+  {
+    "id": "2026-08-15-shows-off-article-on-lower-drug-prices",
+    "date": "2026-08-15",
+    "title": "Shows off a win that credits Biden instead",
+    "hint": "He promoted an article about lower drug prices. The article itself credited Biden. The Guardian noticed the small detail.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "The Guardian",
+        "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQdDEtZmlNYWZGX1NiTDV1YmtHSHR1eXI2WDhaNU1PZE9RSHoya3BIM2hNMU1RYzg4dTJhU1lGeEZTdlB1bC1XcFNzdkk2dEhibmZLYlZPRWcybS1XN0xDNWRxTzVWNXplYmYwOEsybDBJVXNER2lGVEFBWVlwemhFT3V0ck1TZkF0?oc=5"
+      }
+    ],
+    "status": "approved",
+    "addedAt": "2026-08-19T00:25:51.801Z"
   }
 ];

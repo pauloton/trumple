@@ -60,7 +60,7 @@ test("automatic curation marks direct Trump actions as publishable", () => {
   assert.ok(events.every((event) => event.title.length <= 50));
 });
 
-test("automatic refresh selects one distinct event per day", async () => {
+test("automatic refresh can select multiple distinct events per day", async () => {
   const result = await refreshLibrary({
     today: "2026-09-04",
     fixture: "tests/fixtures/automatic-refresh.json",
@@ -93,7 +93,7 @@ test("generated library removes near-duplicate stories", () => {
   assert.equal(merged.length, 1);
 });
 
-test("hand-curated events take priority over generated events for a date", () => {
+test("a distinct generated event may share a date with a hand-curated event", () => {
   const merged = mergeApprovedGenerated([], [{
     id: "generated-aug-16",
     date: "2026-08-16",
@@ -104,5 +104,5 @@ test("hand-curated events take priority over generated events for a date", () =>
     addedAt: "2026-08-17T00:00:00.000Z",
   }]);
 
-  assert.deepEqual(merged, []);
+  assert.equal(merged.length, 1);
 });

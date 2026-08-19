@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server.js";
 import {
+  FEATURED_SECOND_TERM_EVENTS,
+  LEGACY_EVENTS as DATED_LEGACY_EVENTS,
   SECOND_TERM_EVENTS as DATED_SECOND_TERM_EVENTS,
   isFirstSaturday,
   weeklyEventsForSunday,
 } from "../../../lib/event-library.js";
+import { createDailyRotationSelector } from "../../../lib/daily-rotation.js";
 
 // ============================================================
 // EVENT POOL, spanning 2015–2025
@@ -471,6 +474,11 @@ function seededShuffle(arr, seed) {
 
 // Season seed, change once per year to refresh the rotation order
 const SEASON = 2026;
+const EXPANDED_ROTATION_START = "2026-08-19";
+const selectSecondTermRotation = createDailyRotationSelector(DATED_SECOND_TERM_EVENTS, {
+  startDate: "2025-01-20",
+  season: SEASON,
+});
 
 function pickForDay(pool, eraOffset, dayNum) {
   const shuffled = seededShuffle(pool, SEASON * 1000 + eraOffset);
@@ -479,11 +487,16 @@ function pickForDay(pool, eraOffset, dayNum) {
 
 // Daily puzzles lean toward recent stories while retaining enough of the
 // second-term back catalogue to keep the sequence surprising.
-function pickSecondTermEvents(dayNum) {
-  const recent = DATED_SECOND_TERM_EVENTS.slice(-28);
+function pickSecondTermEvents(dateText) {
+  return selectSecondTermRotation(dateText)
+    .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
+    .map((event, index) => ({ ...event, id: index + 1 }));
+}
+
+function pickClassicSecondTermEvents(dayNum) {
+  const recent = FEATURED_SECOND_TERM_EVENTS.slice(-28);
   const selected = [];
   const dates = new Set();
-
   const addUniqueDates = (candidates, limit) => {
     for (const event of candidates) {
       if (selected.length >= limit) break;
@@ -492,34 +505,50 @@ function pickSecondTermEvents(dayNum) {
       selected.push(event);
     }
   };
-
   addUniqueDates(seededShuffle(recent, SEASON * 777 + dayNum), 4);
-  addUniqueDates(
-    seededShuffle(DATED_SECOND_TERM_EVENTS, SEASON * 997 + dayNum),
-    7
-  );
-
+  addUniqueDates(seededShuffle(FEATURED_SECOND_TERM_EVENTS, SEASON * 997 + dayNum), 7);
   return selected
     .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
     .map((event, index) => ({ ...event, id: index + 1 }));
 }
 
-function buildLegacyPuzzle(dayNum) {
+function buildClassicLegacyPuzzle(dayNum) {
   const historicalPools = [POOL.A, POOL.B, POOL.C, POOL.D, POOL.E]
     .map((pool) => pool.filter((event) => event.year >= 2016));
-  const historical = historicalPools.map((pool, index) =>
-    pickForDay(pool, index + 1, dayNum)
-  );
-
-  const current = seededShuffle(
-    DATED_SECOND_TERM_EVENTS,
-    SEASON * 1291 + dayNum
-  ).slice(0, 2).map((event) => ({
-    ...event,
-    year: Number(event.date.slice(0, 4)),
-  }));
-
+  const historical = historicalPools.map((pool, index) => pickForDay(pool, index + 1, dayNum));
+  const current = seededShuffle(FEATURED_SECOND_TERM_EVENTS, SEASON * 1291 + dayNum)
+    .slice(0, 2)
+    .map((event) => ({ ...event, year: Number(event.date.slice(0, 4)) }));
   return [...historical, ...current]
+    .sort((a, b) => {
+      const aDate = a.date || `${a.year}-06-30`;
+      const bDate = b.date || `${b.year}-06-30`;
+      return aDate.localeCompare(bDate) || String(a.id).localeCompare(String(b.id));
+    })
+    .map((event, index) => ({ ...event, id: index + 1 }));
+}
+
+function buildLegacyPuzzle(dayNum) {
+  const selected = [];
+  const dates = new Set();
+  const add = (candidates, limit) => {
+    for (const event of candidates) {
+      if (selected.length >= limit) break;
+      const dateKey = event.date || `${event.year}-${event.id}`;
+      if (dates.has(dateKey)) continue;
+      dates.add(dateKey);
+      selected.push({ ...event, year: event.year || Number(event.date.slice(0, 4)) });
+    }
+  };
+
+  const launchEra = POOL.A.filter((event) => event.year === 2016);
+  const firstTermArchive = DATED_LEGACY_EVENTS.filter((event) => event.date < "2021-01-21");
+  const secondTermArchive = DATED_LEGACY_EVENTS.filter((event) => event.date >= "2025-01-20");
+  add(seededShuffle(launchEra, SEASON * 1103 + dayNum), 1);
+  add(seededShuffle(firstTermArchive, SEASON * 1201 + dayNum), 4);
+  add(seededShuffle(secondTermArchive, SEASON * 1291 + dayNum), 7);
+
+  return selected
     .sort((a, b) => {
       const aDate = a.date || `${a.year}-06-30`;
       const bDate = b.date || `${b.year}-06-30`;
@@ -577,7 +606,11 @@ export async function GET(req) {
   // Sundays use the previous seven completed calendar days. Requiring one
   // event per day keeps the answer fair: no invisible ordering within a date.
   if (d.getUTCDay() === 0) {
-    const weeklyEvents = weeklyEventsForSunday(d);
+    const weeklyEvents = weeklyEventsForSunday(
+      d,
+      DATED_SECOND_TERM_EVENTS,
+      { backfillDays: dateParam >= EXPANDED_ROTATION_START ? 3 : 0 }
+    );
     if (weeklyEvents.length === 7) {
       edition = WEEKLY_EDITION;
       events = weeklyEvents.map((event, index) => ({ ...event, id: index + 1 }));
@@ -588,11 +621,17 @@ export async function GET(req) {
   // The first Saturday of each month is the long-range 2016-present game.
   if (!events && isFirstSaturday(d)) {
     edition = LEGACY_EDITION;
-    events = buildLegacyPuzzle(dayNum);
+    events = dateParam < EXPANDED_ROTATION_START
+      ? buildClassicLegacyPuzzle(dayNum)
+      : buildLegacyPuzzle(dayNum);
     puzzlePrefix = "l";
   }
 
-  if (!events) events = pickSecondTermEvents(dayNum);
+  if (!events) {
+    events = dateParam < EXPANDED_ROTATION_START
+      ? pickClassicSecondTermEvents(dayNum)
+      : pickSecondTermEvents(dateParam);
+  }
 
   const answerOrder = events.map(e => e.id);
   const shuffled    = seededShuffle(

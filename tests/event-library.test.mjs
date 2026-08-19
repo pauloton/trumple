@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   EVENT_LIBRARY,
+  LEGACY_EVENTS,
   SECOND_TERM_EVENTS,
   isFirstSaturday,
   mergeLibrary,
@@ -11,14 +12,16 @@ import {
   weeklyEventsForSunday,
 } from "../lib/event-library.js";
 
-test("the curated library is large, dated, unique, and game-safe", () => {
-  assert.ok(EVENT_LIBRARY.length >= 50);
+test("the daily and legacy libraries are genuinely large, dated, unique, and game-safe", () => {
+  assert.ok(EVENT_LIBRARY.length >= 400);
+  assert.ok(LEGACY_EVENTS.length >= 500);
   assert.equal(EVENT_LIBRARY.length, SECOND_TERM_EVENTS.length);
   assert.equal(new Set(EVENT_LIBRARY.map((event) => event.id)).size, EVENT_LIBRARY.length);
   for (const event of EVENT_LIBRARY) {
     assert.deepEqual(validateLibraryEvent(event), [], event.id);
     assert.ok(event.date >= "2025-01-20");
   }
+  for (const event of LEGACY_EVENTS) assert.deepEqual(validateLibraryEvent(event), [], event.id);
 });
 
 test("weekly range is the seven completed days before Sunday", () => {
@@ -42,6 +45,20 @@ test("weekly selection chooses one strong event per day in order", () => {
   assert.equal(selected.length, 7);
   assert.deepEqual(selected.map((event) => event.date), events.slice(0, 7).map((event) => event.date));
   assert.equal(selected[3].id, "event-3");
+});
+
+test("weekly selection can backfill a quiet day without making tied dates unfair", () => {
+  const events = Array.from({ length: 7 }, (_, index) => ({
+    id: `backfill-${index}`,
+    date: `2026-08-${String(index + 6).padStart(2, "0")}`,
+    title: `Event ${index}`,
+    hint: "Hint",
+    significance: 3,
+  }));
+  const selected = weeklyEventsForSunday(new Date("2026-08-16T12:00:00Z"), events, { backfillDays: 3 });
+  assert.equal(selected.length, 7);
+  assert.equal(selected[0].date, "2026-08-06");
+  assert.equal(new Set(selected.map((event) => event.date)).size, 7);
 });
 
 test("legacy edition trigger means only the first Saturday", () => {

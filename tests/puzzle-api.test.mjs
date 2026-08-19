@@ -103,7 +103,12 @@ test("every 2026 puzzle satisfies the game contract and schedule", async () => {
     assert.equal(response.status, 200, date);
 
     const firstSaturday = current.getUTCDay() === 6 && current.getUTCDate() <= 7;
-    assertPuzzleShape(body, firstSaturday ? "legacy" : "second-term");
+    const expectedEdition = firstSaturday
+      ? "legacy"
+      : current.getUTCDay() === 0 && body.edition === "weekly"
+        ? "weekly"
+        : "second-term";
+    assertPuzzleShape(body, expectedEdition);
 
     for (const event of body.puzzle.events) {
       assert.ok(event.title.length <= 50, `${date}: ${event.title}`);

@@ -16,6 +16,7 @@ const TRUSTED_DOMAINS = new Set([
   "congress.gov", "justice.gov", "defense.gov", "state.gov",
   "supremecourt.gov", "federalregister.gov",
 ]);
+export const MAX_APPROVED_PER_DATE = 3;
 
 function parseArgs(argv) {
   const options = { today: new Date().toISOString().slice(0, 10), dryRun: false, fixture: null };
@@ -74,7 +75,7 @@ function dedupeArticles(articles) {
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
-  }).slice(0, 140);
+  }).slice(0, 240);
 }
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -210,6 +211,7 @@ function candidateTitle(headline) {
 
 const DIRECT_ACTION = /^(announces?|appoints?|approves?|backs?|bans?|calls?|cancels?|claims?|confirms?|cuts?|demands?|deploys?|dismisses?|empowers?|extends?|fires?|grants?|heads?|hosts?|launches?|orders?|pardons?|pulls?|refuses?|scales?|says?|shows?|signs?|stumps?|sues?|threatens?|travels?|unveils?|visits?|vows?|wears?)\b/i;
 const NON_EVENT_HEADLINE = /^(analysis|fact[- ]?check|how |inside |opinion|photos?|poll|preview|what |why )/i;
+const LOW_VALUE_ACTION = /^(heads?|stumps?|travels?|visits?|wears?)\b/i;
 
 function shortText(value, maxLength) {
   if (value.length <= maxLength) return value;
@@ -223,7 +225,7 @@ function automaticTitle(headline) {
     .trim();
   if (NON_EVENT_HEADLINE.test(cleaned)) return null;
 
-  const match = cleaned.match(/^(?:President\s+|Donald\s+)?Trump\s+(.+)$/i);
+  const match = cleaned.match(/\b(?:President\s+|Donald\s+)?Trump\s+(.+)$/i);
   if (!match) return null;
   let action = match[1]
     .replace(/\bexecutive order\b/gi, "order")
@@ -234,7 +236,7 @@ function automaticTitle(headline) {
     .split(/[,;]\s/)[0]
     .trim();
   action = action.split(/\s+(?:because|that|while|which|who)\s+/i)[0].trim();
-  if (!DIRECT_ACTION.test(action) || action.includes("?")) return null;
+  if (!DIRECT_ACTION.test(action) || LOW_VALUE_ACTION.test(action) || action.includes("?")) return null;
   if (action.length > 50) return null;
   return action[0].toUpperCase() + action.slice(1);
 }
@@ -273,7 +275,7 @@ export function curateArticles(articles, window) {
       b.significance - a.significance ||
       a.title.localeCompare(b.title)
     ).slice(0, 4)
-  ).slice(0, 28);
+  ).slice(0, 42);
 }
 
 function isNearDuplicate(event, existing) {
@@ -292,7 +294,7 @@ function isNearDuplicate(event, existing) {
 
 function materializeEvents(rawEvents, articles, window) {
   const accepted = [];
-  const approvedDates = new Set();
+  const approvedByDate = new Map();
   const rankedRawEvents = [...rawEvents].sort((a, b) =>
     a.date.localeCompare(b.date) ||
     Number(b.status === "approved") - Number(a.status === "approved") ||
@@ -317,10 +319,11 @@ function materializeEvents(rawEvents, articles, window) {
     if (validateLibraryEvent(event, { requireSources: true }).length > 0) continue;
     const acceptedApproved = accepted.filter((known) => known.status === "approved");
     if (isNearDuplicate(event, [...EVENT_LIBRARY, ...acceptedApproved])) continue;
-    if (event.status === "approved" && approvedDates.has(event.date)) {
+    const approvedOnDate = approvedByDate.get(event.date) || 0;
+    if (event.status === "approved" && approvedOnDate >= MAX_APPROVED_PER_DATE) {
       event.status = "candidate";
     }
-    if (event.status === "approved") approvedDates.add(event.date);
+    if (event.status === "approved") approvedByDate.set(event.date, approvedOnDate + 1);
     accepted.push(event);
   }
   return accepted.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
@@ -332,13 +335,10 @@ function generatedModule(events) {
 
 export function mergeApprovedGenerated(existing, additions) {
   const merged = [];
-  const dates = new Set(SEED_EVENTS.map((event) => event.date));
   for (const event of [...existing, ...additions].sort((a, b) =>
     a.date.localeCompare(b.date) || b.significance - a.significance || a.id.localeCompare(b.id)
   )) {
-    if (dates.has(event.date)) continue;
     if (isNearDuplicate(event, [...SEED_EVENTS, ...merged])) continue;
-    dates.add(event.date);
     merged.push(event);
   }
   return merged;
@@ -374,7 +374,7 @@ export async function refreshLibrary(options) {
     approvedCount: approvedAdditions.length,
     rejectedCount: additions.length - approvedAdditions.length,
     additions,
-    total: SEED_EVENTS.length + merged.length,
+    total: EVENT_LIBRARY.length + Math.max(0, merged.length - GENERATED_EVENTS.length),
   };
 }
 
