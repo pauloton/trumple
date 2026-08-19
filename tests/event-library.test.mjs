@@ -12,14 +12,16 @@ import {
   weeklyEventsForSunday,
 } from "../lib/event-library.js";
 
-test("the daily and legacy libraries are genuinely large, dated, unique, and game-safe", () => {
-  assert.ok(EVENT_LIBRARY.length >= 400);
-  assert.ok(LEGACY_EVENTS.length >= 500);
+test("playable libraries contain only curated, dated, unique, game-safe events", () => {
+  assert.ok(EVENT_LIBRARY.length >= 50);
+  assert.ok(LEGACY_EVENTS.length >= 50);
   assert.equal(EVENT_LIBRARY.length, SECOND_TERM_EVENTS.length);
   assert.equal(new Set(EVENT_LIBRARY.map((event) => event.id)).size, EVENT_LIBRARY.length);
   for (const event of EVENT_LIBRARY) {
     assert.deepEqual(validateLibraryEvent(event), [], event.id);
     assert.ok(event.date >= "2025-01-20");
+    assert.ok(!event.id.startsWith("fr-"), `${event.id} is an uncurated Federal Register record`);
+    assert.ok(!/^(?:Authorizes|Imposes|Keeps the .+ emergency|Signs off on)\b/i.test(event.title), `${event.id} reads like raw government paperwork`);
   }
   for (const event of LEGACY_EVENTS) assert.deepEqual(validateLibraryEvent(event), [], event.id);
 });

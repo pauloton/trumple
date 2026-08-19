@@ -212,6 +212,11 @@ function candidateTitle(headline) {
 const DIRECT_ACTION = /^(announces?|appoints?|approves?|backs?|bans?|calls?|cancels?|claims?|confirms?|cuts?|demands?|deploys?|dismisses?|empowers?|extends?|fires?|grants?|heads?|hosts?|launches?|orders?|pardons?|pulls?|refuses?|scales?|says?|shows?|signs?|stumps?|sues?|threatens?|travels?|unveils?|visits?|vows?|wears?)\b/i;
 const NON_EVENT_HEADLINE = /^(analysis|fact[- ]?check|how |inside |opinion|photos?|poll|preview|what |why )/i;
 const LOW_VALUE_ACTION = /^(heads?|stumps?|travels?|visits?|wears?)\b/i;
+// Automatic publication is deliberately conservative. A direct presidential
+// action is not automatically a Trumple. It must also contain a strong signal
+// of spectacle, norm-breaking, personal grievance, absurdity, or unusually
+// grave consequences. Everything else remains a collected candidate.
+const HIGH_CONFIDENCE_TRUMPLE = /\b(?:alcatraz|annex(?:es|ation)?|ballroom|bomb(?:s|ed|ing)?|brag(?:s|ged|ging)?|con job|conspiracy|def(?:y|ies|ied) (?:a )?(?:court|judge)|deport(?:s|ed|ing)? (?:a )?(?:protected|wrong)|dictator|fires? .+ (?:after|because|for)|gaza (?:resort|riviera)|gold (?:card|statue)|greenland|gulf of (?:america|mexico)|his own|hoax|insult(?:s|ed|ing)?|invad(?:e|es|ed|ing)|king|mock(?:s|ed|ing)?|pardons?|punish(?:es|ed|ing)?|rebrand(?:s|ed|ing)?|refuses? to (?:back down|comply|obey)|renam(?:e|es|ed|ing)|retaliat(?:e|es|ed|ing|ion)|revenge|rigged|seiz(?:e|es|ed|ing)|sharpie|shows? off|taunt(?:s|ed|ing)?|third term|threatens?|trump 2028|ufc|white house lawn)\b/i;
 
 function shortText(value, maxLength) {
   if (value.length <= maxLength) return value;
@@ -238,6 +243,7 @@ function automaticTitle(headline) {
   action = action.split(/\s+(?:because|that|while|which|who)\s+/i)[0].trim();
   if (!DIRECT_ACTION.test(action) || LOW_VALUE_ACTION.test(action) || action.includes("?")) return null;
   if (action.length > 50) return null;
+  if (!HIGH_CONFIDENCE_TRUMPLE.test(`${cleaned} ${action}`)) return null;
   return action[0].toUpperCase() + action.slice(1);
 }
 

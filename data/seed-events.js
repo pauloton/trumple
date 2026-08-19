@@ -55,6 +55,5 @@ export const SEED_EVENTS = [
   { id: "2026-06-14-ufc-birthday", date: "2026-06-14", title: "Turns his 80th birthday into a UFC card", hint: "The South Lawn became an octagon for Freedom 250. Cake would have lacked sufficient combat.", significance: 5 },
   { id: "2026-07-17-canada-smoke", date: "2026-07-17", title: "Threatens tariffs on Canadian wildfire smoke", hint: "Smoke crossed the border without paying a dime, so naturally Canada received a tariff threat.", significance: 4 },
   { id: "2026-07-24-trump-2028", date: "2026-07-24", title: "Models a 'Trump 2028' cap at press dinner", hint: "He joked about a constitutionally awkward third term, then provided the matching merchandise.", significance: 4 },
-  { id: "2026-08-12-leavitt-exit", date: "2026-08-12", title: "Announces another press secretary exit", hint: "Karoline Leavitt's departure arrived before the end of year two. The podium survived another turnover.", significance: 3 },
   { id: "2026-08-16-korea-drills", date: "2026-08-16", title: "Cuts Korea drills after praising the North", hint: "He called US exercises hostile and North Korea respectful. Allies received the compliment in reverse.", significance: 4 },
 ];

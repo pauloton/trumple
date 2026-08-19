@@ -26,7 +26,7 @@ test("weekly refresh maps trusted sources and rejects bad candidates", async () 
   ]);
 });
 
-test("automatic curation marks direct Trump actions as publishable", () => {
+test("automatic curation publishes only high-confidence shenanigans", () => {
   const articles = [
     {
       title: "Trump orders a giant gold statue for the Rose Garden",
@@ -55,12 +55,13 @@ test("automatic curation marks direct Trump actions as publishable", () => {
   ];
   const events = curateArticles(articles, { start: "2026-08-09", end: "2026-08-15" });
 
-  assert.equal(events.filter((event) => event.status === "approved").length, 3);
+  assert.equal(events.filter((event) => event.status === "approved").length, 1);
   assert.equal(events.find((event) => event.date === "2026-08-10" && event.status === "approved").title, "Orders a giant gold statue for the Rose Garden");
+  assert.equal(events.find((event) => event.title.includes("private missions")).status, "candidate");
   assert.ok(events.every((event) => event.title.length <= 50));
 });
 
-test("automatic refresh can select multiple distinct events per day", async () => {
+test("automatic refresh collects ordinary policy without publishing it", async () => {
   const result = await refreshLibrary({
     today: "2026-09-04",
     fixture: "tests/fixtures/automatic-refresh.json",
@@ -68,12 +69,8 @@ test("automatic refresh can select multiple distinct events per day", async () =
   });
   const approved = result.additions.filter((event) => event.status === "approved");
 
-  assert.deepEqual(approved.map((event) => event.date), [
-    "2026-09-01",
-    "2026-09-02",
-    "2026-09-03",
-  ]);
-  assert.equal(approved[1].title, "Refuses to back down as court blocks plan");
+  assert.deepEqual(approved.map((event) => event.date), ["2026-09-02"]);
+  assert.equal(approved[0].title, "Refuses to back down as court blocks plan");
 });
 
 test("generated library removes near-duplicate stories", () => {

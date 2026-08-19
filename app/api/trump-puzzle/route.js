@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server.js";
 import {
   CLASSIC_SECOND_TERM_EVENTS,
-  LEGACY_EVENTS as DATED_LEGACY_EVENTS,
   SECOND_TERM_EVENTS as DATED_SECOND_TERM_EVENTS,
   isFirstSaturday,
   weeklyEventsForSunday,
@@ -528,35 +527,6 @@ function buildClassicLegacyPuzzle(dayNum) {
     .map((event, index) => ({ ...event, id: index + 1 }));
 }
 
-function buildLegacyPuzzle(dayNum) {
-  const selected = [];
-  const dates = new Set();
-  const add = (candidates, limit) => {
-    for (const event of candidates) {
-      if (selected.length >= limit) break;
-      const dateKey = event.date || `${event.year}-${event.id}`;
-      if (dates.has(dateKey)) continue;
-      dates.add(dateKey);
-      selected.push({ ...event, year: event.year || Number(event.date.slice(0, 4)) });
-    }
-  };
-
-  const launchEra = POOL.A.filter((event) => event.year === 2016);
-  const firstTermArchive = DATED_LEGACY_EVENTS.filter((event) => event.date < "2021-01-21");
-  const secondTermArchive = DATED_LEGACY_EVENTS.filter((event) => event.date >= "2025-01-20");
-  add(seededShuffle(launchEra, SEASON * 1103 + dayNum), 1);
-  add(seededShuffle(firstTermArchive, SEASON * 1201 + dayNum), 4);
-  add(seededShuffle(secondTermArchive, SEASON * 1291 + dayNum), 7);
-
-  return selected
-    .sort((a, b) => {
-      const aDate = a.date || `${a.year}-06-30`;
-      const bDate = b.date || `${b.year}-06-30`;
-      return aDate.localeCompare(bDate) || String(a.id).localeCompare(String(b.id));
-    })
-    .map((event, index) => ({ ...event, id: index + 1 }));
-}
-
 // ============================================================
 // ROUTE HANDLER
 // ============================================================
@@ -621,9 +591,7 @@ export async function GET(req) {
   // The first Saturday of each month is the long-range 2016-present game.
   if (!events && isFirstSaturday(d)) {
     edition = LEGACY_EDITION;
-    events = dateParam < EXPANDED_ROTATION_START
-      ? buildClassicLegacyPuzzle(dayNum)
-      : buildLegacyPuzzle(dayNum);
+    events = buildClassicLegacyPuzzle(dayNum);
     puzzlePrefix = "l";
   }
 
