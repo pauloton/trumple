@@ -52,12 +52,26 @@ test("automatic curation publishes only high-confidence shenanigans", () => {
       url: "https://theguardian.com/us-news/four",
       seendate: "20260811150000",
     },
+    {
+      title: "Trump shows off an article that credits Biden instead",
+      domain: "theguardian.com",
+      url: "https://theguardian.com/us-news/five",
+      seendate: "20260812150000",
+    },
+    {
+      title: "Trump cuts Korea military drills after praising North Korea",
+      domain: "reuters.com",
+      url: "https://reuters.com/world/us/six",
+      seendate: "20260813150000",
+    },
   ];
   const events = curateArticles(articles, { start: "2026-08-09", end: "2026-08-15" });
 
   assert.equal(events.filter((event) => event.status === "approved").length, 1);
   assert.equal(events.find((event) => event.date === "2026-08-10" && event.status === "approved").title, "Orders a giant gold statue for the Rose Garden");
   assert.equal(events.find((event) => event.title.includes("private missions")).status, "candidate");
+  assert.equal(events.find((event) => event.title.includes("credits Biden")).status, "candidate");
+  assert.equal(events.find((event) => event.title.includes("Korea military drills")).status, "candidate");
   assert.ok(events.every((event) => event.title.length <= 50));
 });
 

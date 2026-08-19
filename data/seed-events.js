@@ -15,7 +15,6 @@ export const SEED_EVENTS = [
   { id: "2025-02-12-kennedy-center", date: "2025-02-12", title: "Installs himself atop the Kennedy Center", hint: "He replaced the board, took the chairman's seat, and completed the most predictable takeover in Washington.", significance: 4 },
   { id: "2025-02-11-ap-ban", date: "2025-02-11", title: "Punishes AP for refusing his Gulf rebrand", hint: "The news agency kept saying Gulf of Mexico. White House access promptly went swimming.", significance: 4 },
   { id: "2025-02-18-ukraine-talks", date: "2025-02-18", title: "Holds Ukraine talks. Ukraine not invited.", hint: "US and Russian officials met in Riyadh. Kyiv received the diplomatic equivalent of left on read.", significance: 5 },
-  { id: "2025-02-20-cartel-designations", date: "2025-02-20", title: "Promotes drug cartels to terrorist groups", hint: "Eight organizations received the designation and a much larger menu of US counterterrorism tools.", significance: 4 },
   { id: "2025-02-21-military-firings", date: "2025-02-21", title: "Fires Joint Chiefs chairman in military purge", hint: "Gen. C.Q. Brown went first. A wider cleanup of military leadership followed.", significance: 5 },
   { id: "2025-02-25-gold-card", date: "2025-02-25", title: "Pitches $5 million visas as 'gold cards'", hint: "Immigration policy got a luxury rebrand and a price tag for people who never check price tags.", significance: 3 },
   { id: "2025-02-26-musk-cabinet", date: "2025-02-26", title: "Lets Musk hijack his first Cabinet meeting", hint: "Musk was not in the Cabinet. This technicality did not stop him from dominating the room.", significance: 4 },
@@ -55,5 +54,4 @@ export const SEED_EVENTS = [
   { id: "2026-06-14-ufc-birthday", date: "2026-06-14", title: "Turns his 80th birthday into a UFC card", hint: "The South Lawn became an octagon for Freedom 250. Cake would have lacked sufficient combat.", significance: 5 },
   { id: "2026-07-17-canada-smoke", date: "2026-07-17", title: "Threatens tariffs on Canadian wildfire smoke", hint: "Smoke crossed the border without paying a dime, so naturally Canada received a tariff threat.", significance: 4 },
   { id: "2026-07-24-trump-2028", date: "2026-07-24", title: "Models a 'Trump 2028' cap at press dinner", hint: "He joked about a constitutionally awkward third term, then provided the matching merchandise.", significance: 4 },
-  { id: "2026-08-16-korea-drills", date: "2026-08-16", title: "Cuts Korea drills after praising the North", hint: "He called US exercises hostile and North Korea respectful. Allies received the compliment in reverse.", significance: 4 },
 ];

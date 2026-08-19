@@ -216,7 +216,7 @@ const LOW_VALUE_ACTION = /^(heads?|stumps?|travels?|visits?|wears?)\b/i;
 // action is not automatically a Trumple. It must also contain a strong signal
 // of spectacle, norm-breaking, personal grievance, absurdity, or unusually
 // grave consequences. Everything else remains a collected candidate.
-const HIGH_CONFIDENCE_TRUMPLE = /\b(?:alcatraz|annex(?:es|ation)?|ballroom|bomb(?:s|ed|ing)?|brag(?:s|ged|ging)?|con job|conspiracy|def(?:y|ies|ied) (?:a )?(?:court|judge)|deport(?:s|ed|ing)? (?:a )?(?:protected|wrong)|dictator|fires? .+ (?:after|because|for)|gaza (?:resort|riviera)|gold (?:card|statue)|greenland|gulf of (?:america|mexico)|his own|hoax|insult(?:s|ed|ing)?|invad(?:e|es|ed|ing)|king|mock(?:s|ed|ing)?|pardons?|punish(?:es|ed|ing)?|rebrand(?:s|ed|ing)?|refuses? to (?:back down|comply|obey)|renam(?:e|es|ed|ing)|retaliat(?:e|es|ed|ing|ion)|revenge|rigged|seiz(?:e|es|ed|ing)|sharpie|shows? off|taunt(?:s|ed|ing)?|third term|threatens?|trump 2028|ufc|white house lawn)\b/i;
+const HIGH_CONFIDENCE_TRUMPLE = /\b(?:alcatraz|annex(?:es|ation)?|ballroom|bomb(?:s|ed|ing)?|brag(?:s|ged|ging)?|con job|conspiracy|def(?:y|ies|ied) (?:a )?(?:court|judge)|deport(?:s|ed|ing)? (?:a )?(?:protected|wrong)|dictator|fires? .+ (?:after|because|for)|gaza (?:resort|riviera)|gold (?:card|statue)|greenland|gulf of (?:america|mexico)|hoax|insult(?:s|ed|ing)?|invad(?:e|es|ed|ing)|king|mock(?:s|ed|ing)?|pardons?|punish(?:es|ed|ing)?|rebrand(?:s|ed|ing)?|refuses? to (?:back down|comply|obey)|renam(?:e|es|ed|ing)|retaliat(?:e|es|ed|ing|ion)|revenge|rigged|seiz(?:e|es|ed|ing)|sharpie|taunt(?:s|ed|ing)?|third term|trump 2028|ufc|white house lawn)\b/i;
 
 function shortText(value, maxLength) {
   if (value.length <= maxLength) return value;
@@ -259,18 +259,20 @@ export function curateArticles(articles, window) {
     const date = articleDate(article);
     if (!date || date < window.start || date > window.end) return;
     const approvedTitle = automaticTitle(article.title);
+    const significance = candidateSignificance(approvedTitle || article.title);
+    const automaticallyApproved = Boolean(approvedTitle) && significance >= 4;
     const title = approvedTitle || candidateTitle(article.title);
     if (!title) return;
     const candidates = byDate.get(date) || [];
     candidates.push({
       date,
       title,
-      hint: approvedTitle
+      hint: automaticallyApproved
         ? shortText(`${sourceName(article)} had to report it: ${article.title.replaceAll("—", "-")}. Yes, really.`, 180)
         : `${sourceName(article)} reported this candidate. It did not pass automatic publication checks.`,
-      significance: candidateSignificance(title),
+      significance,
       source_indexes: [sourceIndex],
-      status: approvedTitle ? "approved" : "candidate",
+      status: automaticallyApproved ? "approved" : "candidate",
     });
     byDate.set(date, candidates);
   });
