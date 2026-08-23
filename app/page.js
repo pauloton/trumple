@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { compactEventHint, formatMonthYear } from "../lib/chain-display.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
+import { losingShareText, winningShareText } from "../lib/share-score.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
 
@@ -35,6 +36,30 @@ function formatTime(ms) {
   const secs = Math.floor((ms % 60000) / 1000);
   const centis = Math.floor((ms % 1000) / 10);
   return { display: mins + ":" + secs.toString().padStart(2,"0") + "." + centis.toString().padStart(2,"0") };
+}
+
+let cardAudioContext = null;
+function playCardTone(kind) {
+  if (typeof window === "undefined") return;
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+  try {
+    cardAudioContext ||= new AudioContext();
+    if (cardAudioContext.state === "suspended") cardAudioContext.resume();
+    const now = cardAudioContext.currentTime;
+    const oscillator = cardAudioContext.createOscillator();
+    const gain = cardAudioContext.createGain();
+    oscillator.type = kind === "pickup" ? "sine" : "triangle";
+    oscillator.frequency.setValueAtTime(kind === "pickup" ? 620 : 480, now);
+    oscillator.frequency.exponentialRampToValueAtTime(kind === "pickup" ? 760 : 360, now + 0.032);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(kind === "pickup" ? 0.018 : 0.014, now + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.038);
+    oscillator.connect(gain);
+    gain.connect(cardAudioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.04);
+  } catch {}
 }
 
 // stars = what you EARN if you solve it on this attempt
@@ -442,21 +467,35 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
   const overIndexRef = useRef(null);
   const listRef = useRef(null);
   const touchData = useRef({ active:false, index:null, startY:0, clone:null, startTop:0 });
+  const desktopDropTonePlayed = useRef(false);
   const eventsRef = useRef(events);
   eventsRef.current = events;
 
-  const handleDragStart = (e, i) => { if (lockedCorrect[events[i]?.id]) return; setDragIndex(i); e.dataTransfer.effectAllowed="move"; };
+  const handleDragStart = (e, i) => {
+    if (lockedCorrect[events[i]?.id]) return;
+    desktopDropTonePlayed.current = false;
+    playCardTone("pickup");
+    setDragIndex(i);
+    e.dataTransfer.effectAllowed="move";
+  };
   const handleDragOver  = (e, i) => { e.preventDefault(); setOverIndex(i); };
   const handleDrop = (e, ti) => {
     e.preventDefault();
+    playCardTone("drop");
+    desktopDropTonePlayed.current = true;
     if (dragIndex !== null && dragIndex !== ti && !lockedCorrect[events[dragIndex]?.id])
       onReorder(reorderAroundLocks(events, dragIndex, ti, lockedCorrect));
     setDragIndex(null); setOverIndex(null);
   };
-  const handleDragEnd = () => { setDragIndex(null); setOverIndex(null); };
+  const handleDragEnd = () => {
+    if (!desktopDropTonePlayed.current) playCardTone("drop");
+    desktopDropTonePlayed.current = false;
+    setDragIndex(null); setOverIndex(null);
+  };
 
   const handleTouchStart = useCallback((e, index) => {
     if (lockedCorrect[eventsRef.current[index]?.id]) return;
+    playCardTone("pickup");
     const touch = e.touches[0]; const target = e.currentTarget;
     const rect = target.getBoundingClientRect();
     const clone = target.cloneNode(true);
@@ -476,6 +515,7 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
       overIndexRef.current = found; setOverIndex(found);
     };
     const onEnd = () => {
+      playCardTone("drop");
       document.removeEventListener("touchmove", onMove);
       document.removeEventListener("touchend", onEnd);
       if (touchData.current.clone?.parentNode) touchData.current.clone.parentNode.removeChild(touchData.current.clone);
@@ -582,16 +622,7 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
         {/* Share your horrible score */}
         <button
           onClick={async () => {
-            const editionLabel = meta && meta.label;
-            const subject = editionLabel ? `the ${editionLabel} of Trumple` : "today's Trumple";
-            const LOSER_MSGS = [
-              `${subject} defeated me. Apparently the news can get worse twice. Think you can do better? https://trumple.app`,
-              `I lost ${subject}. My memory has entered a plea of not guilty. https://trumple.app`,
-              `${subject} beat me. The timeline was hostile and the facts refused to cooperate. https://trumple.app`,
-              `I could not put Trump's chaos in order. In my defense, neither can anyone else. https://trumple.app`,
-              `${subject} won. Democracy remains on a three-attempt limit. https://trumple.app`,
-            ];
-            const msg = LOSER_MSGS[Math.floor(Math.random() * LOSER_MSGS.length)];
+            const msg = losingShareText({ puzzleDate });
             if (navigator.share) {
               try { await navigator.share({ text: msg }); return; } catch (_) {}
             }
@@ -669,79 +700,15 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
   );
 }
 
-function ShareIcons({ time, meta, stars, streak }) {
+function ShareIcons({ time, stars, puzzleDate }) {
   const { display } = formatTime(time);
-  const editionName = meta?.label || meta?.taglines?.[0]?.replace(/\.$/, "") || "Daily";
-  const starLine = "★".repeat(stars) + "☆".repeat(3 - stars);
-  const streakLine = streak > 0 ? `\n🔥 ${streak} day streak` : "";
-  const WIN_MSGS = [
-    `I put Trump's chaos back in order. Somebody had to.`,
-    `Seven Trump stories. One functioning memory. Barely.`,
-    `I survived today's Trump timeline. The facts were not so lucky.`,
-    `I sorted the chaos before the chaos sorted me.`,
-    `Today in democracy: I remembered what happened first.`,
-  ];
-  const [cheekyLine] = useState(() => WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)]);
-  const msg = `TRUMPLE · ${editionName}\n${starLine}  ⏱ ${display}${streakLine}\n${cheekyLine}\nhttps://trumple.app`;
+  const msg = winningShareText({ display, stars, puzzleDate });
 
   async function generateAndShare() {
-    // Build the score card image
-    try {
-      const canvas = document.createElement("canvas");
-      const scale = 2;
-      canvas.width  = 480 * scale;
-      canvas.height = 260 * scale;
-      const ctx = canvas.getContext("2d");
-      ctx.scale(scale, scale);
+    if (navigator.share) {
+      try { await navigator.share({ text: msg }); return; } catch (_) {}
+    }
 
-      ctx.fillStyle = "#0b0f18";
-      ctx.fillRect(0, 0, 480, 260);
-      ctx.strokeStyle = "#2a2e3e";
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(12, 12, 456, 236);
-
-      ctx.fillStyle = "#888";
-      ctx.font = "700 13px monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText(`TRUMPLE · ${editionName.toUpperCase()}`, 240, 42);
-
-      ctx.fillStyle = "#f5c518";
-      ctx.font = "700 24px sans-serif";
-      ctx.fillText(starLine, 240, 77);
-
-      ctx.fillStyle = "#f0f0f5";
-      ctx.font = "700 72px monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(display, 240, 137);
-
-      ctx.fillStyle = "#f0f0f5";
-      ctx.font = "700 16px sans-serif";
-      ctx.fillText(streak > 0 ? `🔥 ${streak} DAY STREAK` : "CHAOS SORTED", 240, 190);
-
-      ctx.fillStyle = "#f5c518";
-      ctx.font = "700 13px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText("trumple.app", 240, 230);
-
-      const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
-      const file = new File([blob], "trumple-score.png", { type: "image/png" });
-
-      // Try sharing with image file (opens OS share sheet → user picks app)
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], text: msg });
-        return;
-      }
-      // Fallback: share text only via share sheet
-      if (navigator.share) {
-        await navigator.share({ text: msg });
-        return;
-      }
-    } catch (_) {}
-
-    // Last resort: copy text to clipboard
     try {
       await navigator.clipboard.writeText(msg);
       alert("Copied to clipboard!");
@@ -843,7 +810,7 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           View the "BEAUTIFUL" Trump Timeline
         </button>
-        <ShareIcons time={time} meta={meta} stars={stars} streak={stats.streak}/>
+        <ShareIcons time={time} stars={stars} puzzleDate={puzzleDate}/>
         <div style={{ marginTop:"0.75rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.62rem", letterSpacing:"0.06em" }}>
           NEXT CHAOS IN {countdown}
         </div>
@@ -877,6 +844,7 @@ export default function TrumpleApp() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const forceReplay = window.location.pathname === "/play" || params.get("challenge") === "1";
     const urlDate = params.get("date");
     const localDate = urlDate || new Date().toLocaleDateString("en-CA");
     fetch("/api/trump-puzzle?date=" + localDate)
@@ -893,7 +861,8 @@ export default function TrumpleApp() {
         const stats = getStats(data.puzzle.date);
         const saved = dailyResultForDate(stats.results, data.puzzle.date);
         setIntroStreak(stats.streak);
-        if (!saved) {
+        if (!saved || forceReplay) {
+          setRestoredResult(null);
           setScreen(SCREENS.INTRO);
           return;
         }
