@@ -8,11 +8,11 @@ Trumple is a daily timeline game. Players drag seven Trump-related events into c
 
 ## Edition schedule
 
-- **Daily:** seven exactly dated events from Trump's second term (January 20, 2025 to today). The draw favors recent additions while retaining variety.
+- **Daily:** seven exactly dated events from Trump's second term (January 20, 2025 to today). While at least five unseen cards remain, each game contains five a player has not encountered in the live rotation, plus up to two controlled returners. The final fresh batch uses every card left before the full library begins its controlled rotation.
 - **Sunday, This Week:** one event from each of the previous seven completed days. If a week is incomplete, Sunday safely falls back to the second-term daily game instead of inventing or replaying news.
 - **First Saturday, Legacy Edition:** seven events spanning 2016 to today.
 
-The second-term library contains 100 hand-reviewed events. New cards are researched through reputable journalism and must pass the Trumple test: normal policy is not enough.
+The second-term library contains 250 hand-reviewed events. New cards are researched through reputable journalism and must pass the Trumple test: normal policy is not enough.
 
 ## Run locally
 
@@ -40,6 +40,7 @@ npm audit
 - `app/api/trump-puzzle/route.js` contains deterministic puzzle selection, the Legacy pool, answer keys, edition metadata, date validation, and CORS response.
 - `data/seed-events.js` is the reviewed starting library.
 - `data/curated-news-events.js` contains the expanded sourced journalism library.
+- `data/expanded-curated-events.js` contains the depth expansion built from original news reporting.
 - `data/generated-events.js` contains the small number of weekly additions that clear the strict automatic filter.
 - `data/presidential-events.js` is a source archive for discovery only. Raw government paperwork never enters the game.
 - `lib/event-library.js` validates and combines both libraries and selects Sunday events.

@@ -475,7 +475,10 @@ function seededShuffle(arr, seed) {
 const SEASON = 2026;
 const EXPANDED_ROTATION_START = "2026-08-19";
 const selectSecondTermRotation = createDailyRotationSelector(DATED_SECOND_TERM_EVENTS, {
-  startDate: "2025-01-20",
+  // The expanded library did not power the live game before this date. Starting
+  // its history here prevents imaginary backfilled plays from making new cards
+  // look familiar on launch day.
+  startDate: EXPANDED_ROTATION_START,
   season: SEASON,
 });
 

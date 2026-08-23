@@ -12,9 +12,10 @@ import {
   weeklyEventsForSunday,
 } from "../lib/event-library.js";
 import { CURATED_NEWS_EVENTS } from "../data/curated-news-events.js";
+import { EXPANDED_CURATED_EVENTS } from "../data/expanded-curated-events.js";
 
 test("playable libraries contain only curated, dated, unique, game-safe events", () => {
-  assert.ok(EVENT_LIBRARY.length >= 100);
+  assert.ok(EVENT_LIBRARY.length >= 250);
   assert.ok(LEGACY_EVENTS.length >= 50);
   assert.equal(EVENT_LIBRARY.length, SECOND_TERM_EVENTS.length);
   assert.equal(new Set(EVENT_LIBRARY.map((event) => event.id)).size, EVENT_LIBRARY.length);
@@ -28,8 +29,9 @@ test("playable libraries contain only curated, dated, unique, game-safe events",
 });
 
 test("the rebuilt news library is sourced and editorially classified", () => {
-  assert.ok(CURATED_NEWS_EVENTS.length >= 40);
-  for (const event of CURATED_NEWS_EVENTS) {
+  const sourcedEditorialEvents = [...CURATED_NEWS_EVENTS, ...EXPANDED_CURATED_EVENTS];
+  assert.ok(sourcedEditorialEvents.length >= 190);
+  for (const event of sourcedEditorialEvents) {
     assert.deepEqual(validateLibraryEvent(event, { requireSources: true }), [], event.id);
     assert.ok(event.trumpleScore >= 3, `${event.id} lacks a strong Trumple score`);
     assert.ok(event.category, `${event.id} lacks an editorial category`);
