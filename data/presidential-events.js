@@ -13804,5 +13804,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-16979",
+    "date": "2026-08-19",
+    "title": "Tweaks imports of Unmanned Aircraft Systems",
+    "hint": "The Federal Register made it official: \"Adjusting Imports of Unmanned Aircraft Systems and Unmanned Aircraft Systems Components Into the US.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16979/adjusting-imports-of-unmanned-aircraft-systems-and-unmanned-aircraft-systems-components-into-the"
+      }
+    ],
+    "status": "approved"
   }
 ];
