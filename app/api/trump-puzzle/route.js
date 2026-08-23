@@ -613,11 +613,16 @@ export async function GET(req) {
     e.id,
     e.year || (e.date ? Number(e.date.slice(0, 4)) : null),
   ]));
+  const dateMap = Object.fromEntries(events.map(e => [
+    e.id,
+    e.date || null,
+  ]));
 
   return NextResponse.json({
     puzzle:       { id: puzzlePrefix + dayNum, dayNum, date: dateParam, events: shuffled },
     answerOrder,
     yearMap,
+    dateMap,
     isWeekly:     edition.key === "weekly",
     isSecondTerm: edition.key === "second-term",
     isLegacy:     edition.key === "legacy",

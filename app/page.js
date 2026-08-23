@@ -1,6 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { compactEventHint, formatMonthYear } from "../lib/chain-display.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
@@ -620,13 +621,15 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
           <button onClick={onBackToResults} style={{ background:"transparent", border:"none", color:C.dim, cursor:"pointer", fontFamily:"'DM Sans', sans-serif", fontSize:"0.85rem" }}>&#8592; {backLabel}</button>
           <div/>
         </div>
-        <div style={{ display:"flex", flexDirection:"column", gap:"clamp(0.25rem,1vh,0.55rem)", flex:1, minHeight:0 }}>
+        <div style={{ display:"flex", flexDirection:"column", gap:"clamp(0.22rem,0.7vh,0.42rem)", flex:1, minHeight:0 }}>
           {events.map(event => (
-            <div key={event.id} style={{ background:C.locked, borderRadius:"12px", padding:"clamp(0.4rem,1.2vh,1rem) clamp(1rem,3vw,1.5rem)", display:"flex", alignItems:"center", justifyContent:"center", flex:1, minHeight:0, overflow:"hidden" }}>
-              <div style={{ textAlign:"center" }}>
-                <div style={{ fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18 }}>{event.title}</div>
-                <div style={{ fontSize:"clamp(0.6rem,1.6vw,0.72rem)", color:"rgba(10,22,40,0.6)", marginTop:"0.15rem", fontFamily:"'JetBrains Mono', monospace" }}>{event.hint}</div>
-                {event.year != null && <div style={{ fontSize:"clamp(0.6rem,1.6vw,0.7rem)", color:"rgba(10,22,40,0.4)", marginTop:"0.08rem", fontFamily:"'JetBrains Mono', monospace", fontWeight:700 }}>{event.year}</div>}
+            <div key={event.id} style={{ background:C.locked, borderRadius:"12px", padding:"clamp(0.38rem,0.8vh,0.62rem) clamp(0.8rem,2.6vw,1.2rem)", display:"flex", alignItems:"center", justifyContent:"center", flex:1, minHeight:0, overflow:"hidden" }}>
+              <div style={{ textAlign:"center", width:"100%", minWidth:0 }}>
+                <div style={{ fontSize:"clamp(0.86rem,2.4vw,1rem)", fontWeight:700, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{event.title}</div>
+                <div style={{ display:"flex", alignItems:"baseline", gap:"0.55rem", marginTop:"clamp(0.12rem,0.35vh,0.24rem)", minWidth:0 }}>
+                  <div title={event.hint} style={{ flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", textAlign:"left", fontSize:"clamp(0.56rem,1.45vw,0.66rem)", color:"rgba(10,22,40,0.58)", fontFamily:"'JetBrains Mono', monospace" }}>{compactEventHint(event.hint)}</div>
+                  <div style={{ flexShrink:0, whiteSpace:"nowrap", fontSize:"clamp(0.58rem,1.5vw,0.68rem)", color:"rgba(10,22,40,0.62)", fontFamily:"'JetBrains Mono', monospace", fontWeight:800, textTransform:"uppercase", letterSpacing:"0.03em" }}>{formatMonthYear(event.date, event.year)}</div>
+                </div>
               </div>
             </div>
           ))}
@@ -856,6 +859,7 @@ export default function TrumpleApp() {
   const [puzzle, setPuzzle]             = useState(null);
   const [answerOrder, setAnswerOrder]   = useState([]);
   const [yearMap, setYearMap]           = useState({});
+  const [dateMap, setDateMap]           = useState({});
   const [isWeekly, setIsWeekly]         = useState(false);
   const [isSecondTerm, setIsSecondTerm] = useState(false);
   const [editionMeta, setEditionMeta]   = useState(null);
@@ -881,6 +885,7 @@ export default function TrumpleApp() {
         setPuzzle(data.puzzle);
         setAnswerOrder(data.answerOrder);
         setYearMap(data.yearMap);
+        setDateMap(data.dateMap || {});
         setIsWeekly(!!data.isWeekly);
         setIsSecondTerm(!!data.isSecondTerm);
         setEditionMeta(data.editionMeta || null);
@@ -895,7 +900,7 @@ export default function TrumpleApp() {
 
         const sorted = data.answerOrder.map(id => {
           const event = data.puzzle.events.find(item => item.id === id);
-          return event ? { ...event, year: data.yearMap[id] } : null;
+          return event ? { ...event, year: data.yearMap[id], date: data.dateMap?.[id] || null } : null;
         }).filter(Boolean);
         setEvents(sorted);
         setRevealEvents(sorted);
@@ -917,7 +922,7 @@ export default function TrumpleApp() {
   }, []);
 
   const handleStart = () => {
-    const evts = puzzle.events.map(e => ({ ...e, year: yearMap[e.id] }));
+    const evts = puzzle.events.map(e => ({ ...e, year: yearMap[e.id], date: dateMap[e.id] || null }));
     const shuffled = shuffleArray(evts);
     setEvents(shuffled); setRevealEvents(shuffled);
     setFailedAttempts(0); setLockedCorrect({}); setWrongCards({});
@@ -925,9 +930,9 @@ export default function TrumpleApp() {
   };
 
   const handleRevealComplete = useCallback(() => {
-    const evts = puzzle.events.map(e => ({ ...e, year: yearMap[e.id] }));
+    const evts = puzzle.events.map(e => ({ ...e, year: yearMap[e.id], date: dateMap[e.id] || null }));
     setEvents(shuffleArray(evts)); setScreen(SCREENS.PLAYING); timer.start();
-  }, [timer, puzzle, yearMap]);
+  }, [timer, puzzle, yearMap, dateMap]);
 
   const handleReorder = useCallback((newEvents) => setEvents(newEvents), []);
 
