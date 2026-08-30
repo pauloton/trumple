@@ -13818,5 +13818,61 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-17294",
+    "date": "2026-08-24",
+    "title": "Signs off on Temporary Suspension of Additional",
+    "hint": "The Federal Register made it official: \"Temporary Suspension of Additional Duties To Offset Canadian Discrimination Against the Commerce of the US.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17294/temporary-suspension-of-additional-duties-to-offset-canadian-discrimination-against-the-commerce-of"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-17372",
+    "date": "2026-08-25",
+    "title": "Signs off on National Space Transportation Policy",
+    "hint": "The Federal Register made it official: \"The National Space Transportation Policy.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/08/25/2026-17372/the-national-space-transportation-policy"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-17374",
+    "date": "2026-08-25",
+    "title": "Keeps Exercise of Certain Authorities running",
+    "hint": "Official paperwork followed under \"Continuation of the Exercise of Certain Authorities Under the Trading With the Enemy Act.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/08/25/2026-17374/continuation-of-the-exercise-of-certain-authorities-under-the-trading-with-the-enemy-act"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-17477",
+    "date": "2026-08-26",
+    "title": "Signs off on Provision of Atomic Information",
+    "hint": "The Federal Register made it official: \"Presidential Determination on Provision of Atomic Information to Finland and Sweden.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17477/presidential-determination-on-provision-of-atomic-information-to-finland-and-sweden"
+      }
+    ],
+    "status": "approved"
   }
 ];
