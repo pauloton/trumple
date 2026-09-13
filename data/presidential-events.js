@@ -13874,5 +13874,145 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-17842",
+    "date": "2026-08-31",
+    "title": "Signs off on Further Ensuring Affordable Beef",
+    "hint": "Official paperwork followed under \"Further Ensuring Affordable Beef for the American Consumer.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17842/further-ensuring-affordable-beef-for-the-american-consumer"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-17843",
+    "date": "2026-08-31",
+    "title": "Signs off on Declaring a National Emergency",
+    "hint": "The Federal Register made it official: \"Declaring a National Emergency To Secure the US Bulk-Power System.\" The fine print joined the plot.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17843/declaring-a-national-emergency-to-secure-the-united-states-bulk-power-system"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18020",
+    "date": "2026-09-02",
+    "title": "Signs off on Honoring the American History of",
+    "hint": "The Federal Register made it official: \"Honoring the American History of the Great Lakes and Renaming Lake Ontario as Lake America.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/02/2026-18020/honoring-the-american-history-of-the-great-lakes-and-renaming-lake-ontario-as-lake-america"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18046",
+    "date": "2026-09-02",
+    "title": "Keeps the Foreign Interference in or Undermining",
+    "hint": "Official paperwork followed under \"Continuation of the National Emergency With Respect to Foreign Interference in or Undermining Public.\" Yes, it came with a presidential seal.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/02/2026-18046/continuation-of-the-national-emergency-with-respect-to-foreign-interference-in-or-undermining-public"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18141",
+    "date": "2026-09-03",
+    "title": "Creates US Space Academy",
+    "hint": "The presidential record calls it \"Establishing the US Space Academy.\" The paperwork arrived with consequences.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/03/2026-18141/establishing-the-united-states-space-academy"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18567",
+    "date": "2026-09-10",
+    "title": "Orders a push for Fair Competition in Livestock",
+    "hint": "The presidential record calls it \"Promoting Fair Competition in Livestock Markets and Expanding Market Access for American Meat Producers.\" The paperwork arrived with consequences.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18567/promoting-fair-competition-in-livestock-markets-and-expanding-market-access-for-american-meat"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18571",
+    "date": "2026-09-10",
+    "title": "Signs off on Supporting America's Ranchers",
+    "hint": "Official paperwork followed under \"Supporting America's Ranchers.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18571/supporting-americas-ranchers"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18589",
+    "date": "2026-09-10",
+    "title": "Keeps the Certain Terrorist Attacks emergency",
+    "hint": "Official paperwork followed under \"Continuation of the National Emergency With Respect to Certain Terrorist Attacks.\" Yes, it came with a presidential seal.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18589/continuation-of-the-national-emergency-with-respect-to-certain-terrorist-attacks"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18738",
+    "date": "2026-09-11",
+    "title": "Signs off on Accelerating Access to Veterans'",
+    "hint": "The presidential record calls it \"Accelerating Access to Veterans' Benefits and Employment Opportunities.\" The paperwork arrived with consequences.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18738/accelerating-access-to-veterans-benefits-and-employment-opportunities"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-18739",
+    "date": "2026-09-11",
+    "title": "Signs off on Adjusting Certain Delegations",
+    "hint": "Official paperwork followed under \"Adjusting Certain Delegations Under the Defense Production Act.\" Yes, it came with a presidential seal.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18739/adjusting-certain-delegations-under-the-defense-production-act"
+      }
+    ],
+    "status": "approved"
   }
 ];
