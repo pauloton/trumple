@@ -123,7 +123,7 @@ const SECOND_TERM_EVENTS = [
 const SECOND_TERM_EDITION = {
   key: "second-term",
   label: null,
-  taglines: ["The Second Term.", "Somehow, More Chaos.", "Put It Back In Order."],
+  taglines: ["Midterms Are Coming.", "The Chaos Is Not Slowing Down.", "Can You Put It In Order?"],
   badgeStyle: null,
   buttonColor: "#B22234",
   bgImageUrl: "/bg/red.jpg",
@@ -134,7 +134,7 @@ const SECOND_TERM_EDITION = {
 const WEEKLY_EDITION = {
   key: "weekly",
   label: "THIS WEEK",
-  taglines: ["Seven Days.", "Seven Fresh Disasters.", "Put Them Back In Order."],
+  taglines: ["One Week.", "Seven Fresh Disasters.", "Fix The Timeline."],
   badgeStyle: "gold",
   buttonColor: "#B22234",
   bgImageUrl: "/weekly-war.png",
