@@ -12,12 +12,13 @@ async function getPuzzle(date) {
 }
 
 function assertPuzzleShape(body, expectedEdition) {
+  const expectedCards = expectedEdition === "second-term" ? 5 : 7;
   assert.equal(body.edition, expectedEdition);
-  assert.equal(body.puzzle.events.length, 7);
-  assert.equal(new Set(body.puzzle.events.map((event) => event.id)).size, 7);
-  assert.equal(body.answerOrder.length, 7);
-  assert.equal(Object.keys(body.yearMap).length, 7);
-  assert.equal(Object.keys(body.dateMap).length, 7);
+  assert.equal(body.puzzle.events.length, expectedCards);
+  assert.equal(new Set(body.puzzle.events.map((event) => event.id)).size, expectedCards);
+  assert.equal(body.answerOrder.length, expectedCards);
+  assert.equal(Object.keys(body.yearMap).length, expectedCards);
+  assert.equal(Object.keys(body.dateMap).length, expectedCards);
   assert.ok(Object.values(body.dateMap).every((date) => date === null || /^\d{4}-\d{2}-\d{2}$/.test(date)));
   assert.deepEqual(
     Object.keys(body.editionMeta).sort(),

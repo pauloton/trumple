@@ -679,7 +679,7 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
         <div style={{ fontSize:"clamp(1.1rem,3.2vw,1.35rem)", fontFamily:"'JetBrains Mono', monospace", color:C.gold, fontWeight:700, letterSpacing:"0.04em" }}>{timeDisplay}</div>
       </div>
       <div style={{ height:"3px", background:C.dimmest, borderRadius:"2px", marginBottom:"0.6rem", flexShrink:0 }}>
-        <div style={{ height:"100%", width:((lockedCount/7)*100)+"%", background:C.red, borderRadius:"2px", transition:"width 0.4s ease" }}/>
+        <div style={{ height:"100%", width:((lockedCount/events.length)*100)+"%", background:C.red, borderRadius:"2px", transition:"width 0.4s ease" }}/>
       </div>
       <DraggableList events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={onReorder}/>
       {!allCorrect && (
@@ -927,7 +927,7 @@ export default function TrumpleApp() {
       else newWrong[ev.id] = true;
     });
 
-    const allCorrect = Object.keys(newLocked).length === 7;
+    const allCorrect = Object.keys(newLocked).length === events.length;
     setLockedCorrect(newLocked); setWrongCards(newWrong);
     setTimeout(() => setWrongCards({}), 800);
 

@@ -507,8 +507,8 @@ function pickClassicSecondTermEvents(dayNum) {
       selected.push(event);
     }
   };
-  addUniqueDates(seededShuffle(recent, SEASON * 777 + dayNum), 4);
-  addUniqueDates(seededShuffle(CLASSIC_SECOND_TERM_EVENTS, SEASON * 997 + dayNum), 7);
+  addUniqueDates(seededShuffle(recent, SEASON * 777 + dayNum), 3);
+  addUniqueDates(seededShuffle(CLASSIC_SECOND_TERM_EVENTS, SEASON * 997 + dayNum), 5);
   return selected
     .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
     .map((event, index) => ({ ...event, id: index + 1 }));
@@ -607,7 +607,7 @@ export async function GET(req) {
   const answerOrder = events.map(e => e.id);
   const shuffled    = seededShuffle(
     events.map(e => ({ id: e.id, title: clean(e.title), hint: clean(e.hint) })),
-    dayNum * 999983 + 7
+    dayNum * 999983 + events.length
   );
   const yearMap = Object.fromEntries(events.map(e => [
     e.id,

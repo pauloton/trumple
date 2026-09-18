@@ -16,14 +16,14 @@ function fixtureEvents() {
   }));
 }
 
-test("daily rotation is deterministic and uses seven orderable dates", () => {
+test("daily rotation is deterministic and uses five orderable dates", () => {
   const first = createDailyRotationSelector(fixtureEvents(), { startDate: "2025-01-20" });
   const second = createDailyRotationSelector(fixtureEvents(), { startDate: "2025-01-20" });
   const puzzle = first("2025-03-01");
 
   assert.deepEqual(puzzle, second("2025-03-01"));
-  assert.equal(puzzle.length, 7);
-  assert.equal(new Set(puzzle.map((event) => event.date)).size, 7);
+  assert.equal(puzzle.length, 5);
+  assert.equal(new Set(puzzle.map((event) => event.date)).size, 5);
 });
 
 test("daily rotation balances fresh and recurring cards without a rigid cooldown", () => {
@@ -89,7 +89,7 @@ test("the final fresh batch uses every remaining unseen card", () => {
   const select = createDailyRotationSelector(editorialEvents, { startDate: "2025-01-20" });
   const seen = new Set();
 
-  for (let day = 0; day < 11; day += 1) {
+  for (let day = 0; day < 14; day += 1) {
     const remainingBeforePuzzle = editorialEvents.length - seen.size;
     const puzzle = select(dateFrom("2025-01-20", day));
     const neverSeen = puzzle.filter((event) => !seen.has(event.id));
