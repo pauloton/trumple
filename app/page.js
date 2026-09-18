@@ -602,10 +602,9 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
 
   return (
     <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b0f18", overflow:"hidden" }}>
-      {/* Backdrop image, bottom-anchored with an animated taunt over the baked-in bubble. */}
+      {/* Backdrop image lands once, then stays still. */}
       <div className="loser-character" style={{ position:"absolute", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:"440px", aspectRatio:"9 / 16", pointerEvents:"none", userSelect:"none" }}>
         <img src={LOSER_IMG} alt="" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", objectPosition:"bottom" }} />
-        <div className="loser-bubble">LOSER!</div>
       </div>
 
       {/* Overlay gradient so text is readable at top */}
@@ -986,8 +985,7 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".intro-tagline { opacity:0; transform:translateY(20px) scale(0.92); text-align:center; text-transform:uppercase; letter-spacing:0.025em; padding:0 1rem; }" +
   ".intro-tagline-visible { animation: urgentLineIn 0.52s cubic-bezier(0.18,0.9,0.28,1.25) both; }" +
   ".intro-cta-ready { animation: ctaUrgency 1.35s ease-in-out infinite; }" +
-  ".loser-bubble { position:absolute; right:22.5%; bottom:8%; width:29%; aspect-ratio:1.7 / 1; display:flex; align-items:center; justify-content:center; background:#fff; color:#050505; border:3px solid #050505; border-radius:22%; font-family:'Space Grotesk',sans-serif; font-size:clamp(1.15rem,6vw,1.72rem); font-weight:900; letter-spacing:-0.04em; transform-origin:8% 65%; box-shadow:0 8px 20px rgba(0,0,0,0.2); animation:loserBubblePop 0.72s cubic-bezier(0.16,1,0.3,1) both, loserBubbleTaunt 1.7s ease-in-out 0.85s infinite; }" +
-  ".loser-bubble::before { content:''; position:absolute; left:-14%; bottom:16%; width:26%; height:30%; background:#fff; border-left:3px solid #050505; border-bottom:3px solid #050505; transform:skewX(42deg) rotate(18deg); z-index:-1; }" +
+  ".loser-character { animation:loserLanding 0.82s cubic-bezier(0.18,0.9,0.25,1.18) both; transform-origin:50% 100%; }" +
   "@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }" +
   "@keyframes celebrate { 0%{transform:scale(1)} 25%{transform:scale(1.03) rotate(-0.5deg)} 50%{transform:scale(1.05) rotate(0.5deg)} 75%{transform:scale(1.03) rotate(-0.3deg)} 100%{transform:scale(1)} }" +
   "@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }" +
@@ -997,6 +995,5 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   "@keyframes logoLock { 0%{transform:scale(1)} 35%{transform:scale(1.13) rotate(-1deg)} 62%{transform:scale(0.96) rotate(0.5deg)} 100%{transform:scale(1)} }" +
   "@keyframes urgentLineIn { 0%{opacity:0;transform:translateY(20px) scale(0.92)} 65%{opacity:1;transform:translateY(-3px) scale(1.035)} 100%{opacity:1;transform:translateY(0) scale(1)} }" +
   "@keyframes ctaUrgency { 0%,100%{box-shadow:0 4px 24px rgba(178,34,52,0.5)} 50%{box-shadow:0 4px 36px rgba(245,197,24,0.72),0 0 0 5px rgba(245,197,24,0.12)} }" +
-  "@keyframes loserBubblePop { 0%{opacity:0;transform:scale(0.15) rotate(-14deg)} 58%{opacity:1;transform:scale(1.16) rotate(5deg)} 78%{transform:scale(0.94) rotate(-2deg)} 100%{opacity:1;transform:scale(1) rotate(0)} }" +
-  "@keyframes loserBubbleTaunt { 0%,100%{transform:scale(1) rotate(0)} 42%{transform:scale(1.08) rotate(-2deg)} 65%{transform:scale(1.03) rotate(2deg)} }" +
-  "@media (prefers-reduced-motion: reduce) { .intro-overlay,.intro-logo-solved,.intro-tagline-visible,.intro-cta-ready,.loser-bubble { animation:none !important; } .intro-tagline-visible { opacity:1; transform:none; } }";
+  "@keyframes loserLanding { 0%{opacity:0;transform:translateX(-50%) translateY(-85vh) rotate(-5deg) scale(0.96)} 68%{opacity:1;transform:translateX(-50%) translateY(2.5%) rotate(1.5deg) scale(1.02,0.97)} 84%{transform:translateX(-50%) translateY(-1.2%) rotate(-0.7deg) scale(0.995,1.01)} 100%{opacity:1;transform:translateX(-50%) translateY(0) rotate(0) scale(1)} }" +
+  "@media (prefers-reduced-motion: reduce) { .intro-overlay,.intro-logo-solved,.intro-tagline-visible,.intro-cta-ready,.loser-character { animation:none !important; } .intro-tagline-visible { opacity:1; transform:none; } }";
