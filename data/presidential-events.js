@@ -14014,5 +14014,47 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-18838",
+    "date": "2026-09-14",
+    "title": "Reworks Scope of Products of Canada Subject to",
+    "hint": "Official paperwork followed under \"Modifying the Scope of Products of Canada Subject to the Additional Duties Imposed To Offset Canadian.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/14/2026-18838/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-19053",
+    "date": "2026-09-16",
+    "title": "Keeps the Persons Who Commit, Threaten To Commit",
+    "hint": "The presidential record calls it \"Continuation of the National Emergency With Respect to Persons Who Commit, Threaten To Commit, or Support.\" The paperwork arrived with consequences.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/16/2026-19053/continuation-of-the-national-emergency-with-respect-to-persons-who-commit-threaten-to-commit-or"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-19251",
+    "date": "2026-09-18",
+    "title": "Signs off on Major Drug Transit or Major Illicit",
+    "hint": "The presidential record calls it \"Presidential Determination on Major Drug Transit or Major Illicit Drug Producing Countries for Fiscal Year.\" The paperwork arrived with consequences.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/18/2026-19251/presidential-determination-on-major-drug-transit-or-major-illicit-drug-producing-countries-for"
+      }
+    ],
+    "status": "approved"
   }
 ];
