@@ -1,6 +1,6 @@
 # Trumple
 
-Trumple is a daily timeline game. Players drag seven Trump-related events into chronological order, lock in their answer, and try to solve the puzzle in as few attempts and as little time as possible.
+Trumple is a daily timeline game. Players drag Trump-related events into chronological order, lock in their answer, and try to solve the puzzle in as few attempts and as little time as possible.
 
 - Live game: https://www.trumple.app/
 - Production repository: https://github.com/pauloton/trumple
@@ -8,11 +8,11 @@ Trumple is a daily timeline game. Players drag seven Trump-related events into c
 
 ## Edition schedule
 
-- **Daily:** seven exactly dated events from Trump's second term (January 20, 2025 to today). While at least five unseen cards remain, each game contains five a player has not encountered in the live rotation, plus up to two controlled returners. The final fresh batch uses every card left before the full library begins its controlled rotation.
-- **Sunday, This Week:** one event from each of the previous seven completed days. If a week is incomplete, Sunday safely falls back to the second-term daily game instead of inventing or replaying news.
-- **First Saturday, Legacy Edition:** seven events spanning 2016 to today.
+- **Daily:** five exactly dated events from Trump's second term (January 20, 2025 to today). The rotation targets four unseen cards while supply allows, avoids consecutive-day repeats, and caps appearances at twice in seven days. Freshness targets depend on available eligible content.
+- **Sunday, This Week:** seven events strictly from the preceding Sunday through Saturday. Prefer a spread of dates, then fill from busy days. Cards from the same day are interchangeable. No older backfill or daily fallback. If content is missing, return an explicit, uncached `WEEKLY_NOT_READY` response and a retry screen.
+- **First Saturday, Legacy Edition:** five events spanning 2016 to today, drawn from three rotating historical eras and two second-term events.
 
-The second-term library contains 250 hand-reviewed events. New cards are researched through reputable journalism and must pass the Trumple test: normal policy is not enough.
+The second-term library contains over 250 reviewed events. New cards are researched through reputable journalism and must pass the Trumple test: normal policy is not enough.
 
 ## Run locally
 
@@ -41,10 +41,12 @@ npm audit
 - `data/seed-events.js` is the reviewed starting library.
 - `data/curated-news-events.js` contains the expanded sourced journalism library.
 - `data/expanded-curated-events.js` contains the depth expansion built from original news reporting.
+- `data/weekly-curated-events.js` contains sourced, date-verified weekly editorial additions.
 - `data/generated-events.js` contains the small number of weekly additions that clear the strict automatic filter.
 - `data/presidential-events.js` is a source archive for discovery only. Raw government paperwork never enters the game.
 - `lib/event-library.js` validates and combines both libraries and selects Sunday events.
 - `scripts/refresh-event-library.mjs` collects and curates weekly candidates.
+- `scripts/check-weekly-coverage.mjs` fails when a specified Sunday lacks seven eligible stories.
 - `.github/workflows/refresh-event-library.yml` runs the refresh each weekend and publishes additions that pass every automatic check.
 - `tests/` protects the game, schedule, library, and refresh contracts.
 - `public/` contains the edition backgrounds and game artwork.
@@ -58,12 +60,19 @@ At 02:00 UTC every Sunday (Saturday evening in US time zones), GitHub Actions:
 1. Collects up to 250 recent English-language Trump articles through GDELT, with Google News RSS as a rate-limit and outage fallback.
 2. Keeps reporting from an allowlist of established news and primary-government domains.
 3. Looks for specific spectacle, retaliation, absurdity, norm-breaking, dangerous chaos, or an obvious own goal. A direct presidential action alone does not qualify.
-4. Selects at most one high-confidence Trumple per calendar day.
+4. Selects at most three high-confidence Trumples per calendar day.
 5. Rejects normal policy, analysis, opinion, indirect stories, vague or oversized headlines, invalid dates, malformed events, untrusted sources, and likely duplicates.
 6. Runs the complete game test and production-build check.
 7. Commits approved additions directly to `main`, which refreshes the playable library and deploys through Vercel.
+8. Checks actual Sunday coverage. Missing stories fail the workflow, even if the source archive updated successfully.
 
-The workflow needs no purchased API key and no weekly human approval. Stories that fail any automatic check are discarded. If fewer than seven calendar dates qualify in a week, Sunday uses the regular second-term game; daily games continue normally.
+The headline collector needs no purchased API key, but cannot reliably verify the actual event date from publication timestamps alone. Such additions cannot fill Sunday until date-verified. A separate Codex follow-up in the web task researches and verifies the coming Sunday's stories every Saturday at 6 p.m. America/Los_Angeles. It adds editorial content, runs tests and the coverage check, publishes passing changes, and reports blockers. This local follow-up requires the machine and app to be available; GitHub collection and coverage checks run independently in the cloud. Neither process guarantees source availability. Never cover a shortfall with old events or ordinary policy.
+
+Check a specific Sunday before publishing:
+
+```bash
+npm run library:coverage -- --date 2026-09-20
+```
 
 To rehearse the refresh without network access or changing the library:
 
@@ -80,7 +89,7 @@ Before publishing an event:
 3. Do not use em dashes.
 4. Keep Trump as the focus of the event.
 5. Use a concise, sardonic hint without inventing details.
-6. Keep Sunday fair by publishing no more than one automatic event per calendar day.
+6. Verify the event date separately from the article's date. Multiple distinct same-day stories are allowed; either order must be accepted by the game.
 7. Reject a card if a reasonable reader could say, "That is just ordinary policy."
 8. Periodically audit automatic additions and tighten the filters if a weak pattern appears.
 
@@ -89,7 +98,7 @@ Before publishing an event:
 Changes pushed to `main` are deployed by Vercel. Always run `npm run check` and `npm audit` first, then verify these endpoints after deployment:
 
 - `/api/trump-puzzle?date=2026-08-17` (second-term daily)
-- `/api/trump-puzzle?date=2026-08-16` (safe Sunday fallback when the prior week is incomplete)
+- `/api/trump-puzzle?date=2026-09-20` (Sunday, seven stories dated September 13-19)
 - `/api/trump-puzzle?date=2026-08-01` (Legacy Edition)
 
 All successful API responses should include complete `editionMeta` data and the `Access-Control-Allow-Origin: *` header needed by the native client.

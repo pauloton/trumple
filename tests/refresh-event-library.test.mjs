@@ -85,6 +85,7 @@ test("automatic refresh collects ordinary policy without publishing it", async (
 
   assert.deepEqual(approved.map((event) => event.date), ["2026-09-02"]);
   assert.equal(approved[0].title, "Refuses to back down as court blocks plan");
+  assert.equal(approved[0].dateBasis, "article-publication");
 });
 
 test("generated library removes near-duplicate stories", () => {

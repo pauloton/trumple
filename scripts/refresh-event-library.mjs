@@ -266,6 +266,7 @@ export function curateArticles(articles, window) {
     const candidates = byDate.get(date) || [];
     candidates.push({
       date,
+      dateBasis: "article-publication",
       title,
       hint: automaticallyApproved
         ? shortText(`${sourceName(article)} had to report it: ${article.title.replaceAll("—", "-")}. Yes, really.`, 180)
@@ -317,6 +318,7 @@ function materializeEvents(rawEvents, articles, window) {
     const event = {
       id: `${raw.date}-${slugify(raw.title)}`,
       date: raw.date,
+      dateBasis: raw.dateBasis || "editorial-review",
       title: raw.title.replaceAll("—", "-").trim(),
       hint: raw.hint.replaceAll("—", "-").trim(),
       significance: raw.significance,

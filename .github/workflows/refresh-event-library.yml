@@ -56,5 +56,17 @@ jobs:
           git config user.name "trumple-editor-bot"
           git config user.email "trumple-editor-bot@users.noreply.github.com"
           git add data/generated-events.js data/presidential-events.js
-          git commit -m "Publish verified weekly events"
+          git commit -m "Refresh Trumple event library and source archive"
           git push origin HEAD:main
+
+      # A successful archive update does not mean Sunday's puzzle is ready.
+      # Run after publication so a shortfall never discards useful additions.
+      - name: Verify Sunday has seven past-week stories
+        env:
+          REQUESTED_TODAY: ${{ inputs.today }}
+        run: |
+          if [ -n "$REQUESTED_TODAY" ]; then
+            npm run library:coverage -- --date "$REQUESTED_TODAY"
+          else
+            npm run library:coverage
+          fi

@@ -2,6 +2,7 @@
 export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatMonthYear } from "../lib/chain-display.js";
+import { isCorrectPosition } from "../lib/answer-check.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
 import { losingShareText, winningShareText } from "../lib/share-score.js";
 
@@ -291,12 +292,13 @@ function LoadingScreen() {
   );
 }
 
-function ErrorScreen() {
+function ErrorScreen({ weeklyNotReady = false }) {
   return (
     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:"100dvh", padding:"2rem", textAlign:"center" }}>
       <div style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:900, fontSize:"2.2rem", color:C.text }}>TRUMPLE</div>
-      <div style={{ marginTop:"1.5rem", color:C.dim, fontSize:"0.9rem" }}>No puzzle today</div>
-      <div style={{ marginTop:"0.5rem", color:C.dimmer, fontSize:"0.75rem" }}>Check back tomorrow!</div>
+      <div style={{ marginTop:"1.5rem", color:C.dim, fontSize:"0.9rem" }}>{weeklyNotReady ? "This week's chaos is still being sorted." : "Couldn't load the puzzle."}</div>
+      <div style={{ marginTop:"0.5rem", color:C.dimmer, fontSize:"0.75rem" }}>{weeklyNotReady ? "Fresh stories only. Please try again shortly." : "Check your connection and try again."}</div>
+      <button onClick={() => window.location.reload()} style={{ marginTop:"1.5rem", padding:"0.8rem 1.4rem", background:C.red, color:C.text, border:0, borderRadius:"10px", cursor:"pointer" }}>Try again</button>
     </div>
   );
 }
@@ -825,6 +827,7 @@ const SCREENS = { LOADING:"loading", ERROR:"error", INTRO:"intro", REVEAL:"revea
 
 export default function TrumpleApp() {
   const [screen, setScreen]             = useState(SCREENS.LOADING);
+  const [weeklyNotReady, setWeeklyNotReady] = useState(false);
   const [puzzle, setPuzzle]             = useState(null);
   const [answerOrder, setAnswerOrder]   = useState([]);
   const [yearMap, setYearMap]           = useState({});
@@ -856,7 +859,14 @@ export default function TrumpleApp() {
     const urlDate = params.get("date");
     const localDate = urlDate || new Date().toLocaleDateString("en-CA");
     fetch("/api/trump-puzzle?date=" + localDate)
-      .then(r => { if (!r.ok) throw new Error("No puzzle"); return r.json(); })
+      .then(async r => {
+        const data = await r.json();
+        if (!r.ok) {
+          setWeeklyNotReady(data.code === "WEEKLY_NOT_READY");
+          throw new Error(data.error || "No puzzle");
+        }
+        return data;
+      })
       .then(data => {
         setPuzzle(data.puzzle);
         setAnswerOrder(data.answerOrder);
@@ -923,7 +933,7 @@ export default function TrumpleApp() {
 
     events.forEach((ev, i) => {
       if (lockedCorrect[ev.id]) return;
-      if (ev.id === answerOrder[i]) { newLocked[ev.id] = true; anyNewCorrect = true; }
+      if (isCorrectPosition(ev.id, answerOrder[i], dateMap, isWeekly)) { newLocked[ev.id] = true; anyNewCorrect = true; }
       else newWrong[ev.id] = true;
     });
 
@@ -963,7 +973,7 @@ export default function TrumpleApp() {
     <div style={{ background:C.bg, minHeight:"100dvh", color:C.text, fontFamily:"'DM Sans', sans-serif", overflow:"hidden" }}>
       <style>{globalStyles}</style>
       {screen === SCREENS.LOADING    && <LoadingScreen/>}
-      {screen === SCREENS.ERROR      && <ErrorScreen/>}
+      {screen === SCREENS.ERROR      && <ErrorScreen weeklyNotReady={weeklyNotReady}/>}
       {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta} streak={introStreak}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}

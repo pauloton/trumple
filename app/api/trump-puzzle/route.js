@@ -3,14 +3,14 @@ import {
   CLASSIC_SECOND_TERM_EVENTS,
   SECOND_TERM_EVENTS as DATED_SECOND_TERM_EVENTS,
   isFirstSaturday,
+  previousWeekRange,
   weeklyEventsForSunday,
 } from "../../../lib/event-library.js";
 import { createDailyRotationSelector } from "../../../lib/daily-rotation.js";
 
 // ============================================================
 // EVENT POOL, spanning 2015–2025
-// Grouped into 6 eras. Each week draws 1 from each of the
-// first 5 eras, and 2 from Era F (2025) = 7 total.
+// Legacy draws from three rotating historical eras and two second-term events.
 //
 // TO ADD AN EVENT: append to the right era. Done.
 //
@@ -21,17 +21,6 @@ import { createDailyRotationSelector } from "../../../lib/daily-rotation.js";
 //   • Mix: policy events, gaffes, scandals and personal moments.
 //   • Test: count the chars before you commit.
 // ============================================================
-// ============================================================
-// WEEKLY EVENTS — updated every Saturday for Sunday's edition
-// Events must be in chronological order (earliest = id 1).
-// Same rules as POOL: max 50 chars, no em dashes, punchy.
-// To skip weekly edition on a given Sunday, set to null.
-// ============================================================
-// Disabled while the weekly editorial workflow is paused. Leaving this null
-// makes Sundays fall back to the normal daily puzzle instead of replaying stale
-// stories. Restore exactly 7 freshly verified events to re-enable the edition.
-const WEEKLY_EVENTS = null;
-
 // ============================================================
 // SECOND TERM DRAFT EVENTS — currently paused
 // This recovered pool needs a source-and-date audit before it can safely power
@@ -514,11 +503,16 @@ function pickClassicSecondTermEvents(dayNum) {
     .map((event, index) => ({ ...event, id: index + 1 }));
 }
 
-function buildClassicLegacyPuzzle(dayNum) {
+function buildClassicLegacyPuzzle(dayNum, dateText) {
   const historicalPools = [POOL.A, POOL.B, POOL.C, POOL.D, POOL.E]
     .map((pool) => pool.filter((event) => event.year >= 2016));
-  const historical = historicalPools.map((pool, index) => pickForDay(pool, index + 1, dayNum));
-  const current = seededShuffle(CLASSIC_SECOND_TERM_EVENTS, SEASON * 1291 + dayNum)
+  const historical = seededShuffle(historicalPools, SEASON * 1289 + dayNum)
+    .slice(0, 3)
+    .map((pool, index) => pickForDay(pool, index + 1, dayNum));
+  const currentByDate = new Map(seededShuffle(
+    DATED_SECOND_TERM_EVENTS.filter(event => event.date <= dateText), SEASON * 1291 + dayNum
+  ).map(event => [event.date, event]));
+  const current = [...currentByDate.values()]
     .slice(0, 2)
     .map((event) => ({ ...event, year: Number(event.date.slice(0, 4)) }));
   return [...historical, ...current]
@@ -576,25 +570,25 @@ export async function GET(req) {
   let events;
   let puzzlePrefix = "d";
 
-  // Sundays use the previous seven completed calendar days. Requiring one
-  // event per day keeps the answer fair: no invisible ordering within a date.
+  // Sunday means last week, never an older daily puzzle wearing a weekly label.
   if (d.getUTCDay() === 0) {
-    const weeklyEvents = weeklyEventsForSunday(
-      d,
-      DATED_SECOND_TERM_EVENTS,
-      { backfillDays: dateParam >= EXPANDED_ROTATION_START ? 3 : 0 }
-    );
-    if (weeklyEvents.length === 7) {
-      edition = WEEKLY_EDITION;
-      events = weeklyEvents.map((event, index) => ({ ...event, id: index + 1 }));
-      puzzlePrefix = "w";
+    const weeklyEvents = weeklyEventsForSunday(d, DATED_SECOND_TERM_EVENTS);
+    if (weeklyEvents.length < 7) {
+      return NextResponse.json({
+        error: "This week's puzzle isn't ready yet. Please try again shortly.",
+        code: "WEEKLY_NOT_READY",
+        week: previousWeekRange(d),
+      }, { status: 503, headers: { ...CORS_HEADERS, "Cache-Control": "no-store", "Retry-After": "300" } });
     }
+    edition = WEEKLY_EDITION;
+    events = weeklyEvents.map((event, index) => ({ ...event, id: index + 1 }));
+    puzzlePrefix = "w";
   }
 
   // The first Saturday of each month is the long-range 2016-present game.
   if (!events && isFirstSaturday(d)) {
     edition = LEGACY_EDITION;
-    events = buildClassicLegacyPuzzle(dayNum);
+    events = buildClassicLegacyPuzzle(dayNum, dateParam);
     puzzlePrefix = "l";
   }
 

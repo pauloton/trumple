@@ -13,6 +13,7 @@ import {
 } from "../lib/event-library.js";
 import { CURATED_NEWS_EVENTS } from "../data/curated-news-events.js";
 import { EXPANDED_CURATED_EVENTS } from "../data/expanded-curated-events.js";
+import { WEEKLY_CURATED_EVENTS } from "../data/weekly-curated-events.js";
 
 test("playable libraries contain only curated, dated, unique, game-safe events", () => {
   assert.ok(EVENT_LIBRARY.length >= 250);
@@ -29,7 +30,7 @@ test("playable libraries contain only curated, dated, unique, game-safe events",
 });
 
 test("the rebuilt news library is sourced and editorially classified", () => {
-  const sourcedEditorialEvents = [...CURATED_NEWS_EVENTS, ...EXPANDED_CURATED_EVENTS];
+  const sourcedEditorialEvents = [...CURATED_NEWS_EVENTS, ...EXPANDED_CURATED_EVENTS, ...WEEKLY_CURATED_EVENTS];
   assert.ok(sourcedEditorialEvents.length >= 190);
   for (const event of sourcedEditorialEvents) {
     assert.deepEqual(validateLibraryEvent(event, { requireSources: true }), [], event.id);
@@ -62,7 +63,7 @@ test("weekly selection chooses one strong event per day in order", () => {
   assert.equal(selected[3].id, "event-3");
 });
 
-test("weekly selection can backfill a quiet day without making tied dates unfair", () => {
+test("weekly selection never backfills from outside the previous week", () => {
   const events = Array.from({ length: 7 }, (_, index) => ({
     id: `backfill-${index}`,
     date: `2026-08-${String(index + 6).padStart(2, "0")}`,
@@ -71,9 +72,29 @@ test("weekly selection can backfill a quiet day without making tied dates unfair
     significance: 3,
   }));
   const selected = weeklyEventsForSunday(new Date("2026-08-16T12:00:00Z"), events, { backfillDays: 3 });
+  assert.equal(selected.length, 4);
+  assert.equal(selected[0].date, "2026-08-09");
+});
+
+test("weekly selection fills quiet days from busy days and excludes Sunday itself", () => {
+  const events = Array.from({ length: 9 }, (_, index) => ({
+    id: `busy-${index}`, date: index < 4 ? "2026-08-10" : "2026-08-14", significance: 3,
+  }));
+  events.push({ id: "future", date: "2026-08-16", significance: 5 });
+  events.push({ id: "unapproved", date: "2026-08-11", significance: 5, status: "candidate" });
+  events.push({ id: "publication-date-only", date: "2026-08-12", significance: 5, dateBasis: "article-publication" });
+  const sunday = new Date("2026-08-16T12:00:00Z");
+  const selected = weeklyEventsForSunday(sunday, events);
   assert.equal(selected.length, 7);
-  assert.equal(selected[0].date, "2026-08-06");
-  assert.equal(new Set(selected.map((event) => event.date)).size, 7);
+  assert.equal(new Set(selected.map(e => e.id)).size, 7);
+  assert.deepEqual([...new Set(selected.map(e => e.date))], ["2026-08-10", "2026-08-14"]);
+  assert.deepEqual(selected, weeklyEventsForSunday(sunday, [...events].reverse()));
+  assert.deepEqual(weeklyEventsForSunday(new Date("2026-08-17T12:00:00Z"), events), []);
+});
+
+test("weekly ranges handle year and leap-month boundaries", () => {
+  assert.deepEqual(previousWeekRange(new Date("2027-01-03T12:00:00Z")), { start: "2026-12-27", end: "2027-01-02" });
+  assert.deepEqual(previousWeekRange(new Date("2028-03-05T12:00:00Z")), { start: "2028-02-27", end: "2028-03-04" });
 });
 
 test("legacy edition trigger means only the first Saturday", () => {
