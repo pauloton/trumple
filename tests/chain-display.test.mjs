@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { compactEventHint, formatMonthYear } from "../lib/chain-display.js";
+import { compactEventHint, formatMonthYear, formatEventDate } from "../lib/chain-display.js";
+
+test("answer dates distinguish same-month cards without inventing dates", () => {
+  assert.equal(formatEventDate("2026-09-14"),"14 Sep 2026");
+  assert.equal(formatEventDate("2026-09-16"),"16 Sep 2026");
+  assert.equal(formatEventDate(null,2016),"2016 · exact date unverified");
+  assert.equal(formatEventDate("2026-02-30"),"Date unverified");
+});
 
 test("chain dates show month and year", () => {
   assert.equal(formatMonthYear("2025-10-18", 2025), "October 2025");

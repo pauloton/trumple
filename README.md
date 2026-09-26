@@ -8,9 +8,11 @@ Trumple is a daily timeline game. Players drag Trump-related events into chronol
 
 ## Edition schedule
 
-- **Daily:** five exactly dated events from Trump's second term (January 20, 2025 to today). The rotation targets four unseen cards while supply allows, avoids consecutive-day repeats, and caps appearances at twice in seven days. Freshness targets depend on available eligible content.
+- **Daily:** five exactly dated events from Trump's second term (January 20, 2025 to today). Prefer one eligible story from the last 14 days, target four unseen cards while supply allows, avoid consecutive-day repeats, and cap appearances at twice in seven days. Repeat history uses actual published cards, including Sundays. Freshness targets depend on eligible content.
 - **Sunday, This Week:** seven events strictly from the preceding Sunday through Saturday. Prefer a spread of dates, then fill from busy days. Cards from the same day are interchangeable. No older backfill or daily fallback. If content is missing, return an explicit, uncached `WEEKLY_NOT_READY` response and a retry screen.
-- **First Saturday, Legacy Edition:** five events spanning 2016 to today, drawn from three rotating historical eras and two second-term events.
+- **First Saturday, Legacy Edition:** five events spanning 2016 to today, drawn from three reviewed historical eras and two second-term events. New selections only use exact-date, sourced history. Older snapshots keep their original cards; dates not yet verified are labelled honestly.
+
+Every player uses the Pacific calendar date. The countdown handles daylight-saving changes. A new-day notice lets an already-open game finish without silently replacing its cards. Future puzzles are not publicly playable.
 
 The second-term library contains over 250 reviewed events. New cards are researched through reputable journalism and must pass the Trumple test: normal policy is not enough.
 
@@ -42,31 +44,52 @@ npm audit
 - `data/curated-news-events.js` contains the expanded sourced journalism library.
 - `data/expanded-curated-events.js` contains the depth expansion built from original news reporting.
 - `data/weekly-curated-events.js` contains sourced, date-verified weekly editorial additions.
+- `data/verified-legacy-events.js` contains the reverified historical subset used by new Legacy puzzles.
+- `data/published-puzzles.json` is the append-only archive of published cards and answer orders. Content refreshes must preserve live responses before editing the library.
 - `data/generated-events.js` contains the small number of weekly additions that clear the strict automatic filter.
 - `data/presidential-events.js` is a source archive for discovery only. Raw government paperwork never enters the game.
 - `lib/event-library.js` validates and combines both libraries and selects Sunday events.
 - `scripts/refresh-event-library.mjs` collects and curates weekly candidates.
 - `scripts/check-weekly-coverage.mjs` fails when a specified Sunday lacks seven eligible stories.
-- `.github/workflows/refresh-event-library.yml` runs the refresh each weekend and publishes additions that pass every automatic check.
+- `.github/workflows/refresh-event-library.yml` schedules daily collection at midnight Pacific, with separate UTC triggers and a daylight-saving guard.
 - `tests/` protects the game, schedule, library, and refresh contracts.
 - `public/` contains the edition backgrounds and game artwork.
 
 Player statistics remain in the browser under the `trumple_*` local-storage keys. There is no account or server-side player database.
 
-## Automated weekly library
+## Automated daily library
 
-At 02:00 UTC every Sunday (Saturday evening in US time zones), GitHub Actions:
+At midnight Pacific, GitHub Actions is scheduled to:
 
 1. Collects up to 250 recent English-language Trump articles through GDELT, with Google News RSS as a rate-limit and outage fallback.
 2. Keeps reporting from an allowlist of established news and primary-government domains.
 3. Looks for specific spectacle, retaliation, absurdity, norm-breaking, dangerous chaos, or an obvious own goal. A direct presidential action alone does not qualify.
 4. Selects at most three high-confidence Trumples per calendar day.
 5. Rejects normal policy, analysis, opinion, indirect stories, vague or oversized headlines, invalid dates, malformed events, untrusted sources, and likely duplicates.
-6. Runs the complete game test and production-build check.
+6. Preserve published puzzles before collection, snapshot newly ready games afterwards, and run the full test, build, and release checks.
 7. Commits approved additions directly to `main`, which refreshes the playable library and deploys through Vercel.
-8. Checks actual Sunday coverage. Missing stories fail the workflow, even if the source archive updated successfully.
+8. Verify the live API after deployment and check Sunday readiness. An unfinished week is a warning; a completed Sunday with missing stories fails the workflow.
 
-The headline collector needs no purchased API key, but cannot reliably verify the actual event date from publication timestamps alone. Such additions cannot fill Sunday until date-verified. A separate Codex follow-up in the web task researches and verifies the coming Sunday's stories every Saturday at 6 p.m. America/Los_Angeles. It adds editorial content, runs tests and the coverage check, publishes passing changes, and reports blockers. This local follow-up requires the machine and app to be available; GitHub collection and coverage checks run independently in the cloud. Neither process guarantees source availability. Never cover a shortfall with old events or ordinary policy.
+The headline collector needs no purchased API key, but cannot reliably verify the actual event date from publication timestamps alone. Such additions cannot fill Sunday until date-verified. The existing Codex follow-up researches and verifies stories daily at midnight America/Los_Angeles. It preserves the live puzzle archive before editing, checks and publishes verified content, then verifies deployment. This local follow-up requires the machine and app to be available; GitHub collection runs independently in the cloud. Scheduled runs can be delayed and neither process guarantees source availability. Never cover a shortfall with old events or ordinary policy.
+
+Editorial refresh sequence, starting from a clean, up-to-date `main`:
+
+```bash
+npm run library:freeze
+# Research and edit verified content only after preservation succeeds.
+npm run library:freeze -- --local
+npm run library:readiness
+npm run check
+npm run library:release-check
+```
+
+The local snapshot step only adds dates without a saved puzzle, such as a Sunday that previously returned `WEEKLY_NOT_READY`. Never replace a saved entry. Corrections may enrich sources and missing dates without changing card identities or answer order. Commit the archive together with content. After pushing, run `npm run library:verify-live`.
+
+The initial archive preserves 533 successful historical responses through September 26, 2026. The 29 available games in the August 26-September 26 review window were also compared against production. Previously unavailable Sundays are not invented or silently replaced.
+
+## Interaction and accessibility
+
+Five-card games use the same compact card dimensions as seven-card games. Arrow buttons and keyboard arrow keys supplement drag-and-drop. Correct cards show a check mark as well as gold. Wrong answers explain progress and offer one optional direction nudge. Assisted wins retain that disclosure on reload and sharing. Tap an answer card to see its explanation and source; the modal supports Escape and returns focus to the card.
 
 Check a specific Sunday before publishing:
 

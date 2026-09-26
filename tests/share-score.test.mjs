@@ -3,6 +3,12 @@ import test from "node:test";
 
 import { challengeUrl, losingShareText, winningShareText } from "../lib/share-score.js";
 
+test("assisted results disclose the nudge without adding another sentence", () => {
+  const text = winningShareText({display:"0:25.00",stars:2,puzzleDate:"2026-09-26",hintUsed:true});
+  assert.match(text, /★★ and a nudge; think you can beat my score\?/);
+  assert.equal(text.split("\n").length, 2);
+});
+
 test("shared challenge links open the exact playable puzzle", () => {
   const url = new URL(challengeUrl("2026-08-23"));
   assert.equal(url.pathname, "/");

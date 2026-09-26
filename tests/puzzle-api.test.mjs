@@ -3,6 +3,8 @@ import test from "node:test";
 
 import { GET, OPTIONS } from "../app/api/trump-puzzle/route.js";
 import { previousWeekRange, weeklyEventsForSunday } from "../lib/event-library.js";
+import { pacificDate, addDays } from "../lib/puzzle-clock.js";
+import published from "../data/published-puzzles.json" with { type: "json" };
 
 const requestFor = (date) =>
   new Request(`http://localhost/api/trump-puzzle?date=${encodeURIComponent(date)}`);
@@ -62,7 +64,7 @@ test("Sunday serves seven events strictly from the preceding week", async () => 
 });
 
 test("an unprepared Sunday never silently serves an older daily puzzle", async () => {
-  const { response, body } = await getPuzzle("2027-09-19");
+  const { response, body } = await getPuzzle("2026-09-13");
   assert.equal(response.status, 503);
   assert.equal(body.code, "WEEKLY_NOT_READY");
   assert.equal(body.puzzle, undefined);
@@ -115,6 +117,11 @@ test("every 2026 puzzle satisfies the game contract and schedule", async () => {
     const current = new Date(time);
     const date = current.toISOString().slice(0, 10);
     const { response, body } = await getPuzzle(date);
+    if (date > pacificDate()) {
+      assert.equal(response.status, 404, date);
+      assert.equal(body.code, "NOT_RELEASED");
+      continue;
+    }
     if (current.getUTCDay() === 0 && weeklyEventsForSunday(current).length < 7) {
       assert.equal(response.status, 503, date);
       assert.equal(body.code, "WEEKLY_NOT_READY");
@@ -144,4 +151,19 @@ test("every 2026 puzzle satisfies the game contract and schedule", async () => {
       assert.ok(!event.title.includes("—"), `${date}: ${event.title}`);
     }
   }
+});
+
+test("all frozen puzzles keep their card identities and answer order", async () => {
+  for (const [date, original] of Object.entries(published)) {
+    const { body } = await getPuzzle(date);
+    assert.deepEqual(body.answerOrder, original.answerOrder, date);
+    assert.deepEqual(body.puzzle.events.map(({ id,title }) => ({ id,title })), original.puzzle.events.map(({ id,title }) => ({ id,title })), date);
+    for (const [id, exactDate] of Object.entries(original.dateMap)) if (exactDate) assert.equal(body.dateMap[id],exactDate,date);
+  }
+});
+
+test("future puzzles cannot leak or become accidental published challenges", async () => {
+  const {response,body} = await getPuzzle(addDays(pacificDate(),1));
+  assert.equal(response.status,404);
+  assert.equal(body.code,"NOT_RELEASED");
 });

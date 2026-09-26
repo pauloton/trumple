@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { pacificDate } from "../lib/puzzle-clock.js";
 
 import { GENERATED_EVENTS } from "../data/generated-events.js";
 import { SEED_EVENTS } from "../data/seed-events.js";
@@ -16,7 +17,7 @@ const ROUTINE_PROCLAMATION = /\b(day|week|month|weekend|anniversary|birthday|mem
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function parseArgs(argv) {
-  const options = { today: new Date().toISOString().slice(0, 10), dryRun: false };
+  const options = { today: pacificDate(), dryRun: false };
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === "--today") options.today = argv[++index];
     else if (argv[index] === "--dry-run") options.dryRun = true;

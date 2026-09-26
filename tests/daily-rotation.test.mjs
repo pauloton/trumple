@@ -6,6 +6,26 @@ import { DAILY_ROTATION_RULES, createDailyRotationSelector, storyKey } from "../
 const DAY_MS = 24 * 60 * 60 * 1000;
 const dateFrom = (start, offset) => new Date(Date.parse(`${start}T12:00:00Z`) + offset * DAY_MS).toISOString().slice(0, 10);
 
+test("refreshes respect actual published cards, not simulated history", () => {
+  const pool=fixtureEvents();
+  const saved=pool.slice(-7);
+  const select=createDailyRotationSelector(pool,{startDate:"2025-04-01",publishedHistory:{"2025-04-01":saved}});
+  assert.deepEqual(select("2025-04-01"),saved);
+  assert.ok(select("2025-04-02").every(event=>!saved.some(old=>old.id===event.id)));
+});
+
+test("a sparse library cannot borrow future events", () => {
+  const pool=fixtureEvents().map(event=>({...event,date:"2027-01-01"}));
+  assert.throws(()=>createDailyRotationSelector(pool,{startDate:"2026-09-26"})("2026-09-26"),/Unable to build/);
+});
+
+test("genuinely recent news is preferred when eligible", () => {
+  const events=fixtureEvents();
+  events.push({id:"breaking",title:"A distinct new story",date:"2025-04-01",hint:"Verified",significance:3});
+  const puzzle=createDailyRotationSelector(events,{startDate:"2025-04-02"})("2025-04-02");
+  assert.ok(puzzle.some(event=>event.id==="breaking"));
+});
+
 function fixtureEvents() {
   return Array.from({ length: 260 }, (_, index) => ({
     id: index % 2 === 0 ? `event-${index}` : `fr-event-${index}`,

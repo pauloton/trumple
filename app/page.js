@@ -1,8 +1,9 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { formatMonthYear } from "../lib/chain-display.js";
-import { isCorrectPosition } from "../lib/answer-check.js";
+import { formatEventDate } from "../lib/chain-display.js";
+import { isCorrectPosition, directionHint } from "../lib/answer-check.js";
+import { pacificDate, nextPacificMidnight } from "../lib/puzzle-clock.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
 import { losingShareText, winningShareText } from "../lib/share-score.js";
 
@@ -18,8 +19,8 @@ const C = {
   red:      "#B22234",
   gold:     "#F5C518",
   text:     "#ffffff",
-  dim:      "rgba(255,255,255,0.45)",
-  dimmer:   "rgba(255,255,255,0.25)",
+  dim:      "rgba(255,255,255,0.75)",
+  dimmer:   "rgba(255,255,255,0.60)",
   dimmest:  "rgba(255,255,255,0.08)",
 };
 
@@ -89,7 +90,7 @@ function getStats(referenceDate = null) {
     };
   } catch { return { played: 0, perfects: 0, best: null, history: [], results: [], streak: 0 }; }
 }
-function saveStats(timeMs, stars, puzzleDate, edition) {
+function saveStats(timeMs, stars, puzzleDate, edition, hintUsed = false) {
   if (typeof window === "undefined") return;
   try {
     const prev = getStats(puzzleDate);
@@ -101,7 +102,7 @@ function saveStats(timeMs, stars, puzzleDate, edition) {
       const history = [...prev.history, timeMs].slice(-5);
       localStorage.setItem("trumple_history", JSON.stringify(history));
     }
-    const results = recordDailyResult(prev.results, puzzleDate, stars > 0, { timeMs, stars, edition });
+    const results = recordDailyResult(prev.results, puzzleDate, stars > 0, { timeMs, stars, edition, hintUsed });
     localStorage.setItem("trumple_results", JSON.stringify(results));
   } catch {}
 }
@@ -109,9 +110,7 @@ function saveStats(timeMs, stars, puzzleDate, edition) {
 function useNextPuzzleCountdown() {
   const getRemaining = useCallback(() => {
     const now = new Date();
-    const next = new Date(now);
-    next.setHours(24, 0, 0, 0);
-    return Math.max(0, next.getTime() - now.getTime());
+    return Math.max(0, nextPacificMidnight(now) - now.getTime());
   }, []);
   const [remaining, setRemaining] = useState(getRemaining);
   useEffect(() => {
@@ -429,9 +428,9 @@ function RevealScreen({ events, onRevealComplete }) {
     else { const t = setTimeout(onRevealComplete, 800); return () => clearTimeout(t); }
   }, [revealed, events.length, onRevealComplete]);
   return (
-    <div style={{ width:"100%", maxWidth:"440px", margin:"0 auto", padding:"1rem 0.75rem", height:"100dvh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+    <div className="timeline-screen">
       <div style={{ height:"1rem", flexShrink:0 }}/>
-      <div style={{ display:"flex", flexDirection:"column", gap:"clamp(0.3rem,1vh,0.6rem)", flex:1, minHeight:0 }}>
+      <div className="event-stack">
         {events.map((event, i) => (
           <div key={event.id} style={{
             background:C.card, border:"1px solid "+C.border, borderRadius:"12px",
@@ -469,97 +468,98 @@ function reorderAroundLocks(events, fromIndex, toIndex, lockedCorrect) {
 function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
   const [dragIndex, setDragIndex] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
-  const overIndexRef = useRef(null);
   const listRef = useRef(null);
-  const touchData = useRef({ active:false, index:null, startY:0, clone:null, startTop:0 });
-  const desktopDropTonePlayed = useRef(false);
+  const pointerCleanup = useRef(null);
+  useEffect(() => () => pointerCleanup.current?.(), []);
   const eventsRef = useRef(events);
   eventsRef.current = events;
 
-  const handleDragStart = (e, i) => {
-    if (lockedCorrect[events[i]?.id]) return;
-    desktopDropTonePlayed.current = false;
-    playCardTone("pickup");
-    setDragIndex(i);
-    e.dataTransfer.effectAllowed="move";
-  };
-  const handleDragOver  = (e, i) => { e.preventDefault(); setOverIndex(i); };
-  const handleDrop = (e, ti) => {
-    e.preventDefault();
+  const moveCard = (index, direction) => {
+    let target = index + direction;
+    while (target >= 0 && target < events.length && lockedCorrect[events[target].id]) target += direction;
+    if (target < 0 || target >= events.length || lockedCorrect[events[index].id]) return;
     playCardTone("drop");
-    desktopDropTonePlayed.current = true;
-    if (dragIndex !== null && dragIndex !== ti && !lockedCorrect[events[dragIndex]?.id])
-      onReorder(reorderAroundLocks(events, dragIndex, ti, lockedCorrect));
-    setDragIndex(null); setOverIndex(null);
-  };
-  const handleDragEnd = () => {
-    if (!desktopDropTonePlayed.current) playCardTone("drop");
-    desktopDropTonePlayed.current = false;
-    setDragIndex(null); setOverIndex(null);
+    onReorder(reorderAroundLocks(events, index, target, lockedCorrect));
   };
 
-  const handleTouchStart = useCallback((e, index) => {
-    if (lockedCorrect[eventsRef.current[index]?.id]) return;
-    playCardTone("pickup");
-    const touch = e.touches[0]; const target = e.currentTarget;
-    const rect = target.getBoundingClientRect();
-    const clone = target.cloneNode(true);
-    Object.assign(clone.style, { position:"fixed", left:rect.left+"px", top:rect.top+"px", width:rect.width+"px", zIndex:9999, opacity:"0.9", transform:"scale(1.04)", boxShadow:"0 8px 32px rgba(0,0,0,0.4)", pointerEvents:"none", transition:"none" });
+  // Pointer events work consistently for mouse, pen and touch. Native HTML
+  // dragging varies between WebKit and embedded browsers.
+  const handlePointerStart = (e, index) => {
+    if (e.button !== 0 || !e.isPrimary || e.target.closest("button") || lockedCorrect[events[index].id]) return;
+    pointerCleanup.current?.();
+    const target=e.currentTarget;
+    target.focus();
+    const rect=target.getBoundingClientRect();
+    const startY=e.clientY;
+    const clone=target.cloneNode(true);
+    clone.setAttribute("aria-hidden","true");
+    Object.assign(clone.style,{position:"fixed",left:`${rect.left}px`,top:`${rect.top}px`,width:`${rect.width}px`,height:`${rect.height}px`,zIndex:9999,opacity:".9",transform:"scale(1.03)",pointerEvents:"none",transition:"none"});
     document.body.appendChild(clone);
-    touchData.current = { active:true, index, startY:touch.clientY, clone, startTop:rect.top };
-    overIndexRef.current = null; target.style.opacity="0.2";
-    const onMove = (ev) => {
+    playCardTone("pickup");
+    setDragIndex(index);
+    let destination=null;
+    const move=ev=>{
+      if(ev.pointerId!==e.pointerId) return;
       ev.preventDefault();
-      const t = ev.touches[0];
-      touchData.current.clone.style.top = (touchData.current.startTop + t.clientY - touchData.current.startY)+"px";
-      const items = listRef.current?.children; let found = null;
-      for (let i = 0; i < items.length; i++) {
-        const r = items[i].getBoundingClientRect();
-        if (t.clientY >= r.top && t.clientY <= r.bottom && i !== touchData.current.index) { found = i; break; }
-      }
-      overIndexRef.current = found; setOverIndex(found);
+      clone.style.top=`${rect.top+ev.clientY-startY}px`;
+      destination=null;
+      Array.from(listRef.current?.children || []).forEach((item,i)=>{
+        const bounds=item.getBoundingClientRect();
+        if(ev.clientY>=bounds.top && ev.clientY<=bounds.bottom && i!==index) destination=i;
+      });
+      setOverIndex(destination);
     };
-    const onEnd = () => {
+    const cleanup=()=>{
+      document.removeEventListener("pointermove",move);
+      document.removeEventListener("pointerup",end);
+      document.removeEventListener("pointercancel",end);
+      clone.remove();
+      pointerCleanup.current=null;
+    };
+    const end=ev=>{
+      if(ev.pointerId!==e.pointerId) return;
+      cleanup();
       playCardTone("drop");
-      document.removeEventListener("touchmove", onMove);
-      document.removeEventListener("touchend", onEnd);
-      if (touchData.current.clone?.parentNode) touchData.current.clone.parentNode.removeChild(touchData.current.clone);
-      const from = touchData.current.index; const to = overIndexRef.current;
-      if (from !== null && to !== null && from !== to && !lockedCorrect[eventsRef.current[from]?.id])
-        onReorder(reorderAroundLocks(eventsRef.current, from, to, lockedCorrect));
-      if (listRef.current?.children[from]) listRef.current.children[from].style.opacity="1";
-      touchData.current = { active:false, index:null, startY:0, clone:null, startTop:0 };
-      overIndexRef.current = null; setDragIndex(null); setOverIndex(null);
+      if(ev.type==="pointerup" && destination!==null) onReorder(reorderAroundLocks(eventsRef.current,index,destination,lockedCorrect));
+      setDragIndex(null); setOverIndex(null);
     };
-    document.addEventListener("touchmove", onMove, { passive:false });
-    document.addEventListener("touchend", onEnd);
-  }, [lockedCorrect, onReorder]);
+    pointerCleanup.current=cleanup;
+    document.addEventListener("pointermove",move,{passive:false});
+    document.addEventListener("pointerup",end);
+    document.addEventListener("pointercancel",end);
+  };
+
 
   return (
-    <div ref={listRef} style={{ display:"flex", flexDirection:"column", gap:"clamp(0.25rem,1vh,0.55rem)", flex:1, minHeight:0 }}>
+    <div ref={listRef} className="event-stack" role="list" aria-label="Timeline, oldest first">
       {events.map((event, index) => {
         const isLocked = !!lockedCorrect[event.id];
         const isWrong  = !!wrongCards[event.id];
         const isOver   = overIndex === index;
         return (
-          <div key={event.id} draggable={!isLocked}
-            onDragStart={e => handleDragStart(e, index)} onDragOver={e => handleDragOver(e, index)}
-            onDrop={e => handleDrop(e, index)} onDragEnd={handleDragEnd}
-            onTouchStart={e => handleTouchStart(e, index)}
+          <div key={event.id} draggable={false} role="listitem" tabIndex={isLocked ? -1 : 0}
+            aria-label={`${index + 1}. ${event.title}. ${isLocked ? "Correct and locked." : "Use up and down arrow keys to move."}`}
+            onKeyDown={e => { if (e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); moveCard(index, e.key === "ArrowUp" ? -1 : 1); } }}
+            onPointerDown={e => handlePointerStart(e,index)}
             style={{
               background: isLocked ? C.locked : isOver ? C.cardOver : C.card,
               border: isLocked ? "none" : isOver ? "1px solid "+C.borderHi : "1px solid "+C.border,
               borderRadius:"12px", padding:"clamp(0.4rem,1.2vh,1rem) clamp(1rem,3vw,1.5rem)",
               display:"flex", alignItems:"center", justifyContent:"center",
-              flex:1, minHeight:0, overflow:"hidden",
-              cursor: isLocked ? "default" : "grab", userSelect:"none",
+              position:"relative", minHeight:0, overflow:"hidden",
+              cursor: isLocked ? "default" : "grab", userSelect:"none", touchAction:isLocked ? "auto" : "none",
               opacity: dragIndex === index ? 0.3 : 1,
               transition: isLocked ? "background 0.3s ease" : "none",
               animation: isWrong ? "shake 0.4s ease" : isLocked ? "celebrate 0.5s ease" : "none",
             }}>
-            <div style={{ fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color: isLocked ? C.bg : C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18, textAlign:"center" }}>
+            <div style={{ flex:1, fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color: isLocked ? C.bg : C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18, textAlign:"center" }}>
+              {isLocked && <span aria-hidden="true">✓ </span>}
               {event.title}
             </div>
+            {!isLocked && <div className="card-moves">
+              <button aria-label={`Move ${event.title} earlier`} disabled={!events.slice(0,index).some(ev => !lockedCorrect[ev.id])} onClick={() => moveCard(index,-1)}>↑</button>
+              <button aria-label={`Move ${event.title} later`} disabled={!events.slice(index+1).some(ev => !lockedCorrect[ev.id])} onClick={() => moveCard(index,1)}>↓</button>
+            </div>}
           </div>
         );
       })}
@@ -648,42 +648,67 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
     </div>
   );
 }
-function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn, timeDisplay, failedAttempts=0, isReadOnly=false, onBackToResults, backLabel="Back to Score" }) {
+function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn, timeDisplay, failedAttempts=0, hint, onHint, feedback, isReadOnly=false, onBackToResults, backLabel="Back to Score" }) {
+  const [detail, setDetail] = useState(null);
+  const detailRef = useRef(null);
+  const detailTrigger = useRef(null);
+  useEffect(() => {
+    if (detail) detailRef.current?.showModal();
+    else if (detailRef.current?.open) detailRef.current.close();
+  }, [detail]);
   const allCorrect = events.length > 0 && events.every(ev => lockedCorrect[ev.id]);
   const lockedCount = Object.keys(lockedCorrect).length;
 
   if (isReadOnly) {
     return (
-      <div style={{ width:"100%", maxWidth:"440px", margin:"0 auto", padding:"1rem 0.75rem", height:"100dvh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+      <div className="timeline-screen">
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0, marginBottom:"0.75rem" }}>
           <button onClick={onBackToResults} style={{ background:"transparent", border:"none", color:C.dim, cursor:"pointer", fontFamily:"'DM Sans', sans-serif", fontSize:"0.85rem" }}>&#8592; {backLabel}</button>
           <div/>
         </div>
-        <div style={{ display:"flex", flexDirection:"column", gap:"clamp(0.22rem,0.7vh,0.42rem)", flex:1, minHeight:0 }}>
+        <p className="timeline-instructions">The receipts. Tap a card for the story.</p>
+        <div className="event-stack">
           {events.map(event => (
-            <div key={event.id} style={{ background:C.locked, borderRadius:"12px", padding:"clamp(0.38rem,0.8vh,0.62rem) clamp(0.8rem,2.6vw,1.2rem)", display:"flex", alignItems:"center", justifyContent:"center", flex:1, minHeight:0, overflow:"hidden" }}>
+            <button key={event.id} onClick={e => { detailTrigger.current = e.currentTarget; setDetail(event); }} style={{ border:0, cursor:"pointer", background:C.locked, borderRadius:"12px", padding:"clamp(0.38rem,0.8vh,0.62rem) clamp(0.8rem,2.6vw,1.2rem)", display:"flex", alignItems:"center", justifyContent:"center", minHeight:0, overflow:"hidden" }}>
               <div style={{ textAlign:"center", width:"100%", minWidth:0 }}>
                 <div style={{ fontSize:"clamp(0.86rem,2.4vw,1rem)", fontWeight:700, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{event.title}</div>
-                <div style={{ marginTop:"clamp(0.14rem,0.4vh,0.28rem)", whiteSpace:"nowrap", fontSize:"clamp(0.58rem,1.5vw,0.7rem)", color:"rgba(10,22,40,0.62)", fontFamily:"'JetBrains Mono', monospace", fontWeight:800, letterSpacing:"0.03em" }}>{formatMonthYear(event.date, event.year)}</div>
+                <div style={{ marginTop:"0.3rem", fontSize:"0.75rem", color:"#24313c", fontFamily:"'JetBrains Mono', monospace", fontWeight:700 }}>{formatEventDate(event.date, event.year)}</div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
+        <dialog ref={detailRef} className="event-detail" onClose={() => { setDetail(null); detailTrigger.current?.focus(); }}>
+          {detail && <>
+            <button autoFocus className="detail-close" onClick={() => detailRef.current?.close()}>Close</button>
+            <p>{formatEventDate(detail.date, detail.year)}</p>
+            <h2>{detail.title}</h2>
+            <p>{detail.hint}</p>
+            {detail.sources?.length ? <ul>{detail.sources.map(source => <li key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">Read {source.name} ↗</a></li>)}</ul> : <p>Source link not yet available for this archived card.</p>}
+          </>}
+        </dialog>
       </div>
     );
   }
 
   return (
-    <div style={{ width:"100%", maxWidth:"440px", margin:"0 auto", padding:"1rem 0.75rem", height:"100dvh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+    <div className="timeline-screen">
       {/* Header: stars left, timer right */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0, marginBottom:"0.5rem" }}>
         <LiveStars failedAttempts={failedAttempts}/>
         <div style={{ fontSize:"clamp(1.1rem,3.2vw,1.35rem)", fontFamily:"'JetBrains Mono', monospace", color:C.gold, fontWeight:700, letterSpacing:"0.04em" }}>{timeDisplay}</div>
       </div>
+      <p className="timeline-instructions">Oldest at the top. Newest at the bottom.<br/>Three tries. Gold cards stay put.</p>
       <div style={{ height:"3px", background:C.dimmest, borderRadius:"2px", marginBottom:"0.6rem", flexShrink:0 }}>
         <div style={{ height:"100%", width:((lockedCount/events.length)*100)+"%", background:C.red, borderRadius:"2px", transition:"width 0.4s ease" }}/>
       </div>
       <DraggableList events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={onReorder}/>
+      <div className="feedback-area">
+        <div className="play-feedback" role="status" aria-live="polite">
+          {feedback || "Drag to sort, or use the arrow buttons."}
+          {hint && <div className="nudge">At the nudge: “{hint.title}” needed to move {hint.direction}.</div>}
+        </div>
+        {failedAttempts > 0 && !hint && !allCorrect && <button className="hint-button" onClick={onHint}>Stuck? Give me one nudge</button>}
+      </div>
       {!allCorrect && (
         <button onClick={onLockIn} style={{
           marginTop:"clamp(0.5rem,1.5vh,1rem)", background:C.red, color:"#fff",
@@ -704,9 +729,9 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
   );
 }
 
-function ShareIcons({ time, stars, puzzleDate }) {
+function ShareIcons({ time, stars, puzzleDate, hintUsed }) {
   const { display } = formatTime(time);
-  const msg = winningShareText({ display, stars, puzzleDate });
+  const msg = winningShareText({ display, stars, puzzleDate, hintUsed });
 
   async function generateAndShare() {
     if (navigator.share) {
@@ -740,7 +765,7 @@ function ShareIcons({ time, stars, puzzleDate }) {
   );
 }
 
-function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount, meta, puzzleDate }) {
+function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount, meta, puzzleDate, hintUsed }) {
   const stars = getStars(failedAttempts);
   const { display } = formatTime(time);
   const [celebWord] = useState(() => getCelebWord(stars));
@@ -753,17 +778,17 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
     if (!hasRun.current) {
       hasRun.current = true;
       if (firstVisit) {
-        onMount(); saveStats(time, stars, puzzleDate, meta?.key);
+        onMount(); saveStats(time, stars, puzzleDate, meta?.key, hintUsed);
         setShowConfetti(true); setTimeout(() => setShowConfetti(false), 4000);
       }
       setStats(getStats(puzzleDate));
     }
-  }, [firstVisit, onMount, time, stars, puzzleDate, meta?.key]);
+  }, [firstVisit, onMount, time, stars, puzzleDate, meta?.key, hintUsed]);
 
   return (
     <>
       <Confetti active={showConfetti}/>
-      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"1.5rem 1.25rem", maxWidth:"440px", margin:"0 auto", minHeight:"100dvh", justifyContent:"center" }}>
+      <div className="results-screen" style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"1.5rem 1.25rem", maxWidth:"440px", margin:"0 auto", height:"100dvh", overflowY:"auto", justifyContent:"safe center" }}>
         <StarDisplay stars={stars} size={32} celebrate={firstVisit}/>
         <div style={{ marginTop:"0.6rem", fontSize:"1.6rem", fontWeight:900, fontFamily:"'Space Grotesk', sans-serif", color:C.gold, letterSpacing:"-0.01em" }}>{celebWord}</div>
         <div style={{ marginTop:"1rem", fontSize:"clamp(3rem,12vw,4.5rem)", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text, letterSpacing:"-0.02em", lineHeight:1 }}>{display}</div>
@@ -814,7 +839,8 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           View the "BEAUTIFUL" Trump Timeline
         </button>
-        <ShareIcons time={time} stars={stars} puzzleDate={puzzleDate}/>
+        {hintUsed && <p style={{marginTop:".75rem",fontSize:".8rem",color:C.dim}}>Sorted with one nudge.</p>}
+        <ShareIcons time={time} stars={stars} puzzleDate={puzzleDate} hintUsed={hintUsed}/>
         <div style={{ marginTop:"0.75rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.62rem", letterSpacing:"0.06em" }}>
           NEXT CHAOS IN {countdown}
         </div>
@@ -840,12 +866,16 @@ export default function TrumpleApp() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockedCorrect, setLockedCorrect] = useState({});
   const [wrongCards, setWrongCards]     = useState({});
+  const [hint, setHint]                 = useState(null);
+  const [feedback, setFeedback]         = useState("");
+  const [newDay, setNewDay]             = useState(null);
   const [restoredResult, setRestoredResult] = useState(null);
   const [introStreak, setIntroStreak]   = useState(0);
   const confettiShown = useRef(false);
   const gameOverShown = useRef(false);
   const chainViewSource = useRef(null);
   const terminalOutcome = useRef(null);
+  const lastSubmission = useRef(0);
   const resultTransitionTimer = useRef(null);
   const timer = useTimer();
 
@@ -857,8 +887,9 @@ export default function TrumpleApp() {
     const params = new URLSearchParams(window.location.search);
     const forceReplay = window.location.pathname === "/play" || params.get("challenge") === "1";
     const urlDate = params.get("date");
-    const localDate = urlDate || new Date().toLocaleDateString("en-CA");
-    fetch("/api/trump-puzzle?date=" + localDate)
+    const localDate = urlDate || pacificDate();
+    const abort = new AbortController();
+    fetch("/api/trump-puzzle?date=" + localDate, { cache:"no-store", signal:abort.signal })
       .then(async r => {
         const data = await r.json();
         if (!r.ok) {
@@ -907,16 +938,28 @@ export default function TrumpleApp() {
           setScreen(SCREENS.GAME_OVER);
         }
       })
-      .catch(() => setScreen(SCREENS.ERROR));
+      .catch(error => { if (error.name !== "AbortError") setScreen(SCREENS.ERROR); });
+    return () => abort.abort();
   }, []);
+
+  useEffect(() => {
+    if (!puzzle || new URLSearchParams(window.location.search).has("date")) return;
+    const checkDate = () => { const today = pacificDate(); if (today > puzzle.date) setNewDay(today); };
+    const interval = setInterval(checkDate, 1000);
+    document.addEventListener("visibilitychange", checkDate);
+    checkDate();
+    return () => { clearInterval(interval); document.removeEventListener("visibilitychange", checkDate); };
+  }, [puzzle]);
 
   const handleStart = () => {
     if (resultTransitionTimer.current) clearTimeout(resultTransitionTimer.current);
     terminalOutcome.current = null;
+    lastSubmission.current = 0;
     const evts = puzzle.events.map(e => ({ ...e, year: yearMap[e.id], date: dateMap[e.id] || null }));
     const shuffled = shuffleArray(evts);
     setEvents(shuffled); setRevealEvents(shuffled);
     setFailedAttempts(0); setLockedCorrect({}); setWrongCards({});
+    setHint(null); setFeedback("");
     setScreen(SCREENS.REVEAL);
   };
 
@@ -928,6 +971,8 @@ export default function TrumpleApp() {
   const handleReorder = useCallback((newEvents) => setEvents(newEvents), []);
 
   const handleLockIn = () => {
+    if (terminalOutcome.current || Date.now() - lastSubmission.current < 800) return;
+    lastSubmission.current = Date.now();
     const newLocked = { ...lockedCorrect }; const newWrong = {};
     let anyNewCorrect = false;
 
@@ -939,6 +984,8 @@ export default function TrumpleApp() {
 
     const allCorrect = Object.keys(newLocked).length === events.length;
     setLockedCorrect(newLocked); setWrongCards(newWrong);
+    const count = Object.keys(newLocked).length;
+    setFeedback(allCorrect ? "Chaos sorted." : `${count} of ${events.length} in the right spot. ${Math.max(0, MAX_ATTEMPTS - failedAttempts - 1)} ${MAX_ATTEMPTS - failedAttempts - 1 === 1 ? "try" : "tries"} left.`);
     setTimeout(() => setWrongCards({}), 800);
 
     if (allCorrect) {
@@ -970,21 +1017,32 @@ export default function TrumpleApp() {
   };
 
   return (
-    <div style={{ background:C.bg, minHeight:"100dvh", color:C.text, fontFamily:"'DM Sans', sans-serif", overflow:"hidden" }}>
+    <div className={newDay ? "has-new-day" : ""} style={{ background:C.bg, minHeight:"100dvh", color:C.text, fontFamily:"'DM Sans', sans-serif", overflow:"hidden" }}>
       <style>{globalStyles}</style>
+      {newDay && <div className="new-day-banner" role="status">New day. Fresh chaos. <button onClick={() => window.location.assign(window.location.pathname)}>Play today</button></div>}
       {screen === SCREENS.LOADING    && <LoadingScreen/>}
       {screen === SCREENS.ERROR      && <ErrorScreen weeklyNotReady={weeklyNotReady}/>}
       {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta} streak={introStreak}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
-      {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts}/>}
+      {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts} hint={hint} feedback={feedback} onHint={() => setHint(directionHint(events,answerOrder,dateMap,isWeekly))}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
-      {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult?.timeMs ?? timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
+      {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult?.timeMs ?? timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date} hintUsed={restoredResult?.hintUsed ?? !!hint}/>}
       {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !gameOverShown.current} onMount={() => { gameOverShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
     </div>
   );
 }
 
 const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Space+Grotesk:wght@300;400;600;700;900&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');" +
+  ".timeline-screen{width:100%;max-width:440px;margin:0 auto;padding:1rem .75rem;height:100dvh;display:flex;flex-direction:column;overflow-y:auto;}" +
+  ".results-screen>*{flex-shrink:0}" +
+  ".event-stack{display:grid;grid-auto-rows:clamp(64px,calc((100dvh - 344px)/7),104px);gap:clamp(.25rem,1vh,.55rem);flex:0 0 auto;}" +
+  ".timeline-instructions{font-size:.78rem;line-height:1.4;color:#c5cbd3;text-align:center;margin:0 0 .65rem;flex-shrink:0;}" +
+  ".card-moves{display:flex;flex-direction:column;margin-left:8px;flex-shrink:0}.card-moves button{width:28px;height:24px;border:0;border-radius:5px;background:transparent;color:#d3dae5;font-size:1rem;cursor:pointer}.card-moves button:disabled{opacity:.25;cursor:default}" +
+  ".feedback-area{height:100px;margin-top:auto;flex-shrink:0;display:flex;flex-direction:column;justify-content:center}.nudge{margin-top:.4rem;color:#f5c518}" +
+  "button:focus-visible,[tabindex]:focus-visible,a:focus-visible{outline:3px solid #79bfff;outline-offset:3px}" +
+  ".play-feedback{font-size:.75rem;color:#d3dae5;text-align:center;line-height:1.35;min-height:2.2rem;padding:.4rem 0;flex-shrink:0}.hint-button{background:transparent;border:1px solid #667080;color:white;border-radius:8px;padding:.5rem;cursor:pointer;flex-shrink:0}" +
+  ".event-detail{margin:auto;width:calc(100% - 2rem);max-width:420px;max-height:85dvh;overflow:auto;padding:1.5rem;background:#152337;color:white;border:1px solid #637085;border-radius:16px;line-height:1.5}.event-detail::backdrop{background:#000a}.event-detail h2{font-size:1.2rem;margin:.8rem 0}.event-detail p{margin:.75rem 0}.event-detail ul{padding-left:1.2rem}.event-detail a{color:#9ccbff}.detail-close{display:block;margin-left:auto;background:transparent;color:white;border:1px solid #8793a4;border-radius:6px;padding:.4rem .8rem;cursor:pointer}" +
+  ".new-day-banner{position:relative;z-index:20;padding:.6rem;background:#f5c518;color:#0a1628;text-align:center}.new-day-banner button{margin-left:.5rem;padding:.4rem;border:0;border-radius:5px;background:#0a1628;color:white;cursor:pointer}.has-new-day .timeline-screen{height:calc(100dvh - 52px)}" +
   "* { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
   "body { background: #0A1628; margin: 0; overflow: hidden; }" +
   "html { overflow: hidden; }" +

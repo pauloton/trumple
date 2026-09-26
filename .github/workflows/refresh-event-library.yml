@@ -2,8 +2,9 @@ name: Refresh Trumple event library
 
 on:
   schedule:
-    # Saturday evening in US time zones; Sunday 02:00 UTC.
-    - cron: "0 2 * * 0"
+    # Midnight Pacific is 07:00 UTC in summer, 08:00 in winter.
+    # The job guard selects the correct one across daylight-saving changes.
+    - cron: "0 7,8 * * *"
   workflow_dispatch:
     inputs:
       today:
@@ -33,7 +34,19 @@ jobs:
 
       - run: npm ci
 
+      - name: Select Pacific midnight run
+        id: clock
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          node --input-type=module -e 'import {appendFileSync} from "node:fs"; const hour=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",hour:"2-digit",hourCycle:"h23"}).format(new Date()); appendFileSync(process.env.GITHUB_OUTPUT,`run=${process.env.EVENT_NAME === "workflow_dispatch" || hour === "00"}\n`);'
+
+      - name: Preserve already-published puzzles
+        if: steps.clock.outputs.run == 'true'
+        run: npm run library:freeze
+
       - name: Collect and curate the week
+        if: steps.clock.outputs.run == 'true'
         env:
           REQUESTED_TODAY: ${{ inputs.today }}
         run: |
@@ -45,28 +58,35 @@ jobs:
             npm run library:refresh
           fi
 
-      - run: npm run check
+      - name: Preserve newly ready puzzles
+        if: steps.clock.outputs.run == 'true'
+        run: npm run library:freeze -- --local
+
+      - if: steps.clock.outputs.run == 'true'
+        run: npm run check
+
+      - if: steps.clock.outputs.run == 'true'
+        run: npm run library:release-check
 
       - name: Publish approved library additions
+        if: steps.clock.outputs.run == 'true'
         run: |
           if git diff --quiet; then
-            echo "No new events passed automatic publication checks this week."
+            echo "No content or puzzle snapshots changed."
             exit 0
           fi
           git config user.name "trumple-editor-bot"
           git config user.email "trumple-editor-bot@users.noreply.github.com"
-          git add data/generated-events.js data/presidential-events.js
+          git add data/generated-events.js data/presidential-events.js data/published-puzzles.json
           git commit -m "Refresh Trumple event library and source archive"
           git push origin HEAD:main
+
+      - name: Verify live deployment
+        if: steps.clock.outputs.run == 'true'
+        run: npm run library:verify-live
 
       # A successful archive update does not mean Sunday's puzzle is ready.
       # Run after publication so a shortfall never discards useful additions.
       - name: Verify Sunday has seven past-week stories
-        env:
-          REQUESTED_TODAY: ${{ inputs.today }}
-        run: |
-          if [ -n "$REQUESTED_TODAY" ]; then
-            npm run library:coverage -- --date "$REQUESTED_TODAY"
-          else
-            npm run library:coverage
-          fi
+        if: always() && steps.clock.outputs.run == 'true'
+        run: npm run library:readiness

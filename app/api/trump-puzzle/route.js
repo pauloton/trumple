@@ -7,6 +7,9 @@ import {
   weeklyEventsForSunday,
 } from "../../../lib/event-library.js";
 import { createDailyRotationSelector } from "../../../lib/daily-rotation.js";
+import publishedPuzzles from "../../../data/published-puzzles.json" with { type: "json" };
+import { pacificDate, addDays } from "../../../lib/puzzle-clock.js";
+import { VERIFIED_LEGACY_EVENTS } from "../../../data/verified-legacy-events.js";
 
 // ============================================================
 // EVENT POOL, spanning 2015–2025
@@ -463,12 +466,23 @@ function seededShuffle(arr, seed) {
 // Season seed, change once per year to refresh the rotation order
 const SEASON = 2026;
 const EXPANDED_ROTATION_START = "2026-08-19";
+const clean = (str) => str.replace(/ \u2014 /g, ", ").replace(/\u2014/g, "-");
+const publishedHistory = {};
+const eventByTitle = new Map(DATED_SECOND_TERM_EVENTS.map(event => [clean(event.title),event]));
+const lastPublishedDate = Object.keys(publishedPuzzles).sort().at(-1);
+for (let date=EXPANDED_ROTATION_START; date<=lastPublishedDate; date=addDays(date,1)) {
+  // Count the cards players actually saw, including Sundays. An unavailable
+  // archived day is empty, not an imaginary five-card game.
+  publishedHistory[date]=(publishedPuzzles[date]?.puzzle.events || []).map(event =>
+    eventByTitle.get(event.title) || {...event,id:`archived:${event.title}`});
+}
 const selectSecondTermRotation = createDailyRotationSelector(DATED_SECOND_TERM_EVENTS, {
   // The expanded library did not power the live game before this date. Starting
   // its history here prevents imaginary backfilled plays from making new cards
   // look familiar on launch day.
   startDate: EXPANDED_ROTATION_START,
   season: SEASON,
+  publishedHistory,
 });
 
 function pickForDay(pool, eraOffset, dayNum) {
@@ -504,8 +518,8 @@ function pickClassicSecondTermEvents(dayNum) {
 }
 
 function buildClassicLegacyPuzzle(dayNum, dateText) {
-  const historicalPools = [POOL.A, POOL.B, POOL.C, POOL.D, POOL.E]
-    .map((pool) => pool.filter((event) => event.year >= 2016));
+  const historicalPools = [[2016,2016],[2017,2018],[2019,2020],[2021,2024]]
+    .map(([start,end]) => VERIFIED_LEGACY_EVENTS.filter(event => event.year >= start && event.year <= end && event.date <= dateText));
   const historical = seededShuffle(historicalPools, SEASON * 1289 + dayNum)
     .slice(0, 3)
     .map((pool, index) => pickForDay(pool, index + 1, dayNum));
@@ -543,7 +557,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const requestedDate = searchParams.get("date");
   const dateParam = requestedDate === null
-    ? new Date().toISOString().split("T")[0]
+    ? pacificDate()
     : requestedDate;
 
   // Fail cleanly for malformed or impossible dates instead of allowing NaN
@@ -563,8 +577,17 @@ export async function GET(req) {
     return NextResponse.json({ error: "No puzzle before launch" }, { status: 404, headers: CORS_HEADERS });
   }
 
+  if (dateParam > pacificDate()) {
+    return NextResponse.json({ error: "That puzzle hasn't dropped yet.", code: "NOT_RELEASED" }, { status: 404, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } });
+  }
+
+  // A library update must never rewrite a challenge already played or shared.
+  // Add explanatory metadata separately; preserve every published card and order.
+  if (publishedPuzzles[dateParam]) {
+    return NextResponse.json(withDetails(publishedPuzzles[dateParam]), { headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } });
+  }
+
   // Strip em dashes automatically at serve time
-  const clean = (str) => str.replace(/ \u2014 /g, ", ").replace(/\u2014/g, "-");
 
   let edition = SECOND_TERM_EDITION;
   let events;
@@ -612,7 +635,7 @@ export async function GET(req) {
     e.date || null,
   ]));
 
-  return NextResponse.json({
+  return NextResponse.json(withDetails({
     puzzle:       { id: puzzlePrefix + dayNum, dayNum, date: dateParam, events: shuffled },
     answerOrder,
     yearMap,
@@ -622,5 +645,21 @@ export async function GET(req) {
     isLegacy:     edition.key === "legacy",
     edition:      edition.key,
     editionMeta:  buildEditionMeta(edition),
-  }, { headers: CORS_HEADERS });
+  }), { headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } });
+}
+
+function withDetails(payload) {
+  const byTitle = new Map([...DATED_SECOND_TERM_EVENTS,...VERIFIED_LEGACY_EVENTS].map(event => [event.title,event]));
+  const dateMap = {...payload.dateMap};
+  for (const event of payload.puzzle.events) {
+    if (!dateMap[event.id] && byTitle.has(event.title)) dateMap[event.id] = byTitle.get(event.title).date;
+  }
+  return {
+    ...payload,
+    dateMap,
+    puzzle: { ...payload.puzzle, events: payload.puzzle.events.map(event => ({
+      ...event, hint: byTitle.get(event.title)?.hint || event.hint,
+      sources: byTitle.get(event.title)?.sources || [],
+    })) },
+  };
 }

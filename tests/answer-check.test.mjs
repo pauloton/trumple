@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isCorrectPosition } from "../lib/answer-check.js";
+import { isCorrectPosition, directionHint } from "../lib/answer-check.js";
+
+test("one nudge gives a useful direction and handles same-day ties", () => {
+  assert.equal(directionHint([{id:3},{id:1},{id:2}],[1,2,3],{},false).direction,"later");
+  assert.equal(directionHint([{id:1},{id:3},{id:2}],[1,2,3],{},false).direction,"later");
+  assert.equal(directionHint([{id:1},{id:2},{id:3}],[1,2,3],{},false),null);
+  const dates={1:"2026-09-14",2:"2026-09-14",3:"2026-09-15"};
+  assert.equal(directionHint([{id:2},{id:1},{id:3}],[1,2,3],dates,true),null);
+  assert.equal(directionHint([{id:3},{id:2},{id:1}],[1,2,3],dates,true).direction,"later");
+});
 
 test("weekly cards from the same day are interchangeable, not different days", () => {
   const dates = { 1: "2026-09-14", 2: "2026-09-14", 3: "2026-09-16", 4: null, 5: null };

@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { pacificDate } from "../lib/puzzle-clock.js";
 
 import { GENERATED_EVENTS } from "../data/generated-events.js";
 import { SEED_EVENTS } from "../data/seed-events.js";
@@ -19,7 +20,7 @@ const TRUSTED_DOMAINS = new Set([
 export const MAX_APPROVED_PER_DATE = 3;
 
 function parseArgs(argv) {
-  const options = { today: new Date().toISOString().slice(0, 10), dryRun: false, fixture: null };
+  const options = { today: pacificDate(), dryRun: false, fixture: null };
   for (let index = 0; index < argv.length; index++) {
     if (argv[index] === "--today") options.today = argv[++index];
     else if (argv[index] === "--fixture") options.fixture = argv[++index];
