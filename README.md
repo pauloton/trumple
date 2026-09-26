@@ -57,6 +57,8 @@ npm audit
 
 Player statistics remain in the browser under the `trumple_*` local-storage keys. There is no account or server-side player database.
 
+Played, Perfect Scores and Streak combine all editions. Each winning results screen shows only that edition's recent wins and best time, matched to the same event count. Daily and Legacy remain separate even though both have five cards. New results store the actual card count as well as the edition. Earlier records without that count, and historical formats with a different count, remain available under Earlier scores but cannot set the current format's best. Old mixed `trumple_best` and `trumple_history` keys are retained without rewriting or guessing an edition. Structured results are no longer trimmed after 400 days, so per-edition best times remain available.
+
 ## Automated daily library
 
 At midnight Pacific, GitHub Actions is scheduled to:

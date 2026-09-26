@@ -1,7 +1,51 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
+import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionTimeStats, editionLabel } from "../lib/player-stats.js";
+
+test("times are separated by edition and actual card count", () => {
+  const results=[
+    {date:"2026-09-01",won:true,edition:"second-term",eventCount:5,timeMs:20000},
+    {date:"2026-09-02",won:true,edition:"second-term",eventCount:7,timeMs:5000},
+    {date:"2026-09-03",won:true,edition:"second-term",timeMs:1000},
+    {date:"2026-09-04",won:true,timeMs:500},
+    {date:"2026-09-05",won:true,edition:"legacy",eventCount:5,timeMs:10000},
+    {date:"2026-09-06",won:true,edition:"weekly",eventCount:7,timeMs:30000},
+    {date:"2026-09-07",won:false,edition:"second-term",eventCount:5,timeMs:100},
+  ];
+  const daily=editionTimeStats(results,"second-term",5);
+  assert.equal(daily.best,20000);
+  assert.equal(daily.history.length,1);
+  assert.equal(daily.earlier.length,3);
+  assert.equal(editionTimeStats(results,"legacy",5).best,10000);
+  assert.equal(editionTimeStats(results,"weekly",7).best,30000);
+  assert.equal(editionTimeStats(results,"second-term",undefined).best,null);
+  assert.equal(results[2].eventCount,undefined,"No invented migration metadata");
+});
+
+test("last five wins are edition-specific, newest first, with all-time best retained", () => {
+  const results=Array.from({length:9},(_,i)=>({date:`2026-09-${String(i+1).padStart(2,"0")}`,won:true,edition:i===8 ? "weekly" : "second-term",eventCount:i===8 ? 7 : 5,timeMs:(i+1)*1000,hintUsed:i===7}));
+  const stats=editionTimeStats(results,"second-term",5);
+  assert.equal(stats.best,1000);
+  assert.deepEqual(stats.history.map(result=>result.date),["2026-09-08","2026-09-07","2026-09-06","2026-09-05","2026-09-04"]);
+  assert.equal(stats.history[0].hintUsed,true);
+});
+
+test("edition counts survive saving and global streak still spans editions", () => {
+  let results=[];
+  for(const [date,edition,eventCount] of [["2026-09-05","legacy",5],["2026-09-06","weekly",7],["2026-09-07","second-term",5]]) results=recordDailyResult(results,date,true,{edition,eventCount,timeMs:20000,stars:3});
+  assert.equal(calculateCurrentStreak(results,"2026-09-07"),3);
+  assert.equal(dailyResultForDate(results,"2026-09-06").eventCount,7);
+  assert.equal(editionLabel("weekly",7),"Sunday · 7 events");
+  assert.equal(editionLabel("second-term",undefined),"Daily · format unrecorded");
+});
+
+test("edition bests do not disappear after 400 days", () => {
+  let results=[];
+  for(let i=0;i<405;i++) results=recordDailyResult(results,new Date(Date.UTC(2025,0,1+i)).toISOString().slice(0,10),true,{edition:"second-term",eventCount:5,timeMs:1000+i});
+  assert.equal(results.length,405);
+  assert.equal(editionTimeStats(results,"second-term",5).best,1000);
+});
 
 test("streak counts consecutive winning puzzle dates", () => {
   const results = [

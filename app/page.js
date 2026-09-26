@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { formatEventDate } from "../lib/chain-display.js";
 import { isCorrectPosition, directionHint } from "../lib/answer-check.js";
 import { pacificDate, nextPacificMidnight } from "../lib/puzzle-clock.js";
-import { calculateCurrentStreak, dailyResultForDate, recordDailyResult } from "../lib/player-stats.js";
+import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionTimeStats, editionLabel, EDITION_NAMES } from "../lib/player-stats.js";
 import { losingShareText, winningShareText } from "../lib/share-score.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
@@ -90,19 +90,16 @@ function getStats(referenceDate = null) {
     };
   } catch { return { played: 0, perfects: 0, best: null, history: [], results: [], streak: 0 }; }
 }
-function saveStats(timeMs, stars, puzzleDate, edition, hintUsed = false) {
+function saveStats(timeMs, stars, puzzleDate, edition, hintUsed = false, eventCount) {
   if (typeof window === "undefined") return;
   try {
     const prev = getStats(puzzleDate);
     if (dailyResultForDate(prev.results, puzzleDate)) return;
     localStorage.setItem("trumple_played",   String(prev.played + 1));
     localStorage.setItem("trumple_perfects", String(prev.perfects + (stars === 3 ? 1 : 0)));
-    if (timeMs && stars > 0 && (!prev.best || timeMs < prev.best)) localStorage.setItem("trumple_best", String(timeMs));
-    if (timeMs) {
-      const history = [...prev.history, timeMs].slice(-5);
-      localStorage.setItem("trumple_history", JSON.stringify(history));
-    }
-    const results = recordDailyResult(prev.results, puzzleDate, stars > 0, { timeMs, stars, edition, hintUsed });
+    // Leave the old mixed-format best/history keys untouched for recovery.
+    // New records derive their edition-specific times from structured results.
+    const results = recordDailyResult(prev.results, puzzleDate, stars > 0, { timeMs, stars, edition, hintUsed, eventCount });
     localStorage.setItem("trumple_results", JSON.stringify(results));
   } catch {}
 }
@@ -593,10 +590,10 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
       hasRun.current = true;
       if (firstVisit) {
         onMount();
-        saveStats(null, 0, puzzleDate, meta?.key);
+        saveStats(null, 0, puzzleDate, meta?.key, false, events.length);
       }
     }
-  }, [firstVisit, onMount, puzzleDate, meta?.key]);
+  }, [firstVisit, onMount, puzzleDate, meta?.key, events.length]);
 
   return (
     <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b0f18", overflow:"hidden" }}>
@@ -610,6 +607,7 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
 
       {/* Content */}
       <div style={{ position:"relative", zIndex:2, width:"100%", maxWidth:"440px", padding:"0 1.5rem", display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"12%", paddingBottom:0 }}>
+        <p style={{fontSize:".8rem",color:C.dim,marginBottom:".5rem"}}>{editionLabel(meta?.key,events.length)}</p>
         {/* GAME OVER */}
         <div style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:"3rem", fontWeight:900, color:C.red, letterSpacing:"-0.02em", lineHeight:1, textAlign:"center", marginBottom:"0.4rem", textShadow:"0 2px 24px rgba(220,53,69,0.5)" }}>
           GAME OVER
@@ -761,7 +759,7 @@ function ShareIcons({ time, stars, puzzleDate, hintUsed }) {
   );
 }
 
-function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount, meta, puzzleDate, hintUsed }) {
+function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount, meta, puzzleDate, hintUsed, eventCount, scoreEventCount }) {
   const stars = getStars(failedAttempts);
   const { display } = formatTime(time);
   const [celebWord] = useState(() => getCelebWord(stars));
@@ -769,30 +767,34 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
   const [stats, setStats] = useState({ played: 0, perfects: 0, best: null, streak: 0 });
   const hasRun = useRef(false);
   const countdown = useNextPuzzleCountdown();
+  const editionName = EDITION_NAMES[meta?.key] || "Trumple";
+  const records = editionTimeStats(stats.results, meta?.key, eventCount);
+  const hasTime = Number.isFinite(time) && time > 0;
 
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
       if (firstVisit) {
-        onMount(); saveStats(time, stars, puzzleDate, meta?.key, hintUsed);
+        onMount(); saveStats(time, stars, puzzleDate, meta?.key, hintUsed, eventCount);
         setShowConfetti(true); setTimeout(() => setShowConfetti(false), 4000);
       }
       setStats(getStats(puzzleDate));
     }
-  }, [firstVisit, onMount, time, stars, puzzleDate, meta?.key, hintUsed]);
+  }, [firstVisit, onMount, time, stars, puzzleDate, meta?.key, hintUsed, eventCount]);
 
   return (
     <>
       <Confetti active={showConfetti}/>
       <div className="results-screen" style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"1.5rem 1.25rem", maxWidth:"440px", margin:"0 auto", height:"100dvh", overflowY:"auto", justifyContent:"safe center" }}>
         <StarDisplay stars={stars} size={32} celebrate={firstVisit}/>
+        <p style={{marginTop:".6rem",color:C.dim,fontSize:".8rem"}}>{editionLabel(meta?.key,scoreEventCount)}</p>
         <div style={{ marginTop:"0.6rem", fontSize:"1.6rem", fontWeight:900, fontFamily:"'Space Grotesk', sans-serif", color:C.gold, letterSpacing:"-0.01em" }}>{celebWord}</div>
-        <div style={{ marginTop:"1rem", fontSize:"clamp(3rem,12vw,4.5rem)", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text, letterSpacing:"-0.02em", lineHeight:1 }}>{display}</div>
+        <div style={{ marginTop:"1rem", fontSize:hasTime ? "clamp(3rem,12vw,4.5rem)" : "1rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text, letterSpacing:"-0.02em", lineHeight:1 }}>{hasTime ? display : "Time not recorded"}</div>
         <div style={{ marginTop:"1rem", display:"grid", gridTemplateColumns:"repeat(3, minmax(0, 1fr))", gap:"0.5rem", width:"100%" }}>
           {[
             { label:"PLAYED",         val: stats.played   || 1 },
             { label:"PERFECT SCORES", val: stats.perfects || 0 },
-            { label:"STREAK",         val: "🔥 " + (stats.streak || 1) },
+            { label:"STREAK",         val: "🔥 " + (stats.streak || 0) },
           ].map(({ label, val }) => (
             <div key={label} style={{ minWidth:0, background:C.card, border:"1px solid "+C.border, borderRadius:"12px", padding:"0.75rem 0.35rem", textAlign:"center" }}>
               <div style={{ fontSize:"0.48rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"0.3rem", lineHeight:1.3 }}>{label}</div>
@@ -800,43 +802,50 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
             </div>
           ))}
         </div>
-        {stats.history && stats.history.length > 0 && (() => {
-          const allTimes = stats.best ? [...stats.history, stats.best] : stats.history;
-          const minTime = Math.min(...allTimes);
-          const history = [...stats.history].reverse();
+        {records.history.length > 0 && (() => {
+          const minTime = records.best;
+          const history = records.history;
           return (
             <div style={{ width:"100%", marginTop:"1.25rem" }}>
-              <div style={{ fontSize:"0.6rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"0.6rem" }}>YOUR LAST 5</div>
-              {history.map((t, i) => {
+              <div style={{ fontSize:"0.6rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"0.6rem" }}>YOUR LAST 5 {editionName.toUpperCase()} WINS · {eventCount} EVENTS</div>
+              {history.map((result, i) => {
+                const t = result.timeMs;
                 const pct = t > 0 ? (minTime / t) * 100 : 100;
-                const isCurrent = i === 0 && history.length === stats.history.length;
                 return (
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:"0.5rem", marginBottom:"0.35rem" }}>
+                  <div key={result.date} title={result.date} style={{ display:"flex", alignItems:"center", gap:"0.5rem", marginBottom:"0.35rem" }}>
                     <div style={{ width:"1rem", fontSize:"0.6rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", textAlign:"right", flexShrink:0 }}>{history.length - i}</div>
                     <div style={{ flex:1, background:C.card, borderRadius:"6px", height:"2rem", position:"relative", overflow:"hidden" }}>
                       <div style={{ position:"absolute", left:0, top:0, height:"100%", width:pct+"%", background: "rgba(255,255,255,0.08)", borderRadius:"6px", transition:"width 0.6s ease" }}/>
-                      <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color: C.text }}>{formatTime(t).display}</div>
+                      <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color: C.text }}>{formatTime(t).display}{result.hintUsed ? " · nudge" : ""}</div>
                     </div>
                   </div>
                 );
               })}
-              {stats.best && (
+              {records.best && (
                 <div style={{ display:"flex", alignItems:"center", gap:"0.5rem", marginTop:"0.5rem" }}>
                   <div style={{ width:"1rem", fontSize:"0.6rem", color:C.gold, fontFamily:"'JetBrains Mono', monospace", textAlign:"right", flexShrink:0 }}>★</div>
                   <div style={{ flex:1, background:C.gold, borderRadius:"6px", height:"2rem", position:"relative", overflow:"hidden" }}>
-                    <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:"#1a1a2e" }}>BEST&nbsp;&nbsp;{formatTime(stats.best).display}</div>
+                    <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:"#1a1a2e" }}>{editionName.toUpperCase()} BEST&nbsp;&nbsp;{formatTime(records.best).display}</div>
                   </div>
                 </div>
               )}
             </div>
           );
         })()}
+        {!records.history.length && <p style={{marginTop:"1rem",fontSize:".8rem",color:C.dim,textAlign:"center"}}>No recorded {eventCount}-event {editionName.toLowerCase()} times yet.</p>}
+        {(records.earlier.length > 0 || stats.history?.length > 0 || stats.best) && <details style={{width:"100%",marginTop:".75rem",fontSize:".75rem",color:C.dim}}>
+          <summary style={{cursor:"pointer"}}>Earlier scores</summary>
+          <p style={{margin:".5rem 0"}}>Older or unlabelled formats are saved, but kept out of this edition's records.</p>
+          {records.earlier.map(result=><p key={result.date} style={{marginTop:".3rem"}}>{result.date} · {editionLabel(result.edition,result.eventCount)} · {formatTime(result.timeMs).display}</p>)}
+          {!!stats.best && <p style={{marginTop:".5rem"}}>Old mixed-format best: {formatTime(stats.best).display}</p>}
+          {Array.isArray(stats.history) && stats.history.length > 0 && <p style={{marginTop:".5rem"}}>Old mixed-format recent times: {stats.history.filter(t=>Number.isFinite(t) && t>0).slice(-5).reverse().map(t=>formatTime(t).display).join(", ")}</p>}
+        </details>}
         <button onClick={onViewChain} style={{ marginTop:"0.75rem", background:"transparent", border:"1px solid "+C.border, borderRadius:"10px", padding:"0.5rem 1.25rem", color:C.dim, fontFamily:"'DM Sans', sans-serif", fontSize:"0.8rem", cursor:"pointer", display:"flex", alignItems:"center", gap:"0.4rem" }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           View the "BEAUTIFUL" Trump Timeline
         </button>
         {hintUsed && <p style={{marginTop:".75rem",fontSize:".8rem",color:C.dim}}>Sorted with one nudge.</p>}
-        <ShareIcons time={time} stars={stars} puzzleDate={puzzleDate} hintUsed={hintUsed}/>
+        {hasTime && <ShareIcons time={time} stars={stars} puzzleDate={puzzleDate} hintUsed={hintUsed}/>}
         <div style={{ marginTop:"0.75rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.62rem", letterSpacing:"0.06em" }}>
           NEXT CHAOS IN {countdown}
         </div>
@@ -923,7 +932,7 @@ export default function TrumpleApp() {
         if (saved.won) {
           terminalOutcome.current = "won";
           const restoredStars = Number.isInteger(saved.stars) && saved.stars > 0 ? saved.stars : 3;
-          const restoredTime = saved.timeMs || stats.history.at(-1) || stats.best || 0;
+          const restoredTime = saved.timeMs || null;
           setRestoredResult({ ...saved, stars: restoredStars, timeMs: restoredTime });
           setFailedAttempts(3 - restoredStars);
           confettiShown.current = true;
@@ -1022,7 +1031,7 @@ export default function TrumpleApp() {
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts} hint={hint} feedback={feedback} onHint={() => setHint(directionHint(events,answerOrder,dateMap,isWeekly))}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
-      {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult?.timeMs ?? timer.time} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date} hintUsed={restoredResult?.hintUsed ?? !!hint}/>}
+      {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult ? restoredResult.timeMs : timer.time} eventCount={puzzle.events.length} scoreEventCount={restoredResult ? restoredResult.eventCount : puzzle.events.length} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date} hintUsed={restoredResult?.hintUsed ?? !!hint}/>}
       {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !gameOverShown.current} onMount={() => { gameOverShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
     </div>
   );
