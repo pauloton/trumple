@@ -89,7 +89,7 @@ The initial archive preserves 533 successful historical responses through Septem
 
 ## Interaction and accessibility
 
-Five-card games use the same compact card dimensions as seven-card games. Arrow buttons and keyboard arrow keys supplement drag-and-drop. Correct cards show a check mark as well as gold. Wrong answers explain progress and offer one optional direction nudge. Assisted wins retain that disclosure on reload and sharing. Tap an answer card to see its explanation and source; the modal supports Escape and returns focus to the card.
+Five-card games use the same compact card dimensions as seven-card games. Cards have no visible arrow controls; keyboard arrow keys still supplement drag-and-drop. The only opening instruction is: "Drag to sort. Oldest on top. Newest at bottom." Correct cards show a check mark as well as gold. Wrong answers explain progress and offer one optional direction nudge. Assisted wins retain that disclosure on reload and sharing. Tap an answer card to see its explanation and source; the modal supports Escape and returns focus to the card.
 
 Check a specific Sunday before publishing:
 

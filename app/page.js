@@ -556,10 +556,6 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
               {isLocked && <span aria-hidden="true">✓ </span>}
               {event.title}
             </div>
-            {!isLocked && <div className="card-moves">
-              <button aria-label={`Move ${event.title} earlier`} disabled={!events.slice(0,index).some(ev => !lockedCorrect[ev.id])} onClick={() => moveCard(index,-1)}>↑</button>
-              <button aria-label={`Move ${event.title} later`} disabled={!events.slice(index+1).some(ev => !lockedCorrect[ev.id])} onClick={() => moveCard(index,1)}>↓</button>
-            </div>}
           </div>
         );
       })}
@@ -697,14 +693,14 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
         <LiveStars failedAttempts={failedAttempts}/>
         <div style={{ fontSize:"clamp(1.1rem,3.2vw,1.35rem)", fontFamily:"'JetBrains Mono', monospace", color:C.gold, fontWeight:700, letterSpacing:"0.04em" }}>{timeDisplay}</div>
       </div>
-      <p className="timeline-instructions">Oldest at the top. Newest at the bottom.<br/>Three tries. Gold cards stay put.</p>
+      <p className="timeline-instructions">Drag to sort. Oldest on top. Newest at bottom.</p>
       <div style={{ height:"3px", background:C.dimmest, borderRadius:"2px", marginBottom:"0.6rem", flexShrink:0 }}>
         <div style={{ height:"100%", width:((lockedCount/events.length)*100)+"%", background:C.red, borderRadius:"2px", transition:"width 0.4s ease" }}/>
       </div>
       <DraggableList events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={onReorder}/>
       <div className="feedback-area">
         <div className="play-feedback" role="status" aria-live="polite">
-          {feedback || "Drag to sort, or use the arrow buttons."}
+          {feedback}
           {hint && <div className="nudge">At the nudge: “{hint.title}” needed to move {hint.direction}.</div>}
         </div>
         {failedAttempts > 0 && !hint && !allCorrect && <button className="hint-button" onClick={onHint}>Stuck? Give me one nudge</button>}
@@ -1037,7 +1033,6 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".results-screen>*{flex-shrink:0}" +
   ".event-stack{display:grid;grid-auto-rows:clamp(64px,calc((100dvh - 344px)/7),104px);gap:clamp(.25rem,1vh,.55rem);flex:0 0 auto;}" +
   ".timeline-instructions{font-size:.78rem;line-height:1.4;color:#c5cbd3;text-align:center;margin:0 0 .65rem;flex-shrink:0;}" +
-  ".card-moves{display:flex;flex-direction:column;margin-left:8px;flex-shrink:0}.card-moves button{width:28px;height:24px;border:0;border-radius:5px;background:transparent;color:#d3dae5;font-size:1rem;cursor:pointer}.card-moves button:disabled{opacity:.25;cursor:default}" +
   ".feedback-area{height:100px;margin-top:auto;flex-shrink:0;display:flex;flex-direction:column;justify-content:center}.nudge{margin-top:.4rem;color:#f5c518}" +
   "button:focus-visible,[tabindex]:focus-visible,a:focus-visible{outline:3px solid #79bfff;outline-offset:3px}" +
   ".play-feedback{font-size:.75rem;color:#d3dae5;text-align:center;line-height:1.35;min-height:2.2rem;padding:.4rem 0;flex-shrink:0}.hint-button{background:transparent;border:1px solid #667080;color:white;border-radius:8px;padding:.5rem;cursor:pointer;flex-shrink:0}" +
