@@ -24,9 +24,18 @@ export const WEEKLY_CURATED_EVENTS = [
   card("2026-09-22", "sixty-percent-oil", "Claims US and Venezuela have 60% of world oil",
     "At the UN, his oil maths struck a gusher. AP put the combined share around 22%.", 4, "False claim",
     "Associated Press", "https://www.ap.org/news-highlights/elections/2026/fact-focus-trump-made-multiple-false-and-misleading-claims-in-front-of-the-un-general-assembly/"),
+  // AP reports a third consecutive airing day on Friday, September 25.
+  // The first airing was Wednesday, September 23, not the report's date.
+  card("2026-09-23", "taxpayer-love-me-ad", "Gets a taxpayer-funded 'Love Me' TV ad",
+    "His achievements, a 'Love Me' soundtrack, your tax dollars. Quite the fan club.", 5, "Self-promotion",
+    "Associated Press", "https://www.wboc.com/news/national/pro-trump-tv-ad-paid-for-by-us-government-continues-airing-with-higher-spend/article_4d6a5b30-277c-5444-98f1-c65652e3f55e.html"),
   card("2026-09-24", "xi-autopen-tour", "Shows Xi Biden's autopen portrait",
     "A state visit, with a detour to mock his predecessor.", 4, "Spectacle",
     "Associated Press", "https://www.clickondetroit.com/news/politics/2026/09/24/trump-relishes-showing-xi-his-marine-one-chopper-and-new-white-house-helipad/"),
+  // Date of the flight exclusion, not Friday's advance press guidance.
+  card("2026-09-26", "cnn-air-force-one-snub", "Leaves CNN off his Air Force One football trip",
+    "The White House gave a conservative outlet CNN's slot. Access has a dress code.", 4, "Retaliation",
+    "Associated Press", "https://www.news4jax.com/entertainment/2026/09/26/cnn-says-it-was-left-off-air-force-one-for-trumps-saturday-trip-to-a-college-football-game/"),
   card("2026-09-14", "ai-safety-conspiracy", "Calls AI safety fears a sick conspiracy",
     "Safety warnings? Apparently a plot to help China.", 4, "Conspiracy",
     "CBS News", "https://www.cbsnews.com/news/trump-dismisses-ai-regulation-tech-slowdown/"),
