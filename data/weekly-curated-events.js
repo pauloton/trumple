@@ -24,6 +24,9 @@ export const WEEKLY_CURATED_EVENTS = [
   card("2026-09-22", "sixty-percent-oil", "Claims US and Venezuela have 60% of world oil",
     "At the UN, his oil maths struck a gusher. AP put the combined share around 22%.", 4, "False claim",
     "Associated Press", "https://www.ap.org/news-highlights/elections/2026/fact-focus-trump-made-multiple-false-and-misleading-claims-in-front-of-the-un-general-assembly/"),
+  card("2026-09-22", "munitions-traitors-rant", "Calls weapons-shortage critics 'traitors'",
+    "Government reports flagged depleted stocks. He went with insults.", 4, "Grievance",
+    "CNN", "https://kvia.com/politics/cnn-us-politics/2026/09/22/fact-check-trumps-false-claims-to-the-united-nations/"),
   // AP reports a third consecutive airing day on Friday, September 25.
   // The first airing was Wednesday, September 23, not the report's date.
   card("2026-09-23", "taxpayer-love-me-ad", "Gets a taxpayer-funded 'Love Me' TV ad",
