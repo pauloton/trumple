@@ -6,6 +6,10 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Monday's public remark, not the ambassador's disputed account of the summit.
+  card("2026-09-28", "china-arms-good-idea", "Floats selling US weapons to China",
+    "Denied pitching Xi. Then said it might be a good idea. Arms embargo? Awkward.", 4, "Diplomatic chaos",
+    "CNN", "https://kesq.com/news/national-politics/cnn-us-politics/2026/09/28/trump-says-he-did-not-discuss-the-possibility-of-the-us-selling-weapons-to-china-contradicting-his-ambassador/"),
   card("2026-09-20", "arch-snipers", "Adds snipers to his triumphal-arch plan",
     "The monument now needs drones and ammunition. Subtle.", 4, "Spectacle",
     "Associated Press", "https://apnews.com/article/ef9212f98c337a6a142b338c1861da97"),
