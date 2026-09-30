@@ -6,6 +6,9 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  card("2026-09-29", "chatbot-biden-won", "Launches a chatbot that says he lost in 2020",
+    "America.gov said Biden won, then stopped answering political questions. Briefly awkward.", 4, "Own goal",
+    "Associated Press", "https://www.news4jax.com/news/politics/2026/09/29/trump-touts-americagov-but-its-government-sourced-ai-answers-undercut-many-of-his-statements/"),
   // Monday's public remark, not the ambassador's disputed account of the summit.
   card("2026-09-28", "china-arms-good-idea", "Floats selling US weapons to China",
     "Denied pitching Xi. Then said it might be a good idea. Arms embargo? Awkward.", 4, "Diplomatic chaos",
@@ -39,6 +42,10 @@ export const WEEKLY_CURATED_EVENTS = [
   card("2026-09-24", "xi-autopen-tour", "Shows Xi Biden's autopen portrait",
     "A state visit, with a detour to mock his predecessor.", 4, "Spectacle",
     "Associated Press", "https://www.clickondetroit.com/news/politics/2026/09/24/trump-relishes-showing-xi-his-marine-one-chopper-and-new-white-house-helipad/"),
+  // Thursday's Oval Office meeting; ABC's article is dated Friday in Australia.
+  card("2026-09-24", "xi-friendly-press", "Praises China's 'friendliest' press corps",
+    "US outlets were still barred. Xi's reporters got a compliment.", 4, "Hypocrisy",
+    "ABC News Australia", "https://www.abc.net.au/news/2026-09-25/trump-welcomes-xi-to-white-house/107193702"),
   // Date of the flight exclusion, not Friday's advance press guidance.
   card("2026-09-26", "cnn-air-force-one-snub", "Leaves CNN off his Air Force One football trip",
     "The White House gave a conservative outlet CNN's slot. Access has a dress code.", 4, "Retaliation",
