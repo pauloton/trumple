@@ -687,6 +687,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
 
   return (
     <div className="timeline-screen">
+      <div className="gameplay-content">
       <h1 className="gameplay-headline">{gameplayHeadline(edition)}</h1>
       {/* Header: stars left, timer right */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0, marginBottom:"0.5rem" }}>
@@ -721,6 +722,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
       {allCorrect && (
         <div style={{ textAlign:"center", marginTop:"1rem", fontSize:"0.85rem", color:C.dim, fontFamily:"'JetBrains Mono', monospace", animation:"pulse 1s ease infinite", flexShrink:0 }}>Chaos sorted...</div>
       )}
+      </div>
     </div>
   );
 }
@@ -1041,13 +1043,14 @@ export default function TrumpleApp() {
 
 const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Space+Grotesk:wght@300;400;600;700;900&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');" +
   ".timeline-screen{width:100%;max-width:440px;margin:0 auto;padding:1rem .75rem;height:100dvh;display:flex;flex-direction:column;overflow-y:auto;}" +
+  ".gameplay-content{display:flex;flex-direction:column;flex:0 0 auto;width:100%;margin-block:auto;}" +
   ".gameplay-headline{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.25rem,5.5vw,1.55rem);font-weight:700;line-height:1.15;letter-spacing:-.025em;text-align:center;margin:0 0 .85rem;flex-shrink:0;text-wrap:balance;}" +
   ".results-screen>*{flex-shrink:0}" +
   ".event-stack{display:grid;grid-auto-rows:clamp(64px,calc((100dvh - 344px)/7),104px);gap:clamp(.25rem,1vh,.55rem);flex:0 0 auto;}" +
   ".timeline-instructions{font-size:.78rem;line-height:1.4;color:#c5cbd3;text-align:center;margin:0 0 .65rem;flex-shrink:0;}" +
-  ".feedback-area{height:100px;margin-top:auto;flex-shrink:0;display:flex;flex-direction:column;justify-content:center}.nudge{margin-top:.4rem;color:#f5c518}" +
+  ".feedback-area{flex-shrink:0;display:flex;flex-direction:column;justify-content:center}.nudge{margin-top:.4rem;color:#f5c518}" +
   "button:focus-visible,[tabindex]:focus-visible,a:focus-visible{outline:3px solid #79bfff;outline-offset:3px}" +
-  ".play-feedback{font-size:.75rem;color:#d3dae5;text-align:center;line-height:1.35;min-height:2.2rem;padding:.4rem 0;flex-shrink:0}.hint-button{background:transparent;border:1px solid #667080;color:white;border-radius:8px;padding:.5rem;cursor:pointer;flex-shrink:0}" +
+  ".play-feedback{font-size:.75rem;color:#d3dae5;text-align:center;line-height:1.35;flex-shrink:0}.play-feedback:not(:empty){padding:.5rem 0}.hint-button{background:transparent;border:1px solid #667080;color:white;border-radius:8px;padding:.5rem;cursor:pointer;flex-shrink:0}" +
   ".event-detail{margin:auto;width:calc(100% - 2rem);max-width:420px;max-height:85dvh;overflow:auto;padding:1.5rem;background:#152337;color:white;border:1px solid #637085;border-radius:16px;line-height:1.5}.event-detail::backdrop{background:#000a}.event-detail h2{font-size:1.2rem;margin:.8rem 0}.event-detail p{margin:.75rem 0}.event-detail ul{padding-left:1.2rem}.event-detail a{color:#9ccbff}.detail-close{display:block;margin-left:auto;background:transparent;color:white;border:1px solid #8793a4;border-radius:6px;padding:.4rem .8rem;cursor:pointer}" +
   ".new-day-banner{position:relative;z-index:20;padding:.6rem;background:#f5c518;color:#0a1628;text-align:center}.new-day-banner button{margin-left:.5rem;padding:.4rem;border:0;border-radius:5px;background:#0a1628;color:white;cursor:pointer}.has-new-day .timeline-screen{height:calc(100dvh - 52px)}" +
   "* { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
