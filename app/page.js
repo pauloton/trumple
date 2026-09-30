@@ -6,6 +6,7 @@ import { isCorrectPosition, directionHint } from "../lib/answer-check.js";
 import { pacificDate, nextPacificMidnight } from "../lib/puzzle-clock.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionTimeStats, editionLabel, EDITION_NAMES } from "../lib/player-stats.js";
 import { losingShareText, winningShareText } from "../lib/share-score.js";
+import { gameplayHeadline, SORT_INSTRUCTIONS } from "../lib/gameplay-copy.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
 
@@ -642,7 +643,7 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
     </div>
   );
 }
-function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn, timeDisplay, failedAttempts=0, hint, onHint, feedback, isReadOnly=false, onBackToResults, backLabel="Back to Score" }) {
+function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, onLockIn, timeDisplay, failedAttempts=0, hint, onHint, feedback, isReadOnly=false, onBackToResults, backLabel="Back to Score" }) {
   const [detail, setDetail] = useState(null);
   const detailRef = useRef(null);
   const detailTrigger = useRef(null);
@@ -686,12 +687,13 @@ function PlayingScreen({ events, lockedCorrect, wrongCards, onReorder, onLockIn,
 
   return (
     <div className="timeline-screen">
+      <h1 className="gameplay-headline">{gameplayHeadline(edition)}</h1>
       {/* Header: stars left, timer right */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0, marginBottom:"0.5rem" }}>
         <LiveStars failedAttempts={failedAttempts}/>
         <div style={{ fontSize:"clamp(1.1rem,3.2vw,1.35rem)", fontFamily:"'JetBrains Mono', monospace", color:C.gold, fontWeight:700, letterSpacing:"0.04em" }}>{timeDisplay}</div>
       </div>
-      <p className="timeline-instructions">Drag to sort. Oldest on top. Newest at bottom.</p>
+      <p className="timeline-instructions">{SORT_INSTRUCTIONS}</p>
       <div style={{ height:"3px", background:C.dimmest, borderRadius:"2px", marginBottom:"0.6rem", flexShrink:0 }}>
         <div style={{ height:"100%", width:((lockedCount/events.length)*100)+"%", background:C.red, borderRadius:"2px", transition:"width 0.4s ease" }}/>
       </div>
@@ -1029,7 +1031,7 @@ export default function TrumpleApp() {
       {screen === SCREENS.ERROR      && <ErrorScreen weeklyNotReady={weeklyNotReady}/>}
       {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta} streak={introStreak}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
-      {screen === SCREENS.PLAYING    && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts} hint={hint} feedback={feedback} onHint={() => setHint(directionHint(events,answerOrder,dateMap,isWeekly))}/>}
+      {screen === SCREENS.PLAYING    && <PlayingScreen events={events} edition={editionMeta?.key} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts} hint={hint} feedback={feedback} onHint={() => setHint(directionHint(events,answerOrder,dateMap,isWeekly))}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
       {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult ? restoredResult.timeMs : timer.time} eventCount={puzzle.events.length} scoreEventCount={restoredResult ? restoredResult.eventCount : puzzle.events.length} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date} hintUsed={restoredResult?.hintUsed ?? !!hint}/>}
       {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !gameOverShown.current} onMount={() => { gameOverShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
@@ -1039,6 +1041,7 @@ export default function TrumpleApp() {
 
 const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Space+Grotesk:wght@300;400;600;700;900&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');" +
   ".timeline-screen{width:100%;max-width:440px;margin:0 auto;padding:1rem .75rem;height:100dvh;display:flex;flex-direction:column;overflow-y:auto;}" +
+  ".gameplay-headline{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.25rem,5.5vw,1.55rem);font-weight:700;line-height:1.15;letter-spacing:-.025em;text-align:center;margin:0 0 .85rem;flex-shrink:0;text-wrap:balance;}" +
   ".results-screen>*{flex-shrink:0}" +
   ".event-stack{display:grid;grid-auto-rows:clamp(64px,calc((100dvh - 344px)/7),104px);gap:clamp(.25rem,1vh,.55rem);flex:0 0 auto;}" +
   ".timeline-instructions{font-size:.78rem;line-height:1.4;color:#c5cbd3;text-align:center;margin:0 0 .65rem;flex-shrink:0;}" +
