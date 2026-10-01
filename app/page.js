@@ -336,7 +336,8 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
   const taglinesBelow = layoutVariant === "taglines-below";
   const taglines = editionTaglines.map((text, index) => ({
     text,
-    size: index === 0 ? "clamp(1.1rem, 4.8vw, 1.45rem)" : "clamp(1rem, 4.2vw, 1.2rem)",
+    stamp: /^midterms are coming/i.test(text),
+    size: /^midterms are coming/i.test(text) ? "clamp(1.05rem, 5.1vw, 1.65rem)" : index === 0 ? "clamp(1.1rem, 4.8vw, 1.45rem)" : "clamp(1rem, 4.2vw, 1.2rem)",
     weight: index === 0 ? 900 : 700,
     color: index === 0 ? C.gold : C.text,
   }));
@@ -387,7 +388,7 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
           {!taglinesBelow && (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem" }}>
               {taglines.map((t, i) => (
-                <div key={i} className={i < taglineCount ? "intro-tagline intro-tagline-visible" : "intro-tagline"} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif" }}>{t.text}</div>
+                <div key={i} className={`intro-tagline${t.stamp ? " intro-stamp" : ""}${i < taglineCount ? " intro-tagline-visible" : ""}`} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif" }}>{t.text}</div>
               ))}
             </div>
           )}
@@ -397,7 +398,7 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
       {taglinesBelow && (
         <div style={{ position:"absolute", bottom:"clamp(8rem, 18vh, 12rem)", zIndex:2, display:"flex", flexDirection:"column", alignItems:"center", gap:"0.35rem", width:"100%" }}>
           {taglines.map((t, i) => (
-            <div key={i} className={i < taglineCount ? "intro-tagline intro-tagline-visible" : "intro-tagline"} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif" }}>{t.text}</div>
+            <div key={i} className={`intro-tagline${t.stamp ? " intro-stamp" : ""}${i < taglineCount ? " intro-tagline-visible" : ""}`} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif" }}>{t.text}</div>
           ))}
         </div>
       )}
@@ -1062,6 +1063,8 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".intro-logo-solved { animation: logoLock 0.65s cubic-bezier(0.2,0.8,0.2,1) both; }" +
   ".intro-tagline { opacity:0; transform:translateY(20px) scale(0.92); text-align:center; text-transform:uppercase; letter-spacing:0.025em; padding:0 1rem; }" +
   ".intro-tagline-visible { animation: urgentLineIn 0.52s cubic-bezier(0.18,0.9,0.28,1.25) both; }" +
+  ".intro-stamp { border:4px double #f5c518;border-radius:3px;padding:.4rem .65rem;margin:.3rem 1rem .75rem;background:rgba(10,22,40,.88);box-shadow:4px 5px 0 rgba(0,0,0,.3);white-space:nowrap;transform-origin:50% 55%; }" +
+  ".intro-stamp.intro-tagline-visible { animation:stampImpact .56s linear both; }" +
   ".intro-cta-ready { animation: ctaUrgency 1.35s ease-in-out infinite; }" +
   ".loser-character { animation:loserLanding 0.82s cubic-bezier(0.18,0.9,0.25,1.18) both; transform-origin:50% 100%; }" +
   "@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }" +
@@ -1072,6 +1075,7 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   "@keyframes introUrgency { 0%,100%{opacity:1} 50%{opacity:0.82} }" +
   "@keyframes logoLock { 0%{transform:scale(1)} 35%{transform:scale(1.13) rotate(-1deg)} 62%{transform:scale(0.96) rotate(0.5deg)} 100%{transform:scale(1)} }" +
   "@keyframes urgentLineIn { 0%{opacity:0;transform:translateY(20px) scale(0.92)} 65%{opacity:1;transform:translateY(-3px) scale(1.035)} 100%{opacity:1;transform:translateY(0) scale(1)} }" +
+  "@keyframes stampImpact { 0%{opacity:0;transform:translateY(-65px) rotate(-12deg) scale(2.6);filter:blur(5px)} 12%{opacity:1} 43%{opacity:1;transform:translateY(3px) rotate(-3deg) scale(.94, .88);filter:blur(0)} 58%{transform:translateY(-2px) rotate(-2deg) scale(1.035,1.025)} 75%{transform:translateY(1px) rotate(-3.2deg) scale(.995)} 100%{opacity:1;transform:translateY(0) rotate(-3deg) scale(1);filter:blur(0)} }" +
   "@keyframes ctaUrgency { 0%,100%{box-shadow:0 4px 24px rgba(178,34,52,0.5)} 50%{box-shadow:0 4px 36px rgba(245,197,24,0.72),0 0 0 5px rgba(245,197,24,0.12)} }" +
   "@keyframes loserLanding { 0%{opacity:0;transform:translateX(-50%) translateY(-85vh) rotate(-5deg) scale(0.96)} 68%{opacity:1;transform:translateX(-50%) translateY(2.5%) rotate(1.5deg) scale(1.02,0.97)} 84%{transform:translateX(-50%) translateY(-1.2%) rotate(-0.7deg) scale(0.995,1.01)} 100%{opacity:1;transform:translateX(-50%) translateY(0) rotate(0) scale(1)} }" +
   "@media (prefers-reduced-motion: reduce) { .intro-overlay,.intro-logo-solved,.intro-tagline-visible,.intro-cta-ready,.loser-character { animation:none !important; } .intro-tagline-visible { opacity:1; transform:none; } }";
