@@ -1063,7 +1063,7 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".intro-logo-solved { animation: logoLock 0.65s cubic-bezier(0.2,0.8,0.2,1) both; }" +
   ".intro-tagline { opacity:0; transform:translateY(20px) scale(0.92); text-align:center; text-transform:uppercase; letter-spacing:0.025em; padding:0 1rem; }" +
   ".intro-tagline-visible { animation: urgentLineIn 0.52s cubic-bezier(0.18,0.9,0.28,1.25) both; }" +
-  ".intro-stamp { border:4px double #f5c518;border-radius:3px;padding:.4rem .65rem;margin:.3rem 1rem .75rem;background:rgba(10,22,40,.88);box-shadow:4px 5px 0 rgba(0,0,0,.3);white-space:nowrap;transform-origin:50% 55%; }" +
+  ".intro-stamp { border:4px double #f5c518;border-radius:3px;padding:.4rem .65rem;margin:.3rem 1rem .75rem;background:transparent;white-space:nowrap;transform-origin:50% 55%; }" +
   ".intro-stamp.intro-tagline-visible { animation:stampImpact .56s linear both; }" +
   ".intro-cta-ready { animation: ctaUrgency 1.35s ease-in-out infinite; }" +
   ".loser-character { animation:loserLanding 0.82s cubic-bezier(0.18,0.9,0.25,1.18) both; transform-origin:50% 100%; }" +
