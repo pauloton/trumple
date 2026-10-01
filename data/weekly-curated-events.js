@@ -6,6 +6,13 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  card("2026-09-30", "ballroom-fall-joke", "Says only Hispanics could survive a ballroom fall",
+    "Invited guests onto an unfinished floor. His safety briefing went racial.", 4, "Absurdity",
+    "The Washington Post", "https://www.washingtonpost.com/politics/2026/09/30/trump-says-only-hispanic-could-survive-fall-ballroom-site/"),
+  // Signed and posted Tuesday; the typo was reported on Wednesday.
+  card("2026-09-29", "unites-states-accord", "Signs 'super intelligence' pact with a US typo",
+    "'Unites States' sat beneath his signature. Super intelligence, ordinary proofreading.", 4, "Own goal",
+    "Washington Examiner", "https://www.washingtonexaminer.com/news/white-house/4748284/trump-administration-misspells-united-states-ai-memorandum/"),
   card("2026-09-29", "chatbot-biden-won", "Launches a chatbot that says he lost in 2020",
     "America.gov said Biden won, then stopped answering political questions. Briefly awkward.", 4, "Own goal",
     "Associated Press", "https://www.news4jax.com/news/politics/2026/09/29/trump-touts-americagov-but-its-government-sourced-ai-answers-undercut-many-of-his-statements/"),
