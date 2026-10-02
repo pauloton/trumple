@@ -6,6 +6,16 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // TIME published these distinct remarks on October 1; the interview was September 28.
+  card("2026-09-28", "regrets-supreme-court-picks", "Regrets all three of his Supreme Court picks",
+    "They voted against him too often. Lifetime jobs, conditional gratitude.", 4, "Grievance",
+    "Reuters", "https://www.investing.com/news/politics-news/trump-says-he-regrets-nominating-supreme-court-justices-gorsuch-barrett-and-kavanaugh-4927424"),
+  card("2026-09-28", "iran-bombing-after-midterms", "Floats more Iran bombing after the midterms",
+    "He said escalation after the vote was possible. Ballots first, maybe more bombs.", 5, "Dangerous chaos",
+    "TIME interview transcript", "https://time.com/article/2026/10/01/donald-trump-2026-interview-transcript/"),
+  card("2026-09-28", "democrats-house-retaliation", "Vows to 'go after' Democrats if they pursue him",
+    "Asked about losing the House, he promised to hit back. Oversight meets payback.", 5, "Retaliation",
+    "TIME interview transcript", "https://time.com/article/2026/10/01/donald-trump-2026-interview-transcript/"),
   card("2026-09-30", "ballroom-fall-joke", "Says only Hispanics could survive a ballroom fall",
     "Invited guests onto an unfinished floor. His safety briefing went racial.", 4, "Absurdity",
     "The Washington Post", "https://www.washingtonpost.com/politics/2026/09/30/trump-says-only-hispanic-could-survive-fall-ballroom-site/"),
