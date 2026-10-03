@@ -6,6 +6,13 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  card("2026-10-02", "mobile-oil-nuke-scenario", "Defends oil prices with an Alabama nuke scenario",
+    "He compared costly oil to Iran nuking Mobile. Quite the rally pep talk.", 4, "Fearmongering",
+    "Roll Call / Factba.se transcript", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-political-rally-mobile-alabama-october-2-2026/"),
+  // Thursday's Denton appearance, not Friday's follow-up coverage.
+  card("2026-10-01", "paxton-pain-endorsement", "Calls Paxton a 'pain in the ass' while backing him",
+    "Came to Texas to help his Senate pick. Brought an insult. With friends like these.", 4, "Own goal",
+    "Roll Call", "https://rollcall.com/2026/10/01/pain-in-the-ass-trump-again-shows-annoyance-with-paxton-after-leaked-audio/"),
   // TIME published these distinct remarks on October 1; the interview was September 28.
   card("2026-09-28", "regrets-supreme-court-picks", "Regrets all three of his Supreme Court picks",
     "They voted against him too often. Lifetime jobs, conditional gratitude.", 4, "Grievance",
