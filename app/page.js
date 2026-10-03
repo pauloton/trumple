@@ -6,6 +6,7 @@ import { isCorrectPosition, directionHint } from "../lib/answer-check.js";
 import { pacificDate, nextPacificMidnight } from "../lib/puzzle-clock.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionTimeStats, editionLabel, EDITION_NAMES } from "../lib/player-stats.js";
 import { losingShareText, winningShareText } from "../lib/share-score.js";
+import { legacyFormatForScore } from "../lib/legacy-format.js";
 import { gameplayHeadline, SORT_INSTRUCTIONS } from "../lib/gameplay-copy.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
@@ -625,7 +626,7 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
         {/* Share your horrible score */}
         <button
           onClick={async () => {
-            const msg = losingShareText({ puzzleDate });
+            const msg = losingShareText({ puzzleDate, eventCount: events.length });
             if (navigator.share) {
               try { await navigator.share({ text: msg }); return; } catch (_) {}
             }
@@ -728,9 +729,9 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
   );
 }
 
-function ShareIcons({ time, stars, puzzleDate, hintUsed }) {
+function ShareIcons({ time, stars, puzzleDate, hintUsed, eventCount }) {
   const { display } = formatTime(time);
-  const msg = winningShareText({ display, stars, puzzleDate, hintUsed });
+  const msg = winningShareText({ display, stars, puzzleDate, hintUsed, eventCount });
 
   async function generateAndShare() {
     if (navigator.share) {
@@ -850,7 +851,7 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
           View the "BEAUTIFUL" Trump Timeline
         </button>
         {hintUsed && <p style={{marginTop:".75rem",fontSize:".8rem",color:C.dim}}>Sorted with one nudge.</p>}
-        {hasTime && <ShareIcons time={time} stars={stars} puzzleDate={puzzleDate} hintUsed={hintUsed}/>}
+        {hasTime && <ShareIcons time={time} stars={stars} puzzleDate={puzzleDate} hintUsed={hintUsed} eventCount={scoreEventCount}/>}
         <div style={{ marginTop:"0.75rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.62rem", letterSpacing:"0.06em" }}>
           NEXT CHAOS IN {countdown}
         </div>
@@ -898,8 +899,12 @@ export default function TrumpleApp() {
     const forceReplay = window.location.pathname === "/play" || params.get("challenge") === "1";
     const urlDate = params.get("date");
     const localDate = urlDate || pacificDate();
+    const priorResult = dailyResultForDate(getStats(localDate).results, localDate);
+    const format = params.get("format") || (!forceReplay && legacyFormatForScore(localDate, priorResult?.eventCount));
+    const apiParams = new URLSearchParams({ date: localDate });
+    if (format) apiParams.set("format", format);
     const abort = new AbortController();
-    fetch("/api/trump-puzzle?date=" + localDate, { cache:"no-store", signal:abort.signal })
+    fetch("/api/trump-puzzle?" + apiParams, { cache:"no-store", signal:abort.signal })
       .then(async r => {
         const data = await r.json();
         if (!r.ok) {

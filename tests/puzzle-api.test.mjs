@@ -15,7 +15,7 @@ async function getPuzzle(date) {
 }
 
 function assertPuzzleShape(body, expectedEdition) {
-  const expectedCards = expectedEdition === "weekly" ? 7 : 5;
+  const expectedCards = expectedEdition === "weekly" || (expectedEdition === "legacy" && body.puzzle.date >= "2026-10-03") ? 7 : 5;
   assert.equal(body.edition, expectedEdition);
   assert.equal(body.puzzle.events.length, expectedCards);
   assert.equal(new Set(body.puzzle.events.map((event) => event.id)).size, expectedCards);
@@ -155,11 +155,40 @@ test("every 2026 puzzle satisfies the game contract and schedule", async () => {
 
 test("all frozen puzzles keep their card identities and answer order", async () => {
   for (const [date, original] of Object.entries(published)) {
-    const { body } = await getPuzzle(date);
+    // October's explicit seven-card revision leaves its original available.
+    const body = await (await GET(new Request(`${requestFor(date).url}&format=legacy-5`))).json();
     assert.deepEqual(body.answerOrder, original.answerOrder, date);
     assert.deepEqual(body.puzzle.events.map(({ id,title }) => ({ id,title })), original.puzzle.events.map(({ id,title }) => ({ id,title })), date);
     for (const [id, exactDate] of Object.entries(original.dateMap)) if (exactDate) assert.equal(body.dateMap[id],exactDate,date);
   }
+});
+
+test("October Legacy expands to seven without replacing its original five cards", async () => {
+  const original = published["2026-10-03"];
+  const { body } = await getPuzzle("2026-10-03");
+  assertPuzzleShape(body, "legacy");
+  assert.equal(body.puzzle.id, `${original.puzzle.id}-7`);
+  for (const event of original.puzzle.events) {
+    assert.equal(body.puzzle.events.find(item => item.id === event.id).title, event.title);
+    assert.equal(body.dateMap[event.id], original.dateMap[event.id]);
+  }
+  assert.deepEqual(body, (await getPuzzle("2026-10-03")).body);
+  const dates = body.answerOrder.map(id => body.dateMap[id]);
+  assert.equal(new Set(dates).size, 7);
+  assert.deepEqual(dates, [...dates].sort());
+  assert.ok(body.puzzle.events.every(event => event.sources.length > 0));
+});
+
+test("future Legacy generators use seven cards while daily stays five", async t => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-11-07T20:00:00Z") });
+  const { body } = await getPuzzle("2026-11-07");
+  assertPuzzleShape(body, "legacy");
+  assert.equal(new Set(Object.values(body.dateMap)).size, 7);
+  assert.ok(Object.values(body.dateMap).every(date => date <= "2026-11-07"));
+  assert.equal(Object.values(body.yearMap).filter(year => year < 2025).length, 4);
+  assert.equal(Object.values(body.yearMap).filter(year => year >= 2025).length, 3);
+  assert.deepEqual(body, (await getPuzzle("2026-11-07")).body);
+  assertPuzzleShape((await getPuzzle("2026-11-06")).body, "second-term");
 });
 
 test("future puzzles cannot leak or become accidental published challenges", async () => {

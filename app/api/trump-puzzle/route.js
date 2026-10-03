@@ -10,10 +10,12 @@ import { createDailyRotationSelector } from "../../../lib/daily-rotation.js";
 import publishedPuzzles from "../../../data/published-puzzles.json" with { type: "json" };
 import { pacificDate, addDays } from "../../../lib/puzzle-clock.js";
 import { VERIFIED_LEGACY_EVENTS } from "../../../data/verified-legacy-events.js";
+import { LEGACY_REVISIONS } from "../../../data/legacy-revisions.js";
+import { LEGACY_SEVEN_START } from "../../../lib/legacy-format.js";
 
 // ============================================================
 // EVENT POOL, spanning 2015–2025
-// Legacy draws from three rotating historical eras and two second-term events.
+// Legacy draws from four historical eras and three second-term events.
 //
 // TO ADD AN EVENT: append to the right era. Done.
 //
@@ -518,16 +520,17 @@ function pickClassicSecondTermEvents(dayNum) {
 }
 
 function buildClassicLegacyPuzzle(dayNum, dateText) {
+  const expanded = dateText >= LEGACY_SEVEN_START;
   const historicalPools = [[2016,2016],[2017,2018],[2019,2020],[2021,2024]]
     .map(([start,end]) => VERIFIED_LEGACY_EVENTS.filter(event => event.year >= start && event.year <= end && event.date <= dateText));
   const historical = seededShuffle(historicalPools, SEASON * 1289 + dayNum)
-    .slice(0, 3)
+    .slice(0, expanded ? 4 : 3)
     .map((pool, index) => pickForDay(pool, index + 1, dayNum));
   const currentByDate = new Map(seededShuffle(
     DATED_SECOND_TERM_EVENTS.filter(event => event.date <= dateText), SEASON * 1291 + dayNum
   ).map(event => [event.date, event]));
   const current = [...currentByDate.values()]
-    .slice(0, 2)
+    .slice(0, expanded ? 3 : 2)
     .map((event) => ({ ...event, year: Number(event.date.slice(0, 4)) }));
   return [...historical, ...current]
     .sort((a, b) => {
@@ -579,6 +582,11 @@ export async function GET(req) {
 
   if (dateParam > pacificDate()) {
     return NextResponse.json({ error: "That puzzle hasn't dropped yet.", code: "NOT_RELEASED" }, { status: 404, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } });
+  }
+
+  // An explicit format revision is separate from the immutable original archive.
+  if (LEGACY_REVISIONS[dateParam] && searchParams.get("format") !== "legacy-5") {
+    return NextResponse.json(withDetails(LEGACY_REVISIONS[dateParam]), { headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } });
   }
 
   // A library update must never rewrite a challenge already played or shared.

@@ -31,6 +31,20 @@ test("last five wins are edition-specific, newest first, with all-time best reta
   assert.equal(stats.history[0].hintUsed,true);
 });
 
+test("seven-card Legacy records do not mix with old Legacy, Daily, or Sunday times", () => {
+  const results = [
+    { date: "2026-09-05", edition: "legacy", eventCount: 5, won: true, timeMs: 1000 },
+    { date: "2026-10-02", edition: "second-term", eventCount: 5, won: true, timeMs: 2000 },
+    { date: "2026-10-03", edition: "legacy", eventCount: 7, won: true, timeMs: 30000 },
+    { date: "2026-10-04", edition: "weekly", eventCount: 7, won: true, timeMs: 4000 },
+  ];
+  const stats = editionTimeStats(results, "legacy", 7);
+  assert.equal(stats.best, 30000);
+  assert.equal(stats.history.length, 1);
+  assert.equal(stats.earlier[0].eventCount, 5);
+  assert.equal(editionLabel("legacy", 7), "Legacy · 7 events");
+});
+
 test("edition counts survive saving and global streak still spans editions", () => {
   let results=[];
   for(const [date,edition,eventCount] of [["2026-09-05","legacy",5],["2026-09-06","weekly",7],["2026-09-07","second-term",5]]) results=recordDailyResult(results,date,true,{edition,eventCount,timeMs:20000,stars:3});

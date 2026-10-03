@@ -16,6 +16,18 @@ test("shared challenge links open the exact playable puzzle", () => {
   assert.equal(url.searchParams.get("challenge"), "1");
 });
 
+test("October Legacy shares distinguish original five-card and revised seven-card games", () => {
+  for (const share of [winningShareText, losingShareText]) {
+    const args = { display: "0:25.00", stars: 2, puzzleDate: "2026-10-03" };
+    const oldUrl = new URL(share({ ...args, eventCount: 5 }).split("\n")[1]);
+    const newUrl = new URL(share({ ...args, eventCount: 7 }).split("\n")[1]);
+    assert.equal(oldUrl.searchParams.get("format"), "legacy-5");
+    assert.equal(newUrl.searchParams.has("format"), false);
+    assert.equal(oldUrl.searchParams.get("challenge"), "1");
+  }
+  assert.equal(new URL(challengeUrl("2026-10-02", undefined, 5)).searchParams.has("format"), false);
+});
+
 test("score shares use one short performance challenge sentence", () => {
   const win = winningShareText({ display: "0:15.08", stars: 3, puzzleDate: "2026-08-23" });
   const loss = losingShareText({ puzzleDate: "2026-08-23" });
