@@ -8,6 +8,7 @@ import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionT
 import { losingShareText, winningShareText } from "../lib/share-score.js";
 import { legacyFormatForScore } from "../lib/legacy-format.js";
 import { gameplayHeadline, SORT_INSTRUCTIONS } from "../lib/gameplay-copy.js";
+import { dailyIntroCopy } from "../lib/intro-copy.js";
 
 const LOSER_IMG = "/bg/loser.jpg";
 
@@ -302,14 +303,31 @@ function ErrorScreen({ weeklyNotReady = false }) {
 }
 
 function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
+  const isDaily = editionMeta.key === "second-term";
+  const [dailyCopy, setDailyCopy] = useState(() => dailyIntroCopy());
   const [show, setShow] = useState(false);
   const [logoSolved, setLogoSolved] = useState(false);
   const [badgeVisible, setBadgeVisible] = useState(false);
   const [taglineCount, setTaglineCount] = useState(0);
-  useEffect(() => { setTimeout(() => setShow(true), 100); }, []);
+  useEffect(() => { const timer = setTimeout(() => setShow(true), 100); return () => clearTimeout(timer); }, []);
 
   useEffect(() => {
-    if (!logoSolved) return;
+    if (!isDaily) return;
+    const update = () => setDailyCopy(dailyIntroCopy());
+    const interval = setInterval(update, 1000);
+    document.addEventListener("visibilitychange", update);
+    return () => { clearInterval(interval); document.removeEventListener("visibilitychange", update); };
+  }, [isDaily]);
+
+  // The daily stamp lands while the logo is still sorting itself out.
+  useEffect(() => {
+    if (!isDaily) return;
+    const timers = [650, 1150, 1550].map((delay, index) => setTimeout(() => setTaglineCount(index + 1), delay));
+    return () => timers.forEach(clearTimeout);
+  }, [isDaily]);
+
+  useEffect(() => {
+    if (!logoSolved || isDaily) return;
     const timers = [
       setTimeout(() => setBadgeVisible(true), 0),
       setTimeout(() => setTaglineCount(1), 350),
@@ -317,7 +335,7 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
       setTimeout(() => setTaglineCount(3), 1150),
     ];
     return () => timers.forEach(clearTimeout);
-  }, [logoSolved]);
+  }, [logoSolved, isDaily]);
 
   const dateLabel = new Date(puzzle.date + "T12:00:00").toLocaleDateString("en-US", {
     weekday:"long", month:"long", day:"numeric", year:"numeric"
@@ -335,10 +353,10 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
   } = editionMeta;
 
   const taglinesBelow = layoutVariant === "taglines-below";
-  const taglines = editionTaglines.map((text, index) => ({
+  const taglines = (isDaily ? dailyCopy.lines : editionTaglines).map((text, index) => ({
     text,
-    stamp: /^midterms are coming/i.test(text),
-    size: /^midterms are coming/i.test(text) ? "clamp(1.05rem, 5.1vw, 1.65rem)" : index === 0 ? "clamp(1.1rem, 4.8vw, 1.45rem)" : "clamp(1rem, 4.2vw, 1.2rem)",
+    stamp: isDaily && dailyCopy.stamp && index === 0,
+    size: isDaily && index === 0 ? "clamp(1.05rem, 5.1vw, 1.65rem)" : index === 0 ? "clamp(1.1rem, 4.8vw, 1.45rem)" : "clamp(1rem, 4.2vw, 1.2rem)",
     weight: index === 0 ? 900 : 700,
     color: index === 0 ? C.gold : C.text,
   }));
@@ -362,7 +380,7 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
   };
 
   return (
-    <div style={{
+    <div className={isDaily ? "intro-screen intro-daily" : "intro-screen"} style={{
       position:"fixed", inset:0,
       ...bgStyle,
       display:"flex", flexDirection:"column", alignItems:"center",
@@ -383,7 +401,7 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
           <span style={{ color:C.text, fontWeight:700 }}>YOUR DAILY GAME OF SANITY</span>
         </div>
 
-        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom: taglinesBelow ? "0" : "clamp(6rem, 16vh, 10rem)" }}>
+        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom: taglinesBelow ? "0" : isDaily ? "clamp(10rem, 30dvh, 18rem)" : "clamp(6rem, 16vh, 10rem)" }}>
           <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           {renderBadge()}
           {!taglinesBelow && (
@@ -391,6 +409,7 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
               {taglines.map((t, i) => (
                 <div key={i} className={`intro-tagline${t.stamp ? " intro-stamp" : ""}${i < taglineCount ? " intro-tagline-visible" : ""}`} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif" }}>{t.text}</div>
               ))}
+              {isDaily && dailyCopy.countdown && <p className="election-countdown">{dailyCopy.countdown}</p>}
             </div>
           )}
         </div>
@@ -415,7 +434,7 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
         }}
           onMouseEnter={e => e.target.style.transform="scale(1.05)"}
           onMouseLeave={e => e.target.style.transform="scale(1)"}
-        >SORT THE CHAOS!</button>
+        >{isDaily ? "SORT THE CHAOS" : "SORT THE CHAOS!"}</button>
       </div>
     </div>
   );
@@ -1071,6 +1090,9 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".intro-stamp { border:4px double #f5c518;border-radius:3px;padding:.4rem .65rem;margin:.3rem 1rem .75rem;background:transparent;white-space:nowrap;transform-origin:50% 55%; }" +
   ".intro-stamp.intro-tagline-visible { animation:stampImpact .56s linear both; }" +
   ".intro-cta-ready { animation: ctaUrgency 1.35s ease-in-out infinite; }" +
+  ".intro-daily .intro-cta-ready { animation:none; }" +
+  ".intro-daily .intro-tagline:not(.intro-stamp) { text-transform:none;max-width:440px;text-wrap:balance; }" +
+  ".election-countdown { margin-top:.8rem;color:#e6d6c3;font-family:'JetBrains Mono',monospace;font-size:clamp(.6rem,2.5vw,.72rem);letter-spacing:.025em;text-align:center;padding:0 1rem; }" +
   ".loser-character { animation:loserLanding 0.82s cubic-bezier(0.18,0.9,0.25,1.18) both; transform-origin:50% 100%; }" +
   "@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }" +
   "@keyframes celebrate { 0%{transform:scale(1)} 25%{transform:scale(1.03) rotate(-0.5deg)} 50%{transform:scale(1.05) rotate(0.5deg)} 75%{transform:scale(1.03) rotate(-0.3deg)} 100%{transform:scale(1)} }" +
