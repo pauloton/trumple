@@ -302,7 +302,7 @@ function ErrorScreen({ weeklyNotReady = false }) {
   );
 }
 
-function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
+function IntroScreen({ onStart, puzzle, editionMeta }) {
   const isDaily = editionMeta.key === "second-term";
   const [dailyCopy, setDailyCopy] = useState(() => dailyIntroCopy());
   const [show, setShow] = useState(false);
@@ -396,8 +396,6 @@ function IntroScreen({ onStart, puzzle, editionMeta, streak = 0 }) {
           {dateLabel}
         </div>
         <div style={{ marginTop:"0.65rem", display:"flex", alignItems:"center", justifyContent:"center", gap:"0.75rem", color:C.text, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.66rem", letterSpacing:"0.08em" }}>
-          {streak > 0 && <span style={{ color:C.gold }}>🔥 {streak} DAY STREAK</span>}
-          {streak > 0 && <span style={{ color:C.dimmer }}>•</span>}
           <span style={{ color:C.text, fontWeight:700 }}>YOUR DAILY GAME OF SANITY</span>
         </div>
 
@@ -900,7 +898,6 @@ export default function TrumpleApp() {
   const [feedback, setFeedback]         = useState("");
   const [newDay, setNewDay]             = useState(null);
   const [restoredResult, setRestoredResult] = useState(null);
-  const [introStreak, setIntroStreak]   = useState(0);
   const confettiShown = useRef(false);
   const gameOverShown = useRef(false);
   const chainViewSource = useRef(null);
@@ -943,7 +940,6 @@ export default function TrumpleApp() {
 
         const stats = getStats(data.puzzle.date);
         const saved = dailyResultForDate(stats.results, data.puzzle.date);
-        setIntroStreak(stats.streak);
         if (!saved || forceReplay) {
           setRestoredResult(null);
           setScreen(SCREENS.INTRO);
@@ -1056,7 +1052,7 @@ export default function TrumpleApp() {
       {newDay && <div className="new-day-banner" role="status">New day. Fresh chaos. <button onClick={() => window.location.assign(window.location.pathname)}>Play today</button></div>}
       {screen === SCREENS.LOADING    && <LoadingScreen/>}
       {screen === SCREENS.ERROR      && <ErrorScreen weeklyNotReady={weeklyNotReady}/>}
-      {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta} streak={introStreak}/>}
+      {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
       {screen === SCREENS.PLAYING    && <PlayingScreen events={events} edition={editionMeta?.key} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts} hint={hint} feedback={feedback} onHint={() => setHint(directionHint(events,answerOrder,dateMap,isWeekly))}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
