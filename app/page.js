@@ -10,8 +10,9 @@ import { losingShareText, winningShareText } from "../lib/share-score.js";
 import { legacyFormatForScore } from "../lib/legacy-format.js";
 import { gameplayHeadline, SORT_INSTRUCTIONS } from "../lib/gameplay-copy.js";
 import { dailyIntroCopy } from "../lib/intro-copy.js";
+import { introPresentation } from "../lib/intro-presentation.js";
 
-const LOSER_IMG = "/bg/loser.jpg";
+const LOSER_IMG = "/bg/loser-toy-pointing-v5.png";
 
 const C = {
   bg:       "#0A1628",
@@ -305,6 +306,7 @@ function ErrorScreen({ weeklyNotReady = false }) {
 
 function IntroScreen({ onStart, puzzle, editionMeta }) {
   const isDaily = editionMeta.key === "second-term";
+  const toyArtwork = editionMeta.layoutVariant === "toy";
   const [dailyCopy, setDailyCopy] = useState(() => dailyIntroCopy());
   const [show, setShow] = useState(false);
   const [logoSolved, setLogoSolved] = useState(false);
@@ -374,14 +376,14 @@ function IntroScreen({ onStart, puzzle, editionMeta }) {
     }
     // gold badge (weekly, or any badgeStyle:"gold")
     return (
-      <div style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform: badgeVisible ? "rotate(-10deg) scale(1)" : "rotate(-10deg) scale(0.7)", display:"inline-block", marginTop:"-3.5rem", position:"relative", zIndex:3, opacity: badgeVisible ? 1 : 0, transition:"opacity 0.35s ease, transform 0.35s ease" }}>
+      <div className="intro-edition-badge" style={{ background:C.gold, color:"#1a1a2e", borderRadius:"10px", padding:"0.125rem 0.45rem", fontSize:"0.975rem", fontWeight:900, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.12em", transform: badgeVisible ? "rotate(-10deg) scale(1)" : "rotate(-10deg) scale(0.7)", display:"inline-block", marginTop:"-3.5rem", position:"relative", zIndex:3, opacity: badgeVisible ? 1 : 0, transition:"opacity 0.35s ease, transform 0.35s ease" }}>
         {editionLabel}
       </div>
     );
   };
 
   return (
-    <div className={isDaily ? "intro-screen intro-daily" : "intro-screen"} style={{
+    <div className={`intro-screen${isDaily ? " intro-daily" : ""}${editionMeta.key === "weekly" ? " intro-weekly" : ""}${toyArtwork ? " intro-toy" : ""}`} style={{
       position:"fixed", inset:0,
       ...bgStyle,
       display:"flex", flexDirection:"column", alignItems:"center",
@@ -393,14 +395,14 @@ function IntroScreen({ onStart, puzzle, editionMeta }) {
         display:"flex", flexDirection:"column", alignItems:"center",
         opacity: show ? 1 : 0, transition:"opacity 0.8s ease",
       }}>
-        <div style={{ width:"100%", textAlign:"center", paddingTop:"clamp(2rem, 7vh, 3.5rem)", fontSize:"0.72rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.06em" }}>
+        <div className="intro-date" style={{ width:"100%", textAlign:"center", paddingTop:"clamp(2rem, 7vh, 3.5rem)", fontSize:"0.72rem", color:C.dimmer, fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.06em" }}>
           {dateLabel}
         </div>
         <div style={{ marginTop:"0.65rem", display:"flex", alignItems:"center", justifyContent:"center", gap:"0.75rem", color:C.text, fontFamily:"'JetBrains Mono', monospace", fontSize:"0.66rem", letterSpacing:"0.08em" }}>
           <span style={{ color:C.text, fontWeight:700 }}>YOUR DAILY GAME OF SANITY</span>
         </div>
 
-        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom: taglinesBelow ? "0" : isDaily ? "clamp(10rem, 30dvh, 18rem)" : "clamp(6rem, 16vh, 10rem)" }}>
+        <div className="intro-message" style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(1rem, 3vh, 1.8rem)", paddingBottom: taglinesBelow ? "0" : isDaily ? "clamp(10rem, 30dvh, 18rem)" : "clamp(6rem, 16vh, 10rem)" }}>
           <AnimatedLogo onSolved={() => setLogoSolved(true)} />
           {renderBadge()}
           {!taglinesBelow && (
@@ -408,7 +410,6 @@ function IntroScreen({ onStart, puzzle, editionMeta }) {
               {taglines.map((t, i) => (
                 <div key={i} className={`intro-tagline${t.stamp ? " intro-stamp" : ""}${i < taglineCount ? " intro-tagline-visible" : ""}`} style={{ fontSize:t.size, fontWeight:t.weight, color:t.color, fontFamily:"'Space Grotesk', sans-serif" }}>{t.text}</div>
               ))}
-              {isDaily && dailyCopy.countdown && <p className="election-countdown">{dailyCopy.countdown}</p>}
             </div>
           )}
         </div>
@@ -422,8 +423,8 @@ function IntroScreen({ onStart, puzzle, editionMeta }) {
         </div>
       )}
 
-      <div style={{ position:"absolute", bottom:"clamp(4rem, 11vh, 7rem)", zIndex:2, display:"flex", justifyContent:"center", width:"100%" }}>
-        <button className={taglineCount >= 3 ? "intro-cta intro-cta-ready" : "intro-cta"} onClick={onStart} style={{
+      <div className="intro-action" style={{ position:"absolute", bottom:"clamp(4rem, 11vh, 7rem)", zIndex:2, display:"flex", justifyContent:"center", width:"100%" }}>
+        <button className={taglineCount >= taglines.length ? "intro-cta intro-cta-ready" : "intro-cta"} onClick={onStart} style={{
           background:buttonColor, color:"#ffffff", border:"none", borderRadius:"14px",
           padding:"1rem 3rem", fontSize:"1.05rem", fontWeight:700, cursor:"pointer",
           fontFamily:"'Space Grotesk', sans-serif", letterSpacing:"0.05em",
@@ -571,7 +572,6 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
               animation: isWrong ? "shake 0.4s ease" : isLocked ? "celebrate 0.5s ease" : "none",
             }}>
             <div style={{ flex:1, fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color: isLocked ? C.bg : C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18, textAlign:"center" }}>
-              {isLocked && <span aria-hidden="true">✓ </span>}
               {event.title}
             </div>
           </div>
@@ -617,19 +617,18 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
   }, [firstVisit, onMount, puzzleDate, meta?.key, events.length]);
 
   return (
-    <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b0f18", overflow:"hidden" }}>
-      {/* Two clipped views of the same artwork: only the speech bubble stamps in. */}
-      <div className="loser-character" style={{ position:"absolute", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:"440px", aspectRatio:"9 / 16", background:"#0b1628", pointerEvents:"none", userSelect:"none" }}>
-        <img className="loser-portrait" src={LOSER_IMG} alt="" />
-        <img className="loser-bubble" src={LOSER_IMG} alt="LOSER!" />
+    <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b1628", overflowY:"auto", overflowX:"hidden" }}>
+      {/* The portrait stays still. Only the separate speech bubble stamps in. */}
+      <div className="loser-artwork">
+        <div className="loser-character"><img className="loser-portrait" src={LOSER_IMG} alt="" /></div>
+        <div className="loser-bubble-position"><div className="loser-bubble">LOSER!</div></div>
       </div>
 
       {/* Overlay gradient so text is readable at top */}
 
 
       {/* Content */}
-      <div style={{ position:"relative", zIndex:2, width:"100%", maxWidth:"440px", padding:"0 1.5rem", display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"12%", paddingBottom:0 }}>
-        <p style={{fontSize:".8rem",color:C.dim,marginBottom:".5rem"}}>{editionLabel(meta?.key,events.length)}</p>
+      <div style={{ position:"relative", zIndex:2, flexShrink:0, width:"100%", maxWidth:"440px", padding:"0 1.5rem", display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"clamp(2rem, 6dvh, 3.5rem)", paddingBottom:0 }}>
         {/* GAME OVER */}
         <div style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:"3rem", fontWeight:900, color:C.red, letterSpacing:"-0.02em", lineHeight:1, textAlign:"center", marginBottom:"0.4rem", textShadow:"0 2px 24px rgba(220,53,69,0.5)" }}>
           GAME OVER
@@ -806,7 +805,6 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
       <Confetti active={showConfetti}/>
       <div className="results-screen" style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"1.5rem 1.25rem", maxWidth:"440px", margin:"0 auto", height:"100dvh", overflowY:"auto", justifyContent:"safe center" }}>
         <StarDisplay stars={stars} size={32} celebrate={firstVisit}/>
-        <p style={{marginTop:".6rem",color:C.dim,fontSize:".8rem"}}>{editionLabel(meta?.key,scoreEventCount)}</p>
         <div style={{ marginTop:"0.6rem", fontSize:"1.6rem", fontWeight:900, fontFamily:"'Space Grotesk', sans-serif", color:C.gold, letterSpacing:"-0.01em" }}>{celebWord}</div>
         <div style={{ marginTop:"1rem", fontSize:hasTime ? "clamp(3rem,12vw,4.5rem)" : "1rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:C.text, letterSpacing:"-0.02em", lineHeight:1 }}>{hasTime ? display : "Time not recorded"}</div>
         <div style={{ marginTop:"1rem", display:"grid", gridTemplateColumns:"repeat(3, minmax(0, 1fr))", gap:"0.5rem", width:"100%" }}>
@@ -844,14 +842,14 @@ function CompleteScreen({ time, failedAttempts, onViewChain, firstVisit, onMount
                 <div style={{ display:"flex", alignItems:"center", gap:"0.5rem", marginTop:"0.5rem" }}>
                   <div style={{ width:"1rem", fontSize:"0.6rem", color:C.gold, fontFamily:"'JetBrains Mono', monospace", textAlign:"right", flexShrink:0 }}>★</div>
                   <div style={{ flex:1, background:C.gold, borderRadius:"6px", height:"2rem", position:"relative", overflow:"hidden" }}>
-                    <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:"#1a1a2e" }}>{editionName.toUpperCase()} BEST&nbsp;&nbsp;{formatTime(records.best).display}</div>
+                    <div style={{ position:"absolute", right:"0.6rem", top:"50%", transform:"translateY(-50%)", fontSize:"0.75rem", fontWeight:700, fontFamily:"'JetBrains Mono', monospace", color:"#1a1a2e" }}>BEST&nbsp;&nbsp;{formatTime(records.best).display}</div>
                   </div>
                 </div>
               )}
             </div>
           );
         })()}
-        {!records.history.length && <p style={{marginTop:"1rem",fontSize:".8rem",color:C.dim,textAlign:"center"}}>No recorded {eventCount}-event {editionName.toLowerCase()} times yet.</p>}
+        {!records.history.length && <p style={{marginTop:"1rem",fontSize:".8rem",color:C.dim,textAlign:"center"}}>No recorded times yet.</p>}
         {(records.earlier.length > 0 || stats.history?.length > 0 || stats.best) && <details style={{width:"100%",marginTop:".75rem",fontSize:".75rem",color:C.dim}}>
           <summary style={{cursor:"pointer"}}>Earlier scores</summary>
           <p style={{margin:".5rem 0"}}>Older or unlabelled formats are saved, but kept out of this edition's records.</p>
@@ -931,7 +929,18 @@ export default function TrumpleApp() {
         setDateMap(data.dateMap || {});
         setIsWeekly(!!data.isWeekly);
         setIsSecondTerm(!!data.isSecondTerm);
-        setEditionMeta(data.editionMeta || null);
+        setEditionMeta(introPresentation(data.editionMeta) || null);
+
+        // Local design previews must never record a loss or change a streak.
+        if (process.env.NODE_ENV === "development" && params.get("preview") === "loser") {
+          setEvents(data.answerOrder.map(id => {
+            const event = data.puzzle.events.find(item => item.id === id);
+            return event ? { ...event, year: data.yearMap[id], date: data.dateMap?.[id] || null } : null;
+          }).filter(Boolean));
+          gameOverShown.current = true;
+          setScreen(SCREENS.GAME_OVER);
+          return;
+        }
 
         const stats = getStats(data.puzzle.date);
         const saved = dailyResultForDate(stats.results, data.puzzle.date);
@@ -1081,11 +1090,23 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".intro-stamp.intro-tagline-visible { animation:stampImpact .56s linear both; }" +
   ".intro-cta-ready { animation: ctaUrgency 1.35s ease-in-out infinite; }" +
   ".intro-daily .intro-cta-ready { animation:none; }" +
+  ".intro-toy .intro-overlay { animation:none; }" +
+  ".intro-toy { max-width:56.25dvh; margin-inline:auto; }" +
+  ".intro-toy .intro-date { padding-top:2dvh !important; color:#f4c2b7 !important; }" +
+  ".intro-toy .intro-logo { zoom:.55; }" +
+  ".intro-toy .intro-tagline { font-size:clamp(.8rem,2.3dvh,1.05rem) !important; }" +
+  ".intro-toy .intro-stamp { margin-bottom:.25rem; }" +
+  ".intro-toy .intro-message { flex:0 !important; justify-content:flex-start !important; padding-top:1.5dvh; padding-bottom:0 !important; gap:0.35rem !important; }" +
+  ".intro-toy .intro-tagline { text-shadow:0 1px 6px rgba(0,0,0,.35); }" +
+  ".intro-weekly.intro-toy .intro-edition-badge { margin-top:0 !important; margin-bottom:.5rem; }" +
+  ".intro-weekly.intro-toy .intro-action { bottom:max(2dvh,env(safe-area-inset-bottom)) !important; }" +
   ".intro-daily .intro-tagline:not(.intro-stamp) { text-transform:none;max-width:440px;text-wrap:balance; }" +
-  ".election-countdown { margin-top:.8rem;color:#e6d6c3;font-family:'JetBrains Mono',monospace;font-size:clamp(.6rem,2.5vw,.72rem);letter-spacing:.025em;text-align:center;padding:0 1rem; }" +
-  ".loser-portrait,.loser-bubble{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom;}" +
-  ".loser-portrait{clip-path:polygon(0 0,100% 0,100% 81.8%,47.5% 81.8%,47.5% 89.5%,100% 89.5%,100% 100%,0 100%);}" +
-  ".loser-bubble{clip-path:inset(81.8% 24.5% 10.5% 47.5%);transform-origin:64% 86%;animation:loserStamp .48s .18s linear both;}" +
+  ".loser-artwork{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(100vw,56.25dvh,540px);aspect-ratio:9/16;pointer-events:none;user-select:none;}" +
+  ".loser-character{position:absolute;inset:0;transform:scale(.75);transform-origin:left bottom;}" +
+  ".loser-portrait{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}" +
+  ".loser-bubble-position{position:absolute;left:45.75%;top:85%;}" +
+  ".loser-bubble{position:relative;background:#fff;color:#050505;border-radius:22px;padding:.6em .5em;font-family:'Nunito',sans-serif;font-size:clamp(1.25rem,5.5vw,1.9rem);font-weight:900;line-height:1;transform-origin:0 50%;animation:loserStamp .48s .18s linear both;}" +
+  ".loser-bubble:before{content:'';position:absolute;top:52%;left:-20px;width:26px;height:9px;background:#fff;border-radius:100% 0 0 100%;transform:rotate(18deg);}" +
   "@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }" +
   "@keyframes celebrate { 0%{transform:scale(1)} 25%{transform:scale(1.03) rotate(-0.5deg)} 50%{transform:scale(1.05) rotate(0.5deg)} 75%{transform:scale(1.03) rotate(-0.3deg)} 100%{transform:scale(1)} }" +
   "@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }" +
