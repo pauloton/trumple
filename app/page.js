@@ -2,7 +2,8 @@
 export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatEventDate } from "../lib/chain-display.js";
-import { isCorrectPosition, directionHint } from "../lib/answer-check.js";
+import { isCorrectPosition } from "../lib/answer-check.js";
+import { eventWriteup } from "../lib/event-writeups.js";
 import { pacificDate, nextPacificMidnight } from "../lib/puzzle-clock.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionTimeStats, editionLabel, EDITION_NAMES } from "../lib/player-stats.js";
 import { losingShareText, winningShareText } from "../lib/share-score.js";
@@ -617,9 +618,10 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
 
   return (
     <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b0f18", overflow:"hidden" }}>
-      {/* Backdrop image lands once, then stays still. */}
-      <div className="loser-character" style={{ position:"absolute", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:"440px", aspectRatio:"9 / 16", pointerEvents:"none", userSelect:"none" }}>
-        <img src={LOSER_IMG} alt="" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain", objectPosition:"bottom" }} />
+      {/* Two clipped views of the same artwork: only the speech bubble stamps in. */}
+      <div className="loser-character" style={{ position:"absolute", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:"440px", aspectRatio:"9 / 16", background:"#0b1628", pointerEvents:"none", userSelect:"none" }}>
+        <img className="loser-portrait" src={LOSER_IMG} alt="" />
+        <img className="loser-bubble" src={LOSER_IMG} alt="LOSER!" />
       </div>
 
       {/* Overlay gradient so text is readable at top */}
@@ -662,7 +664,7 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
     </div>
   );
 }
-function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, onLockIn, timeDisplay, failedAttempts=0, hint, onHint, feedback, isReadOnly=false, onBackToResults, backLabel="Back to Score" }) {
+function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, onLockIn, timeDisplay, failedAttempts=0, feedback, isReadOnly=false, onBackToResults, backLabel="Back to Score" }) {
   const [detail, setDetail] = useState(null);
   const detailRef = useRef(null);
   const detailTrigger = useRef(null);
@@ -696,7 +698,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
             <button autoFocus className="detail-close" onClick={() => detailRef.current?.close()}>Close</button>
             <p>{formatEventDate(detail.date, detail.year)}</p>
             <h2>{detail.title}</h2>
-            <p>{detail.hint}</p>
+            <p>{eventWriteup(detail)}</p>
             {detail.sources?.length ? <ul>{detail.sources.map(source => <li key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">Read {source.name} ↗</a></li>)}</ul> : <p>Source link not yet available for this archived card.</p>}
           </>}
         </dialog>
@@ -718,13 +720,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
         <div style={{ height:"100%", width:((lockedCount/events.length)*100)+"%", background:C.red, borderRadius:"2px", transition:"width 0.4s ease" }}/>
       </div>
       <DraggableList events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={onReorder}/>
-      <div className="feedback-area">
-        <div className="play-feedback" role="status" aria-live="polite">
-          {feedback}
-          {hint && <div className="nudge">At the nudge: “{hint.title}” needed to move {hint.direction}.</div>}
-        </div>
-        {failedAttempts > 0 && !hint && !allCorrect && <button className="hint-button" onClick={onHint}>Stuck? Give me one nudge</button>}
-      </div>
+      <div className="sr-only" role="status" aria-live="polite">{feedback}</div>
       {!allCorrect && (
         <button onClick={onLockIn} style={{
           marginTop:"clamp(0.5rem,1.5vh,1rem)", background:C.red, color:"#fff",
@@ -894,7 +890,6 @@ export default function TrumpleApp() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockedCorrect, setLockedCorrect] = useState({});
   const [wrongCards, setWrongCards]     = useState({});
-  const [hint, setHint]                 = useState(null);
   const [feedback, setFeedback]         = useState("");
   const [newDay, setNewDay]             = useState(null);
   const [restoredResult, setRestoredResult] = useState(null);
@@ -989,7 +984,7 @@ export default function TrumpleApp() {
     const shuffled = shuffleArray(evts);
     setEvents(shuffled); setRevealEvents(shuffled);
     setFailedAttempts(0); setLockedCorrect({}); setWrongCards({});
-    setHint(null); setFeedback("");
+    setFeedback("");
     setScreen(SCREENS.REVEAL);
   };
 
@@ -1054,9 +1049,9 @@ export default function TrumpleApp() {
       {screen === SCREENS.ERROR      && <ErrorScreen weeklyNotReady={weeklyNotReady}/>}
       {screen === SCREENS.INTRO      && puzzle && editionMeta && <IntroScreen puzzle={puzzle} onStart={handleStart} editionMeta={editionMeta}/>}
       {screen === SCREENS.REVEAL     && <RevealScreen events={revealEvents} onRevealComplete={handleRevealComplete}/>}
-      {screen === SCREENS.PLAYING    && <PlayingScreen events={events} edition={editionMeta?.key} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts} hint={hint} feedback={feedback} onHint={() => setHint(directionHint(events,answerOrder,dateMap,isWeekly))}/>}
+      {screen === SCREENS.PLAYING    && <PlayingScreen events={events} edition={editionMeta?.key} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={handleReorder} onLockIn={handleLockIn} timeDisplay={formatTime(timer.time).display} failedAttempts={failedAttempts} feedback={feedback}/>}
       {screen === SCREENS.CHAIN_VIEW && <PlayingScreen events={events} lockedCorrect={lockedCorrect} wrongCards={{}} onReorder={()=>{}} onLockIn={()=>{}} timeDisplay="" isReadOnly={true} onBackToResults={() => setScreen(chainViewSource.current === "game_over" ? SCREENS.GAME_OVER : SCREENS.COMPLETE)} backLabel={chainViewSource.current === "game_over" ? "Game Over" : "Back to Score"}/>}
-      {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult ? restoredResult.timeMs : timer.time} eventCount={puzzle.events.length} scoreEventCount={restoredResult ? restoredResult.eventCount : puzzle.events.length} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date} hintUsed={restoredResult?.hintUsed ?? !!hint}/>}
+      {screen === SCREENS.COMPLETE   && <CompleteScreen time={restoredResult ? restoredResult.timeMs : timer.time} eventCount={puzzle.events.length} scoreEventCount={restoredResult ? restoredResult.eventCount : puzzle.events.length} failedAttempts={failedAttempts} onViewChain={() => { chainViewSource.current = "complete"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !confettiShown.current} onMount={() => { confettiShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date} hintUsed={restoredResult?.hintUsed ?? false}/>}
       {screen === SCREENS.GAME_OVER  && <GameOverScreen events={events} onViewChain={() => { chainViewSource.current = "game_over"; setScreen(SCREENS.CHAIN_VIEW); }} firstVisit={!restoredResult && !gameOverShown.current} onMount={() => { gameOverShown.current = true; }} meta={editionMeta} puzzleDate={puzzle.date}/>}
     </div>
   );
@@ -1069,9 +1064,8 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".results-screen>*{flex-shrink:0}" +
   ".event-stack{display:grid;grid-auto-rows:clamp(64px,calc((100dvh - 344px)/7),104px);gap:clamp(.25rem,1vh,.55rem);flex:0 0 auto;}" +
   ".timeline-instructions{font-size:.78rem;line-height:1.4;color:#c5cbd3;text-align:center;margin:0 0 .65rem;flex-shrink:0;}" +
-  ".feedback-area{flex-shrink:0;display:flex;flex-direction:column;justify-content:center}.nudge{margin-top:.4rem;color:#f5c518}" +
+  ".sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0;}" +
   "button:focus-visible,[tabindex]:focus-visible,a:focus-visible{outline:3px solid #79bfff;outline-offset:3px}" +
-  ".play-feedback{font-size:.75rem;color:#d3dae5;text-align:center;line-height:1.35;flex-shrink:0}.play-feedback:not(:empty){padding:.5rem 0}.hint-button{background:transparent;border:1px solid #667080;color:white;border-radius:8px;padding:.5rem;cursor:pointer;flex-shrink:0}" +
   ".event-detail{margin:auto;width:calc(100% - 2rem);max-width:420px;max-height:85dvh;overflow:auto;padding:1.5rem;background:#152337;color:white;border:1px solid #637085;border-radius:16px;line-height:1.5}.event-detail::backdrop{background:#000a}.event-detail h2{font-size:1.2rem;margin:.8rem 0}.event-detail p{margin:.75rem 0}.event-detail ul{padding-left:1.2rem}.event-detail a{color:#9ccbff}.detail-close{display:block;margin-left:auto;background:transparent;color:white;border:1px solid #8793a4;border-radius:6px;padding:.4rem .8rem;cursor:pointer}" +
   ".new-day-banner{position:relative;z-index:20;padding:.6rem;background:#f5c518;color:#0a1628;text-align:center}.new-day-banner button{margin-left:.5rem;padding:.4rem;border:0;border-radius:5px;background:#0a1628;color:white;cursor:pointer}.has-new-day .timeline-screen{height:calc(100dvh - 52px)}" +
   "* { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
@@ -1089,7 +1083,9 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".intro-daily .intro-cta-ready { animation:none; }" +
   ".intro-daily .intro-tagline:not(.intro-stamp) { text-transform:none;max-width:440px;text-wrap:balance; }" +
   ".election-countdown { margin-top:.8rem;color:#e6d6c3;font-family:'JetBrains Mono',monospace;font-size:clamp(.6rem,2.5vw,.72rem);letter-spacing:.025em;text-align:center;padding:0 1rem; }" +
-  ".loser-character { animation:loserLanding 0.82s cubic-bezier(0.18,0.9,0.25,1.18) both; transform-origin:50% 100%; }" +
+  ".loser-portrait,.loser-bubble{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom;}" +
+  ".loser-portrait{clip-path:polygon(0 0,100% 0,100% 81.8%,47.5% 81.8%,47.5% 89.5%,100% 89.5%,100% 100%,0 100%);}" +
+  ".loser-bubble{clip-path:inset(81.8% 24.5% 10.5% 47.5%);transform-origin:64% 86%;animation:loserStamp .48s .18s linear both;}" +
   "@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }" +
   "@keyframes celebrate { 0%{transform:scale(1)} 25%{transform:scale(1.03) rotate(-0.5deg)} 50%{transform:scale(1.05) rotate(0.5deg)} 75%{transform:scale(1.03) rotate(-0.3deg)} 100%{transform:scale(1)} }" +
   "@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }" +
@@ -1100,5 +1096,5 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   "@keyframes urgentLineIn { 0%{opacity:0;transform:translateY(20px) scale(0.92)} 65%{opacity:1;transform:translateY(-3px) scale(1.035)} 100%{opacity:1;transform:translateY(0) scale(1)} }" +
   "@keyframes stampImpact { 0%{opacity:0;transform:translateY(-65px) rotate(-12deg) scale(2.6);filter:blur(5px)} 12%{opacity:1} 43%{opacity:1;transform:translateY(3px) rotate(-3deg) scale(.94, .88);filter:blur(0)} 58%{transform:translateY(-2px) rotate(-2deg) scale(1.035,1.025)} 75%{transform:translateY(1px) rotate(-3.2deg) scale(.995)} 100%{opacity:1;transform:translateY(0) rotate(-3deg) scale(1);filter:blur(0)} }" +
   "@keyframes ctaUrgency { 0%,100%{box-shadow:0 4px 24px rgba(178,34,52,0.5)} 50%{box-shadow:0 4px 36px rgba(245,197,24,0.72),0 0 0 5px rgba(245,197,24,0.12)} }" +
-  "@keyframes loserLanding { 0%{opacity:0;transform:translateX(-50%) translateY(-85vh) rotate(-5deg) scale(0.96)} 68%{opacity:1;transform:translateX(-50%) translateY(2.5%) rotate(1.5deg) scale(1.02,0.97)} 84%{transform:translateX(-50%) translateY(-1.2%) rotate(-0.7deg) scale(0.995,1.01)} 100%{opacity:1;transform:translateX(-50%) translateY(0) rotate(0) scale(1)} }" +
-  "@media (prefers-reduced-motion: reduce) { .intro-overlay,.intro-logo-solved,.intro-tagline-visible,.intro-cta-ready,.loser-character { animation:none !important; } .intro-tagline-visible { opacity:1; transform:none; } }";
+  "@keyframes loserStamp{0%{opacity:0;transform:translateY(-55px) rotate(-10deg) scale(2.4)} 12%{opacity:1} 58%{opacity:1;transform:translateY(2px) rotate(1deg) scale(.96,.88)} 78%{transform:translateY(-1px) rotate(-.5deg) scale(1.025,1.015)} 100%{opacity:1;transform:none}}" +
+  "@media (prefers-reduced-motion: reduce) { .intro-overlay,.intro-logo-solved,.intro-tagline-visible,.intro-cta-ready,.loser-bubble { animation:none !important; } .intro-tagline-visible { opacity:1; transform:none; } }";
