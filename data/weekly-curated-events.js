@@ -6,6 +6,9 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  card("2026-10-03", "cotton-phone-clock-fight", "Posts a senator's number in a clock-change row",
+    "Told people to call Tom Cotton over daylight saving. Clock dispute, phone ambush.", 4, "Retaliation",
+    "Associated Press", "https://apnews.com/article/4c92c5171df81d0bb674a831fad49bc9"),
   card("2026-10-02", "mobile-oil-nuke-scenario", "Defends oil prices with an Alabama nuke scenario",
     "He compared costly oil to Iran nuking Mobile. Quite the rally pep talk.", 4, "Fearmongering",
     "Roll Call / Factba.se transcript", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-political-rally-mobile-alabama-october-2-2026/"),
