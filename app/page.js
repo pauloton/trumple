@@ -10,7 +10,7 @@ import { losingShareText, winningShareText } from "../lib/share-score.js";
 import { legacyFormatForScore } from "../lib/legacy-format.js";
 import { gameplayHeadline, SORT_INSTRUCTIONS } from "../lib/gameplay-copy.js";
 import { dailyIntroCopy } from "../lib/intro-copy.js";
-import { introPresentation } from "../lib/intro-presentation.js";
+import { BLUE_SCREEN_BACKGROUND, introPresentation } from "../lib/intro-presentation.js";
 
 const LOSER_IMG = "/bg/loser-toy-pointing-v5.png";
 
@@ -363,7 +363,7 @@ function IntroScreen({ onStart, puzzle, editionMeta }) {
     weight: index === 0 ? 900 : 700,
     color: index === 0 ? C.gold : C.text,
   }));
-  const bgStyle = { backgroundImage:"url("+bgImageUrl+")", backgroundSize:"cover", backgroundPosition:"center bottom" };
+  const bgStyle = { backgroundColor:editionMeta.bgColor || C.bg, backgroundImage:"url("+bgImageUrl+")", backgroundSize:"cover", backgroundPosition:"center bottom" };
 
   const renderBadge = () => {
     if (!editionLabel) return null;
@@ -447,7 +447,7 @@ function RevealScreen({ events, onRevealComplete }) {
     else { const t = setTimeout(onRevealComplete, 800); return () => clearTimeout(t); }
   }, [revealed, events.length, onRevealComplete]);
   return (
-    <div className="timeline-screen">
+    <div className="timeline-screen" style={{ "--event-count": events.length }}>
       <div style={{ height:"1rem", flexShrink:0 }}/>
       <div className="event-stack">
         {events.map((event, i) => (
@@ -605,6 +605,13 @@ function LiveStars({ failedAttempts }) {
 // Game Over screen, shows correct answer with hints
 function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzleDate }) {
   const hasRun = useRef(false);
+  const [portraitReady, setPortraitReady] = useState(false);
+  const [bubbleVisible, setBubbleVisible] = useState(false);
+  useEffect(() => {
+    if (!portraitReady) return;
+    const timer = setTimeout(() => setBubbleVisible(true), 1000);
+    return () => clearTimeout(timer);
+  }, [portraitReady]);
   const countdown = useNextPuzzleCountdown();
   useEffect(() => {
     if (!hasRun.current) {
@@ -617,18 +624,18 @@ function GameOverScreen({ events, onViewChain, firstVisit, onMount, meta, puzzle
   }, [firstVisit, onMount, puzzleDate, meta?.key, events.length]);
 
   return (
-    <div style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:"#0b1628", overflowY:"auto", overflowX:"hidden" }}>
+    <div className="game-over-screen" data-ready={portraitReady} style={{ position:"fixed", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", background:BLUE_SCREEN_BACKGROUND, overflowY:"auto", overflowX:"hidden" }}>
       {/* The portrait stays still. Only the separate speech bubble stamps in. */}
       <div className="loser-artwork">
-        <div className="loser-character"><img className="loser-portrait" src={LOSER_IMG} alt="" /></div>
-        <div className="loser-bubble-position"><div className="loser-bubble">LOSER!</div></div>
+        <div className="loser-character"><img className="loser-portrait" src={LOSER_IMG} alt="" onLoad={() => setPortraitReady(true)} onError={() => setPortraitReady(true)} /></div>
+        {bubbleVisible && <div className="loser-bubble-position"><div className="loser-bubble">LOSER!</div></div>}
       </div>
 
       {/* Overlay gradient so text is readable at top */}
 
 
       {/* Content */}
-      <div style={{ position:"relative", zIndex:2, flexShrink:0, width:"100%", maxWidth:"440px", padding:"0 1.5rem", display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"clamp(2rem, 6dvh, 3.5rem)", paddingBottom:0 }}>
+      <div className="game-over-copy" style={{ position:"relative", zIndex:2, flexShrink:0, width:"100%", maxWidth:"440px", padding:"0 1.5rem", display:"flex", flexDirection:"column", alignItems:"center", paddingTop:"clamp(2rem, 6dvh, 3.5rem)", paddingBottom:0 }}>
         {/* GAME OVER */}
         <div style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:"3rem", fontWeight:900, color:C.red, letterSpacing:"-0.02em", lineHeight:1, textAlign:"center", marginBottom:"0.4rem", textShadow:"0 2px 24px rgba(220,53,69,0.5)" }}>
           GAME OVER
@@ -676,7 +683,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
 
   if (isReadOnly) {
     return (
-      <div className="timeline-screen">
+      <div className="timeline-screen" style={{ "--event-count": events.length }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0, marginBottom:"0.75rem" }}>
           <button onClick={onBackToResults} style={{ background:"transparent", border:"none", color:C.dim, cursor:"pointer", fontFamily:"'DM Sans', sans-serif", fontSize:"0.85rem" }}>&#8592; {backLabel}</button>
           <div/>
@@ -706,22 +713,22 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
   }
 
   return (
-    <div className="timeline-screen">
+    <div className="timeline-screen playing-screen" style={{ "--event-count": events.length }}>
       <div className="gameplay-content">
       <h1 className="gameplay-headline">{gameplayHeadline(edition)}</h1>
       {/* Header: stars left, timer right */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0, marginBottom:"0.5rem" }}>
+      <div className="gameplay-status" style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0, marginBottom:"0.5rem" }}>
         <LiveStars failedAttempts={failedAttempts}/>
         <div style={{ fontSize:"clamp(1.1rem,3.2vw,1.35rem)", fontFamily:"'JetBrains Mono', monospace", color:C.gold, fontWeight:700, letterSpacing:"0.04em" }}>{timeDisplay}</div>
       </div>
       <p className="timeline-instructions">{SORT_INSTRUCTIONS}</p>
-      <div style={{ height:"3px", background:C.dimmest, borderRadius:"2px", marginBottom:"0.6rem", flexShrink:0 }}>
+      <div className="gameplay-progress" style={{ height:"3px", background:C.dimmest, borderRadius:"2px", marginBottom:"0.6rem", flexShrink:0 }}>
         <div style={{ height:"100%", width:((lockedCount/events.length)*100)+"%", background:C.red, borderRadius:"2px", transition:"width 0.4s ease" }}/>
       </div>
       <DraggableList events={events} lockedCorrect={lockedCorrect} wrongCards={wrongCards} onReorder={onReorder}/>
       <div className="sr-only" role="status" aria-live="polite">{feedback}</div>
       {!allCorrect && (
-        <button onClick={onLockIn} style={{
+        <button className="lock-in-button" onClick={onLockIn} style={{
           marginTop:"clamp(0.5rem,1.5vh,1rem)", background:C.red, color:"#fff",
           border:"none", borderRadius:"14px", padding:"clamp(0.7rem,1.8vh,1rem) 2rem",
           fontSize:"clamp(0.9rem,2.5vw,1.05rem)", fontWeight:900, cursor:"pointer",
@@ -734,7 +741,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
         >Lock It In!</button>
       )}
       {allCorrect && (
-        <div style={{ textAlign:"center", marginTop:"1rem", fontSize:"0.85rem", color:C.dim, fontFamily:"'JetBrains Mono', monospace", animation:"pulse 1s ease infinite", flexShrink:0 }}>Chaos sorted...</div>
+        <div className="gameplay-sorted" style={{ textAlign:"center", marginTop:"1rem", fontSize:"0.85rem", color:C.dim, fontFamily:"'JetBrains Mono', monospace", animation:"pulse 1s ease infinite", flexShrink:0 }}>Chaos sorted...</div>
       )}
       </div>
     </div>
@@ -1051,7 +1058,7 @@ export default function TrumpleApp() {
   };
 
   return (
-    <div className={newDay ? "has-new-day" : ""} style={{ background:C.bg, minHeight:"100dvh", color:C.text, fontFamily:"'DM Sans', sans-serif", overflow:"hidden" }}>
+    <div className={`app-shell${newDay ? " has-new-day" : ""}`} style={{ background:screen === SCREENS.INTRO ? editionMeta?.bgColor || C.bg : C.bg, color:C.text, fontFamily:"'DM Sans', sans-serif" }}>
       <style>{globalStyles}</style>
       {newDay && <div className="new-day-banner" role="status">New day. Fresh chaos. <button onClick={() => window.location.assign(window.location.pathname)}>Play today</button></div>}
       {screen === SCREENS.LOADING    && <LoadingScreen/>}
@@ -1067,16 +1074,22 @@ export default function TrumpleApp() {
 }
 
 const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Space+Grotesk:wght@300;400;600;700;900&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');" +
-  ".timeline-screen{width:100%;max-width:440px;margin:0 auto;padding:1rem .75rem;height:100dvh;display:flex;flex-direction:column;overflow-y:auto;}" +
-  ".gameplay-content{display:flex;flex-direction:column;flex:0 0 auto;width:100%;margin-block:auto;}" +
+  ".app-shell{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;}.app-shell>.timeline-screen{flex:1;height:auto;min-height:0;}" +
+  ".timeline-screen{--event-count:7;--card-gap:clamp(3px,1dvh,9px);--card-height:clamp(48px,calc((100dvh - 344px)/7),104px);width:100%;max-width:440px;margin:0 auto;padding:max(.5rem,env(safe-area-inset-top)) max(.75rem,env(safe-area-inset-right)) max(.5rem,env(safe-area-inset-bottom)) max(.75rem,env(safe-area-inset-left));height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;}" +
+  ".gameplay-content{display:flex;flex-direction:column;flex:0 1 auto;min-height:0;max-height:100%;width:100%;margin-block:auto;}" +
   ".gameplay-headline{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.25rem,5.5vw,1.55rem);font-weight:700;line-height:1.15;letter-spacing:-.025em;text-align:center;margin:0 0 .85rem;flex-shrink:0;text-wrap:balance;}" +
   ".results-screen>*{flex-shrink:0}" +
-  ".event-stack{display:grid;grid-auto-rows:clamp(64px,calc((100dvh - 344px)/7),104px);gap:clamp(.25rem,1vh,.55rem);flex:0 0 auto;}" +
+  ".event-stack{display:grid;grid-template-rows:repeat(var(--event-count),minmax(0,1fr));gap:var(--card-gap);height:calc(var(--event-count)*var(--card-height) + (var(--event-count) - 1)*var(--card-gap));flex:0 1 auto;min-height:0;container-type:size;}" +
+  ".playing-screen .event-stack>div{padding:2px clamp(8px,3vw,24px) !important;}" +
+  ".playing-screen .event-stack>div>div{font-size:clamp(.68rem,calc((100cqh / var(--event-count) - 10px) / 2.4),1.08rem) !important;}" +
+  ".lock-in-button{min-height:44px;}" +
+  "@media(max-height:600px){.gameplay-headline{font-size:1.1rem !important;margin-bottom:.35rem !important;}.timeline-instructions{margin-bottom:.35rem !important;}.gameplay-status{margin-bottom:.25rem !important;}.lock-in-button{padding:.5rem 1rem !important;}}" +
+  "@media(max-height:500px) and (min-width:600px){.playing-screen{max-width:900px;}.gameplay-content{height:100%;display:grid;grid-template-columns:minmax(160px,.45fr) minmax(0,1fr);grid-template-rows:auto auto auto 1fr auto;column-gap:1rem;}.gameplay-headline{grid-column:1;grid-row:1;}.gameplay-status{grid-column:1;grid-row:2;}.timeline-instructions{grid-column:1;grid-row:3;}.gameplay-progress{grid-column:1;grid-row:4;}.gameplay-content>.event-stack{grid-column:2;grid-row:1/6;height:100%;}.lock-in-button,.gameplay-sorted{grid-column:1;grid-row:5;}}" +
   ".timeline-instructions{font-size:.78rem;line-height:1.4;color:#c5cbd3;text-align:center;margin:0 0 .65rem;flex-shrink:0;}" +
   ".sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0;}" +
   "button:focus-visible,[tabindex]:focus-visible,a:focus-visible{outline:3px solid #79bfff;outline-offset:3px}" +
   ".event-detail{margin:auto;width:calc(100% - 2rem);max-width:420px;max-height:85dvh;overflow:auto;padding:1.5rem;background:#152337;color:white;border:1px solid #637085;border-radius:16px;line-height:1.5}.event-detail::backdrop{background:#000a}.event-detail h2{font-size:1.2rem;margin:.8rem 0}.event-detail p{margin:.75rem 0}.event-detail ul{padding-left:1.2rem}.event-detail a{color:#9ccbff}.detail-close{display:block;margin-left:auto;background:transparent;color:white;border:1px solid #8793a4;border-radius:6px;padding:.4rem .8rem;cursor:pointer}" +
-  ".new-day-banner{position:relative;z-index:20;padding:.6rem;background:#f5c518;color:#0a1628;text-align:center}.new-day-banner button{margin-left:.5rem;padding:.4rem;border:0;border-radius:5px;background:#0a1628;color:white;cursor:pointer}.has-new-day .timeline-screen{height:calc(100dvh - 52px)}" +
+  ".new-day-banner{position:relative;flex-shrink:0;z-index:20;padding:.6rem;background:#f5c518;color:#0a1628;text-align:center}.new-day-banner button{margin-left:.5rem;padding:.4rem;border:0;border-radius:5px;background:#0a1628;color:white;cursor:pointer}" +
   "* { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
   "body { background: #0A1628; margin: 0; overflow: hidden; }" +
   "html { overflow: hidden; }" +
@@ -1101,11 +1114,12 @@ const globalStyles = "@import url('https://fonts.googleapis.com/css2?family=Nuni
   ".intro-weekly.intro-toy .intro-edition-badge { margin-top:0 !important; margin-bottom:.5rem; }" +
   ".intro-weekly.intro-toy .intro-action { bottom:max(2dvh,env(safe-area-inset-bottom)) !important; }" +
   ".intro-daily .intro-tagline:not(.intro-stamp) { text-transform:none;max-width:440px;text-wrap:balance; }" +
+  ".game-over-screen[data-ready=false]>.loser-artwork,.game-over-screen[data-ready=false]>.game-over-copy{visibility:hidden;}" +
   ".loser-artwork{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(100vw,56.25dvh,540px);aspect-ratio:9/16;pointer-events:none;user-select:none;}" +
   ".loser-character{position:absolute;inset:0;transform:scale(.75);transform-origin:left bottom;}" +
   ".loser-portrait{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}" +
   ".loser-bubble-position{position:absolute;left:45.75%;top:85%;}" +
-  ".loser-bubble{position:relative;background:#fff;color:#050505;border-radius:22px;padding:.6em .5em;font-family:'Nunito',sans-serif;font-size:clamp(1.25rem,5.5vw,1.9rem);font-weight:900;line-height:1;transform-origin:0 50%;animation:loserStamp .48s .18s linear both;}" +
+  ".loser-bubble{position:relative;background:#fff;color:#050505;border-radius:22px;padding:.6em .5em;font-family:'Nunito',sans-serif;font-size:clamp(1.25rem,5.5vw,1.9rem);font-weight:900;line-height:1;transform-origin:0 50%;animation:loserStamp .48s linear both;}" +
   ".loser-bubble:before{content:'';position:absolute;top:52%;left:-20px;width:26px;height:9px;background:#fff;border-radius:100% 0 0 100%;transform:rotate(18deg);}" +
   "@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }" +
   "@keyframes celebrate { 0%{transform:scale(1)} 25%{transform:scale(1.03) rotate(-0.5deg)} 50%{transform:scale(1.05) rotate(0.5deg)} 75%{transform:scale(1.03) rotate(-0.3deg)} 100%{transform:scale(1)} }" +

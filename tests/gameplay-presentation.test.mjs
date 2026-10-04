@@ -20,3 +20,23 @@ test("game-over and result headers do not repeat edition labels", () => {
   // Comparing times still distinguishes editions and card counts.
   assert.ok(results.includes("editionTimeStats(stats.results, meta?.key, eventCount)"));
 });
+
+test("all Game Over editions reveal copy with portrait then bubble after one second", () => {
+  const gameOver = source.slice(source.indexOf("function GameOverScreen"), source.indexOf("function PlayingScreen"));
+  assert.ok(gameOver.includes("if (!portraitReady) return"));
+  assert.ok(gameOver.includes("setTimeout(() => setBubbleVisible(true), 1000)"));
+  assert.ok(gameOver.includes("clearTimeout(timer)"));
+  assert.ok(gameOver.includes("data-ready={portraitReady}"));
+  assert.ok(gameOver.includes("{bubbleVisible &&"));
+  assert.ok(source.includes(".game-over-screen[data-ready=false]>.loser-artwork,.game-over-screen[data-ready=false]>.game-over-copy{visibility:hidden;}"));
+  assert.ok(!source.includes("loserStamp .48s .18s"));
+});
+
+test("timeline adapts rows to actual card count and lets them shrink before hiding controls", () => {
+  assert.ok(source.includes("repeat(var(--event-count),minmax(0,1fr))"));
+  assert.ok(source.includes('"--event-count": events.length'));
+  assert.ok(source.includes("flex:0 1 auto;min-height:0;max-height:100%"));
+  assert.ok(source.includes(".lock-in-button{min-height:44px;}"));
+  assert.ok(!source.includes("grid-auto-rows:clamp(64px"));
+  assert.ok(source.includes("env(safe-area-inset-bottom)"));
+});

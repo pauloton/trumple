@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { existsSync, readFileSync } from "node:fs";
-import { introPresentation } from "../lib/intro-presentation.js";
+import { BLUE_SCREEN_BACKGROUND, introPresentation } from "../lib/intro-presentation.js";
 
 test("all editions use approved art without preview parameters", () => {
-  for (const [key, image] of [["second-term", "daily-toy.png"], ["legacy", "legacy-toy.png"], ["weekly", "sunday-toy.png"]]) {
+  for (const [key, image] of [["second-term", "daily-toy.png"], ["legacy", "legacy-toy.png"], ["weekly", "sunday-toy-transparent.png"]]) {
     const original = { key, taglines: ["Old copy"], bgImageUrl: "/bg/red.jpg" };
     const result = introPresentation(original);
     assert.equal(result.bgImageUrl, `/bg/${image}`);
@@ -13,6 +13,15 @@ test("all editions use approved art without preview parameters", () => {
     assert.deepEqual(original.taglines, ["Old copy"]);
     assert.equal(original.bgImageUrl, "/bg/red.jpg");
   }
+});
+
+test("blue opening uses the plain Game Over color and drops One Week only", () => {
+  const original = { key: "weekly", taglines: ["One Week.", "Seven Fresh Disasters.", "Fix The Timeline."] };
+  const result = introPresentation(original);
+  assert.deepEqual(result.taglines, ["Seven Fresh Disasters.", "Fix The Timeline."]);
+  assert.equal(result.bgColor, BLUE_SCREEN_BACKGROUND);
+  assert.equal(result.bgOverlayOpacity, 0);
+  assert.equal(original.taglines.length, 3);
 });
 
 test("Legacy only shows its date-range tagline; Sunday keeps its copy", () => {
