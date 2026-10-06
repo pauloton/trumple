@@ -4,7 +4,8 @@ on:
   schedule:
     # Midnight Pacific is 07:00 UTC in summer, 08:00 in winter.
     # The job guard selects the correct one across daylight-saving changes.
-    - cron: "0 7,8 * * *"
+    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"
   workflow_dispatch:
     inputs:
       today:
@@ -38,8 +39,8 @@ jobs:
         id: clock
         env:
           EVENT_NAME: ${{ github.event_name }}
-        run: |
-          node --input-type=module -e 'import {appendFileSync} from "node:fs"; const hour=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",hour:"2-digit",hourCycle:"h23"}).format(new Date()); appendFileSync(process.env.GITHUB_OUTPUT,`run=${process.env.EVENT_NAME === "workflow_dispatch" || hour === "00"}\n`);'
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+        run: node scripts/select-refresh-run.mjs
 
       - name: Preserve already-published puzzles
         if: steps.clock.outputs.run == 'true'

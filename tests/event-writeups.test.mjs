@@ -16,13 +16,15 @@ test("edited writeups match real cards and stay short without em dashes", () => 
   }
 });
 
-test("every card in the published October 4 game gets the revised display copy", () => {
+test("daily and Sunday published games both get the revised display copy", () => {
   const archive = JSON.parse(readFileSync(new URL("../data/published-puzzles.json", import.meta.url), "utf8"));
-  const events = archive["2026-10-04"].puzzle.events;
-  assert.equal(events.length, 7);
-  for (const event of events) {
-    assert.ok(EVENT_WRITEUPS[event.title]);
-    assert.notEqual(eventWriteup(event), event.hint);
+  for (const [date, count] of [["2026-10-04", 7], ["2026-10-05", 5]]) {
+    const events = archive[date].puzzle.events;
+    assert.equal(events.length, count);
+    for (const event of events) {
+      assert.ok(EVENT_WRITEUPS[event.title]);
+      assert.notEqual(eventWriteup(event), event.hint);
+    }
   }
 });
 

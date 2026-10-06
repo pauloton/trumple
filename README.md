@@ -74,6 +74,10 @@ At midnight Pacific, GitHub Actions is scheduled to:
 
 The headline collector needs no purchased API key, but cannot reliably verify the actual event date from publication timestamps alone. Such additions cannot fill Sunday until date-verified. The existing Codex follow-up researches and verifies stories daily at midnight America/Los_Angeles. It preserves the live puzzle archive before editing, checks and publishes verified content, then verifies deployment. This local follow-up requires the machine and app to be available; GitHub collection runs independently in the cloud. Scheduled runs can be delayed and neither process guarantees source availability. Never cover a shortfall with old events or ordinary policy.
 
+The 07:00 and 08:00 UTC triggers are separate. `scripts/select-refresh-run.mjs` selects the one that corresponds to Pacific midnight on that date, including the DST transition days. It does not require the job to actually start during the midnight hour: delayed jobs still refresh. Pacific means local PST/PDT, not a fixed UTC-8 clock year-round.
+
+Copy should be about 10% cheekier than the previous pass, not longer: state what happened, then add one short, dry jab when it fits. Keep victims out of the punchline. No invented quotes, motives, extra allegations, or em dashes. Titles stay within 50 characters; display writeups within 180. Add display copy for every new event to `lib/event-writeups.js`; use its overrides to polish existing cards without changing saved puzzles or answer orders.
+
 Editorial refresh sequence, starting from a clean, up-to-date `main`:
 
 ```bash

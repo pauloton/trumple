@@ -6,6 +6,13 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  card("2026-10-04", "fox-rally-coverage-rage", "Rages at Fox for not showing enough Trump",
+    "He threatened to stop watching over rally coverage. Even the TV needed a loyalty test.", 4, "Grievance",
+    "TheWrap", "https://www.thewrap.com/media-platforms/tv/trump-lashes-out-fox-news-not-covering-rally/"),
+  // Saturday's Ohio rally, not the Sunday publication date.
+  card("2026-10-03", "ohio-help-election-threat", "Threatens Ohio help if Democrats win",
+    "He said he would not help the Democratic governor candidate. Federal help, loyalty points required.", 5, "Retaliation",
+    "Reuters", "https://www.investing.com/news/commodities-news/in-crude-ohio-rally-speech-trump-says-he-may-not-help-if-democrats-win-4930974"),
   card("2026-10-03", "cotton-phone-clock-fight", "Posts a senator's number in a clock-change row",
     "Told people to call Tom Cotton over daylight saving. Clock dispute, phone ambush.", 4, "Retaliation",
     "Associated Press", "https://apnews.com/article/4c92c5171df81d0bb674a831fad49bc9"),
