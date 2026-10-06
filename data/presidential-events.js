@@ -14056,5 +14056,173 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-19335",
+    "date": "2026-09-21",
+    "title": "Signs off on Providing Meaningful Water Quality",
+    "hint": "The presidential record calls it \"Providing Meaningful Water Quality Improvements Through Collaboration and Oversight of Federal Support.\" The paperwork arrived with consequences.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/21/2026-19335/providing-meaningful-water-quality-improvements-through-collaboration-and-oversight-of-federal"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-19336",
+    "date": "2026-09-21",
+    "title": "Orders Reciprocity in Government Procurement",
+    "hint": "Official paperwork followed under \"Restoring Reciprocity in Government Procurement.\" Yes, it came with a presidential seal.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/21/2026-19336/restoring-reciprocity-in-government-procurement"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-19416",
+    "date": "2026-09-22",
+    "title": "Signs off on Reinvigorating America's Hunting",
+    "hint": "The presidential record calls it \"Reinvigorating America's Hunting Heritage.\" The paperwork arrived with consequences.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/22/2026-19416/reinvigorating-americas-hunting-heritage"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-19417",
+    "date": "2026-09-22",
+    "title": "Orders American Saltwater Angling and Recreation",
+    "hint": "Official paperwork followed under \"Restoring American Saltwater Angling and Recreation.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/22/2026-19417/restoring-american-saltwater-angling-and-recreation"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-19554",
+    "date": "2026-09-23",
+    "title": "Signs off on Restriction on Entry of Certain",
+    "hint": "The presidential record calls it \"Restriction on Entry of Certain Nonimmigrant Workers.\" The paperwork arrived with consequences.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/23/2026-19554/restriction-on-entry-of-certain-nonimmigrant-workers"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-19555",
+    "date": "2026-09-23",
+    "title": "Signs off on Enhancing Program Integrity",
+    "hint": "Official paperwork followed under \"Enhancing Program Integrity and Interagency Coordination in the Administration of the H-1B Nonimmigrant Visa.\" Yes, it came with a presidential seal.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/09/23/2026-19555/enhancing-program-integrity-and-interagency-coordination-in-the-administration-of-the-h-1b"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-20318",
+    "date": "2026-10-02",
+    "title": "Signs off on Refugee Admissions for Fiscal Year",
+    "hint": "The Federal Register made it official: \"Presidential Determination on Refugee Admissions for Fiscal Year 2027.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/02/2026-20318/presidential-determination-on-refugee-admissions-for-fiscal-year-2027"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-20319",
+    "date": "2026-10-02",
+    "title": "Signs off on Streamlining Access to Government",
+    "hint": "The presidential record calls it \"Streamlining Access to Government Services Through America.gov.\" The paperwork arrived with consequences.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/02/2026-20319/streamlining-access-to-government-services-through-americagov"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-20320",
+    "date": "2026-10-02",
+    "title": "Signs off on Eliminating Disease-Carrying Pests",
+    "hint": "Official paperwork followed under \"Eliminating Disease-Carrying Pests and Restoring Enjoyment of the Great Outdoors.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/02/2026-20320/eliminating-disease-carrying-pests-and-restoring-enjoyment-of-the-great-outdoors"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-20321",
+    "date": "2026-10-02",
+    "title": "Signs off on Inaugurating the Era of Super",
+    "hint": "The Federal Register made it official: \"Inaugurating the Era of Super Intelligence.\" The fine print joined the plot.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/02/2026-20321/inaugurating-the-era-of-super-intelligence"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-20322",
+    "date": "2026-10-02",
+    "title": "Keeps the Situation in and in Relation to Syria",
+    "hint": "The presidential record calls it \"Continuation of the National Emergency With Respect to the Situation in and in Relation to Syria.\" The paperwork arrived with consequences.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/02/2026-20322/continuation-of-the-national-emergency-with-respect-to-the-situation-in-and-in-relation-to-syria"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-20439",
+    "date": "2026-10-05",
+    "title": "Signs off on Revocation of Presidential",
+    "hint": "The presidential record calls it \"Presidential Determination on the Revocation of Presidential Determinations Related to Lebanon.\" The paperwork arrived with consequences.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/05/2026-20439/presidential-determination-on-the-revocation-of-presidential-determinations-related-to-lebanon"
+      }
+    ],
+    "status": "approved"
   }
 ];
