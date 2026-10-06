@@ -69,6 +69,8 @@ test("automatic curation publishes only high-confidence shenanigans", () => {
 
   assert.equal(events.filter((event) => event.status === "approved").length, 1);
   assert.equal(events.find((event) => event.date === "2026-08-10" && event.status === "approved").title, "Orders a giant gold statue for the Rose Garden");
+  assert.equal(events.find((event) => event.status === "approved").hint, articles[0].title,
+    "Automatic copy must not append a canned joke or reaction");
   assert.equal(events.find((event) => event.title.includes("private missions")).status, "candidate");
   assert.equal(events.find((event) => event.title.includes("credits Biden")).status, "candidate");
   assert.equal(events.find((event) => event.title.includes("Korea military drills")).status, "candidate");

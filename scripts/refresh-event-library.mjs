@@ -270,7 +270,7 @@ export function curateArticles(articles, window) {
       dateBasis: "article-publication",
       title,
       hint: automaticallyApproved
-        ? shortText(`${sourceName(article)} had to report it: ${article.title.replaceAll("—", "-")}. Yes, really.`, 180)
+        ? shortText(article.title.replaceAll("—", "-"), 180)
         : `${sourceName(article)} reported this candidate. It did not pass automatic publication checks.`,
       significance,
       source_indexes: [sourceIndex],
