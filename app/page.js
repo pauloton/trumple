@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatEventDate } from "../lib/chain-display.js";
 import { isCorrectPosition } from "../lib/answer-check.js";
-import { eventWriteup } from "../lib/event-writeups.js";
 import { eventHeadline } from "../lib/event-headlines.js";
 import { pacificDate, nextPacificMidnight } from "../lib/puzzle-clock.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionTimeStats, editionLabel, EDITION_NAMES } from "../lib/player-stats.js";
@@ -689,7 +688,6 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
           <button onClick={onBackToResults} style={{ background:"transparent", border:"none", color:C.dim, cursor:"pointer", fontFamily:"'DM Sans', sans-serif", fontSize:"0.85rem" }}>&#8592; {backLabel}</button>
           <div/>
         </div>
-        <p className="timeline-instructions">The receipts. Tap a card for the story.</p>
         <div className="event-stack">
           {events.map(event => (
             <button key={event.id} onClick={e => { detailTrigger.current = e.currentTarget; setDetail(event); }} style={{ border:0, cursor:"pointer", background:C.locked, borderRadius:"12px", padding:"clamp(0.38rem,0.8vh,0.62rem) clamp(0.8rem,2.6vw,1.2rem)", display:"flex", alignItems:"center", justifyContent:"center", minHeight:0, overflow:"hidden" }}>
@@ -705,7 +703,6 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
             <button autoFocus className="detail-close" onClick={() => detailRef.current?.close()}>Close</button>
             <p>{formatEventDate(detail.date, detail.year)}</p>
             <h2>{eventHeadline(detail)}</h2>
-            <p>{eventWriteup(detail)}</p>
             {detail.sources?.length ? <ul>{detail.sources.map(source => <li key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">Read {source.name} ↗</a></li>)}</ul> : <p>Source link not yet available for this archived card.</p>}
           </>}
         </dialog>

@@ -45,3 +45,14 @@ test("reveal, sorting, accessible labels and answer details use display headline
   assert.ok(!page.includes("{event.title}"));
   assert.ok(!page.includes("{detail.title}"));
 });
+
+test("all editions show headlines and dates without event explanations", () => {
+  const page = readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
+  assert.ok(!page.includes("eventWriteup"));
+  assert.ok(!page.includes("event.hint"));
+  assert.ok(!page.includes("detail.hint"));
+  assert.ok(!page.includes("Tap a card for the story"));
+  assert.ok(page.includes("{eventHeadline(event)}"));
+  assert.ok(page.includes("formatEventDate(event.date, event.year)"));
+  assert.ok(page.includes("detail.sources.map"), "Keep access to original reporting");
+});
