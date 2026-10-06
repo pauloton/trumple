@@ -363,7 +363,7 @@ function IntroScreen({ onStart, puzzle, editionMeta }) {
     weight: index === 0 ? 900 : 700,
     color: index === 0 ? C.gold : C.text,
   }));
-  const bgStyle = { backgroundColor:editionMeta.bgColor || C.bg, backgroundImage:"url("+bgImageUrl+")", backgroundSize:"cover", backgroundPosition:"center bottom" };
+  const bgStyle = { backgroundColor:editionMeta.bgColor || C.bg, backgroundImage:"url("+bgImageUrl+")", backgroundSize:editionMeta.key === "weekly" ? "100% auto" : "cover", backgroundRepeat:"no-repeat", backgroundPosition:"center bottom" };
 
   const renderBadge = () => {
     if (!editionLabel) return null;
