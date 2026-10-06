@@ -6,6 +6,15 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  card("2026-10-05", "super-pac-patriotic-ads", "Moves his TV ads to his super PAC",
+    "After taxpayer-funded ads praised him, he said MAGA Inc. would pick up the tab. The campaign invoice found a new wallet.", 5, "Self-promotion",
+    "Associated Press", "https://apnews.com/article/e6f47f7b86f83938aacfb16bda12efaa"),
+  card("2026-10-05", "politico-air-force-one-ban", "Blocks Politico from Air Force One",
+    "The White House barred Politico from the Nebraska trip. Press access now comes with a personal grudge check.", 5, "Retaliation",
+    "The Washington Post", "https://www.washingtonpost.com/business/2026/10/05/white-house-blocks-politico-trip-air-force-one/"),
+  card("2026-10-05", "offers-plague-help", "Offers US help with a possible plague",
+    "He said America would help Russia after a suspected plague death. Public health diplomacy, with a dramatic cold open.", 4, "Absurdity",
+    "Axios", "https://www.axios.com/2026/10/05/trump-us-russia-pneumonic-plague-risk-outbreak"),
   card("2026-10-04", "fox-rally-coverage-rage", "Rages at Fox for not showing enough Trump",
     "He threatened to stop watching over rally coverage. Even the TV needed a loyalty test.", 4, "Grievance",
     "TheWrap", "https://www.thewrap.com/media-platforms/tv/trump-lashes-out-fox-news-not-covering-rally/"),
