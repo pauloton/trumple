@@ -12,7 +12,7 @@ import { gameplayHeadline, SORT_INSTRUCTIONS } from "../lib/gameplay-copy.js";
 import { dailyIntroCopy } from "../lib/intro-copy.js";
 import { BLUE_SCREEN_BACKGROUND, introPresentation } from "../lib/intro-presentation.js";
 
-const LOSER_IMG = "/bg/loser-toy-pointing-v5.png";
+const LOSER_IMG = "/bg/loser-toy-fine-lines-v6.png";
 
 const C = {
   bg:       "#0A1628",
