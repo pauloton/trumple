@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { formatEventDate } from "../lib/chain-display.js";
 import { isCorrectPosition } from "../lib/answer-check.js";
 import { eventWriteup } from "../lib/event-writeups.js";
+import { eventHeadline } from "../lib/event-headlines.js";
 import { pacificDate, nextPacificMidnight } from "../lib/puzzle-clock.js";
 import { calculateCurrentStreak, dailyResultForDate, recordDailyResult, editionTimeStats, editionLabel, EDITION_NAMES } from "../lib/player-stats.js";
 import { losingShareText, winningShareText } from "../lib/share-score.js";
@@ -459,7 +460,7 @@ function RevealScreen({ events, onRevealComplete }) {
             transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",
           }}>
             <div style={{ fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color:C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18, textAlign:"center" }}>
-              {event.title}
+              {eventHeadline(event)}
             </div>
           </div>
         ))}
@@ -557,7 +558,7 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
         const isOver   = overIndex === index;
         return (
           <div key={event.id} draggable={false} role="listitem" tabIndex={isLocked ? -1 : 0}
-            aria-label={`${index + 1}. ${event.title}. ${isLocked ? "Correct and locked." : "Use up and down arrow keys to move."}`}
+            aria-label={`${index + 1}. ${eventHeadline(event)}. ${isLocked ? "Correct and locked." : "Use up and down arrow keys to move."}`}
             onKeyDown={e => { if (e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); moveCard(index, e.key === "ArrowUp" ? -1 : 1); } }}
             onPointerDown={e => handlePointerStart(e,index)}
             style={{
@@ -572,7 +573,7 @@ function DraggableList({ events, lockedCorrect, wrongCards, onReorder }) {
               animation: isWrong ? "shake 0.4s ease" : isLocked ? "celebrate 0.5s ease" : "none",
             }}>
             <div style={{ flex:1, fontSize:"clamp(0.92rem,2.6vw,1.08rem)", fontWeight:600, color: isLocked ? C.bg : C.text, fontFamily:"'DM Sans', sans-serif", lineHeight:1.18, textAlign:"center" }}>
-              {event.title}
+              {eventHeadline(event)}
             </div>
           </div>
         );
@@ -693,7 +694,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
           {events.map(event => (
             <button key={event.id} onClick={e => { detailTrigger.current = e.currentTarget; setDetail(event); }} style={{ border:0, cursor:"pointer", background:C.locked, borderRadius:"12px", padding:"clamp(0.38rem,0.8vh,0.62rem) clamp(0.8rem,2.6vw,1.2rem)", display:"flex", alignItems:"center", justifyContent:"center", minHeight:0, overflow:"hidden" }}>
               <div style={{ textAlign:"center", width:"100%", minWidth:0 }}>
-                <div style={{ fontSize:"clamp(0.86rem,2.4vw,1rem)", fontWeight:700, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{event.title}</div>
+                <div style={{ fontSize:"clamp(0.86rem,2.4vw,1rem)", fontWeight:700, color:C.bg, fontFamily:"'DM Sans', sans-serif", lineHeight:1.12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{eventHeadline(event)}</div>
                 <div style={{ marginTop:"0.3rem", fontSize:"0.75rem", color:"#24313c", fontFamily:"'JetBrains Mono', monospace", fontWeight:700 }}>{formatEventDate(event.date, event.year)}</div>
               </div>
             </button>
@@ -703,7 +704,7 @@ function PlayingScreen({ events, edition, lockedCorrect, wrongCards, onReorder, 
           {detail && <>
             <button autoFocus className="detail-close" onClick={() => detailRef.current?.close()}>Close</button>
             <p>{formatEventDate(detail.date, detail.year)}</p>
-            <h2>{detail.title}</h2>
+            <h2>{eventHeadline(detail)}</h2>
             <p>{eventWriteup(detail)}</p>
             {detail.sources?.length ? <ul>{detail.sources.map(source => <li key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">Read {source.name} ↗</a></li>)}</ul> : <p>Source link not yet available for this archived card.</p>}
           </>}
