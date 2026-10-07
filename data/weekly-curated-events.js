@@ -6,6 +6,40 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed October 7: one recent gap and six distinct second-term backfills.
+  // Doral posts were October 5; reporting followed October 6.
+  { ...card("2026-10-05", "doral-photo-grievance", "Accuses the Times of making his golf club ugly",
+    "He accused the Times of doctoring a Doral photo to make his resort look shabby; the paper said the image was unaltered.", 4, "Vanity",
+    "The Independent", "https://www.independent.co.uk/bulletin/news/trump-dirty-image-golf-course-new-york-times-b3062316.html"),
+    sources: [
+      { name: "The Independent", url: "https://www.independent.co.uk/bulletin/news/trump-dirty-image-golf-course-new-york-times-b3062316.html" },
+      { name: "Trump's Truth post archive, October 5", url: "https://www.trumpstruth.org/statuses/42168" },
+    ] },
+  // The complaint was Sunday night, March 23, before the portrait's removal.
+  card("2025-03-23", "colorado-portrait-complaint", "Demands Colorado take down his unflattering face",
+    "He wanted his Colorado Capitol portrait removed, blaming distortion and praising Obama's portrait by the very same artist.", 4, "Vanity",
+    "Associated Press", "https://apnews.com/article/trump-portrait-colorado-capitol-president-2f60271ddd58d979627ec5d2cd5dea89"),
+  card("2025-04-29", "moran-tattoo-photo", "Insists a doctored tattoo photo proves his point",
+    "He kept telling ABC's Terry Moran that Abrego Garcia had MS-13 lettering tattooed on his hand, refusing to accept that the letters were added to the photo.", 5, "False claim",
+    "TheWrap", "https://www.thewrap.com/trump-abc-news-terry-moran-interviews-abrego-garcia-knuckle-tattoos/"),
+  // NBC recorded the interview Friday, May 2; it aired Sunday, May 4.
+  { ...card("2025-05-02", "welker-due-process", "Can't say whether everyone gets due process",
+    "Asked whether citizens and noncitizens deserve due process, he said he wasn't a lawyer and left the constitutional homework to his legal team.", 5, "Power grab",
+    "Associated Press", "https://apnews.com/article/trump-due-process-canada-greenland-military-action-8da3e853b6cec944ec373fae4d317ac4"),
+    sources: [
+      { name: "Associated Press", url: "https://apnews.com/article/trump-due-process-canada-greenland-military-action-8da3e853b6cec944ec373fae4d317ac4" },
+      { name: "NBC interview transcript and recording date via Roll Call", url: "https://rollcall.com/factbase/trump/transcript/donald-trump-interview-kristen-welker-nbc-meet-the-press-may-4-2025/" },
+    ] },
+  card("2025-05-24", "west-point-trophy-wives", "Gives West Point cadets a 'trophy wife' lecture",
+    "His graduation advice wandered into a developer's divorce, new wife and yacht, with cadets getting an unexpected lesson in real-estate regret.", 4, "Off-script",
+    "Associated Press", "https://apnews.com/article/trump-commencement-army-west-point-graduates-ecbc20a0ce46350618dabae573e40556"),
+  card("2025-05-28", "taco-question-rebuke", "Takes 'Trump Always Chickens Out' rather badly",
+    "Asked about Wall Street's TACO nickname for his tariff retreats, he scolded the reporter and called it the nastiest question.", 4, "Grievance",
+    "Associated Press", "https://apnews.com/article/69569d771c28ef972f80b87bac0d54d6"),
+  // First promised at the September 9 convention, not the October reposts.
+  card("2026-09-09", "midterm-five-thousand-dividend", "Promises $5,000 each if his party wins",
+    "He promised every adult citizen $5,000 if Republicans kept Congress, announcing the Trump Dividend before Congress had approved a cent.", 5, "Spectacle",
+    "Associated Press", "https://apnews.com/article/trump-dividend-5k-5000-check-republicans-cc80644e3168acd31c892129fb849436"),
   // Reviewed October 6: missed second-term stories plus the latest completed days.
   card("2025-02-10", "paper-straw-order", "Goes to war with the paper straw",
     "He signed an order steering federal purchases back to plastic straws, giving his dislike of soggy paper the full Oval Office treatment.", 4, "Petty crusade",
