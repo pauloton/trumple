@@ -4,6 +4,21 @@ import { readFileSync } from "node:fs";
 
 const source = readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
 
+test("every winning tier congratulates the player without backhanded praise", () => {
+  for (const stars of [1, 2, 3]) {
+    const match = source.match(new RegExp(`const WORDS_${stars} = (\\[[^;]+\\]);`));
+    assert.ok(match, `Missing congratulations for ${stars} stars`);
+    const messages = JSON.parse(match[1]);
+    assert.equal(messages.length, 4);
+    for (const message of messages) {
+      assert.match(message, /perfect|nailed|victory|tremendous|won|win|congratulations/i);
+      assert.doesNotMatch(message, /barely|eventually|mostly|nearly|close|survived|put up a fight|—/i);
+      assert.ok(message.length <= 50, `Keep congratulations compact: ${message}`);
+      if (stars < 3) assert.doesNotMatch(message, /perfect|flawless|first try/i);
+    }
+  }
+});
+
 test("correct cards use gold without a visible checkmark and retain accessible state", () => {
   const cards = source.slice(source.indexOf("function DraggableList"), source.indexOf("function GameOverScreen"));
   assert.ok(!/[✓✔☑]/u.test(cards));

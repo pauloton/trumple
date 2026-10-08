@@ -147,9 +147,11 @@ function useTimer() {
   return { time, start, stop };
 }
 
-const WORDS_3 = ["Democracy survived. Barely.", "You beat the news cycle.", "Fact-checkers applaud politely.", "Chaos never stood a chance.", "The timeline has been indicted."];
-const WORDS_2 = ["Messy, but constitutional.", "Chaos contained. Mostly.", "You found the plot eventually.", "A respectable act of resistance.", "The timeline put up a fight."];
-const WORDS_1 = ["By the skin of democracy.", "That was alarmingly close.", "The timeline nearly won.", "You survived the chaos."];
+// Every solved timeline deserves congratulations, however many tries it took.
+// Original Trump-style parody, not quotations attributed to Trump.
+const WORDS_3 = ["Perfect. Absolutely tremendous.", "You nailed it. Believe me.", "A flawless victory. Beautiful.", "First try. What a tremendous brain."];
+const WORDS_2 = ["You won. A very beautiful win.", "Tremendous work. Just tremendous.", "That's how a winner does it.", "A big win. You're a natural."];
+const WORDS_1 = ["You won. That's what winners do.", "You did it. Tremendous comeback!", "A beautiful win. Take the credit.", "Congratulations. You're a big winner."];
 function getCelebWord(stars) {
   const list = stars === 3 ? WORDS_3 : stars === 2 ? WORDS_2 : WORDS_1;
   return list[Math.floor(Math.random() * list.length)];
