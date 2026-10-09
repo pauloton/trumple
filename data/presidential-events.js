@@ -14224,5 +14224,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-20855",
+    "date": "2026-10-09",
+    "title": "Signs off on Emergency Tax Relief on Diesel Fuel",
+    "hint": "The Federal Register made it official: \"Emergency Tax Relief on Diesel Fuel.\" The fine print joined the plot.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/09/2026-20855/emergency-tax-relief-on-diesel-fuel"
+      }
+    ],
+    "status": "approved"
   }
 ];
