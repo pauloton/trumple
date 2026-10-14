@@ -14238,5 +14238,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-21061",
+    "date": "2026-10-14",
+    "title": "Signs off on Establishment of a Committee",
+    "hint": "Official paperwork followed under \"Establishment of a Committee of Inquiry To Investigate Allegations of False Statements by Lisa DeNell Cook.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/14/2026-21061/establishment-of-a-committee-of-inquiry-to-investigate-allegations-of-false-statements-by-lisa"
+      }
+    ],
+    "status": "approved"
   }
 ];
