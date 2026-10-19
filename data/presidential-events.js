@@ -14252,5 +14252,47 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-21430",
+    "date": "2026-10-19",
+    "title": "Keeps the Significant Narcotics Traffickers",
+    "hint": "Official paperwork followed under \"Continuation of the National Emergency With Respect to Significant Narcotics Traffickers Centered.\" Yes, it came with a presidential seal.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/19/2026-21430/continuation-of-the-national-emergency-with-respect-to-significant-narcotics-traffickers-centered-in"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-21431",
+    "date": "2026-10-19",
+    "title": "Keeps the Sudan emergency running",
+    "hint": "The Federal Register made it official: \"Continuation of the National Emergency With Respect to Sudan.\" The fine print joined the plot.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/19/2026-21431/continuation-of-the-national-emergency-with-respect-to-sudan"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-21432",
+    "date": "2026-10-19",
+    "title": "Keeps the Democratic Republic of the Congo",
+    "hint": "The presidential record calls it \"Continuation of the National Emergency With Respect to the Democratic Republic of the Congo.\" The paperwork arrived with consequences.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/19/2026-21432/continuation-of-the-national-emergency-with-respect-to-the-democratic-republic-of-the-congo"
+      }
+    ],
+    "status": "approved"
   }
 ];
