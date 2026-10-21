@@ -14294,5 +14294,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-21599",
+    "date": "2026-10-21",
+    "title": "Signs off on Implementing the Lindsey O. Graham",
+    "hint": "The Federal Register made it official: \"Implementing the Lindsey O. Graham Sanctioning Russia and Iran Act of 2026.\" The fine print joined the plot.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/21/2026-21599/implementing-the-lindsey-o-graham-sanctioning-russia-and-iran-act-of-2026"
+      }
+    ],
+    "status": "approved"
   }
 ];
