@@ -14308,5 +14308,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-21666",
+    "date": "2026-10-22",
+    "title": "Signs off on Advancing Women's Health To Improve",
+    "hint": "The presidential record calls it \"Advancing Women's Health To Improve Outcomes in All Phases of Life.\" The paperwork arrived with consequences.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/22/2026-21666/advancing-womens-health-to-improve-outcomes-in-all-phases-of-life"
+      }
+    ],
+    "status": "approved"
   }
 ];
