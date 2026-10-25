@@ -6,6 +6,58 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed October 25 against reporting and dated rally transcripts.
+  // Kansas was October 19 locally, not the Reuters publication date of October 20.
+  card("2026-10-18", "zelensky-never-wanted-peace", "Decides Zelensky never wanted peace anyway",
+    "After Ukraine hit a Russian oil terminal, he accused Zelensky of never wanting the war to end while explaining his own reluctance to upset Moscow.", 5, "Grievance",
+    "CNN via KEYT", "https://keyt.com/news/national-world/cnn-world/2026/10/18/ukraine-defies-trump-and-launches-one-of-its-biggest-drone-attacks-on-russia-this-year/"),
+  card("2026-10-19", "kansas-france-burning-warning", "Turns French riots into a Kansas campaign ad",
+    "At his Kansas rally, he pointed to burning buildings in France and claimed, without evidence, that Democrats wanted the same for America.", 5, "Fearmongering",
+    "Reuters", "https://www.reuters.com/world/us/trump-warns-kansans-that-us-will-burn-like-france-if-democrats-win-2026-10-20/"),
+  card("2026-10-20", "fraud-tip-reward-referee", "Makes himself referee of the fraud-tip payouts",
+    "Launching a federal whistleblower reward scheme, he said he would personally settle disputes over who gets the money when tipsters compete.", 4, "Personal rule",
+    "MPR News", "https://www.mprnews.org/story/2026/10/20/anti-fraud-whistleblower-reward-program-announced-by-president-donald-trump"),
+  card("2026-10-21", "pendleton-protester-punchlines", "Complains protesters keep ruining his punchlines",
+    "At his South Carolina rally, he complained that protesters had interrupted three punchlines and called them losers while praising their timing.", 4, "Off-script",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-pendleton-south-carolina-october-21-2026/"),
+  card("2026-10-22", "iran-fake-ship-hits-midterms", "Accuses Iran of inventing ship hits for midterms",
+    "He claimed Iran was making up attacks and mines in the Strait of Hormuz to push oil prices higher before the US midterm elections.", 5, "Conspiracy claim",
+    "The Times of Israel", "https://www.timesofisrael.com/liveblog_entry/trump-claims-iran-making-up-fake-hits-to-drive-up-oil-prices-ahead-of-midterms/"),
+  card("2026-10-23", "another-little-epic-fury", "Floats another 'little Epic Fury' against Iran",
+    "At his Fort Myers rally, he raised the prospect of another military operation against Iran, giving renewed war the diminutive treatment.", 5, "Escalation",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-fort-myers-florida-october-23-2026/"),
+  card("2026-10-24", "press-corps-less-obnoxious", "Wants the press somewhere 'less obnoxious'",
+    "He denied wanting to replace the briefing room with a pool, then said he might move the White House press corps to a less obnoxious location.", 4, "Media tantrum",
+    "Reuters via GV Wire", "https://gvwire.com/2026/10/24/trump-says-he-may-move-white-house-press-corps/"),
+  // Reviewed October 8: one fresh story and six distinct second-term gaps.
+  // San Antonio was October 7 locally, although some reports carry October 8 UTC.
+  { ...card("2026-10-07", "san-antonio-protester-looks", "Insists he never mocks looks, then mocks looks",
+    "At his San Antonio rally, he claimed he never comments on people's looks while calling the protesters bad-looking in the very same breath.", 4, "Off-script",
+    "Associated Press", "https://apnews.com/article/c3653612100f15c0c4de86daffc08677"),
+    sources: [
+      { name: "Associated Press", url: "https://apnews.com/article/c3653612100f15c0c4de86daffc08677" },
+      { name: "Rally transcript via Roll Call", url: "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-san-antonio-texas-october-7-2026/" },
+    ] },
+  card("2025-07-01", "musk-deportation-look", "Considers deporting his ex-bestie Elon Musk",
+    "Asked about deporting Musk after their spending-bill feud, he said he'd take a look, despite his former ally being a naturalized US citizen.", 5, "Retaliation",
+    "ABC News Australia", "https://www.abc.net.au/news/2025-07-01/trump-suggests-doge-look-at-musk-subsidies-to-save-money/105482158"),
+  card("2025-09-22", "tylenol-autism-claims", "Plays doctor with an unproven Tylenol claim",
+    "He repeatedly told pregnant women to avoid Tylenol while promoting an autism link that medical evidence had not established.", 5, "False claim",
+    "Associated Press", "https://apnews.com/article/tylenol-cause-autism-trump-kennedy-0847ee76eedecbd5e9baa6888b567d66"),
+  card("2025-10-17", "santos-prison-commutation", "Lets convicted fraudster George Santos walk",
+    "He cut short Santos's seven-year fraud and identity-theft sentence less than three months after the former congressman entered prison.", 5, "Cronyism",
+    "Associated Press", "https://apnews.com/article/8ae46d6351cefe01d79f74920521b7a2"),
+  // The exchange happened November 14, before the clip went viral days later.
+  card("2025-11-14", "lucey-quiet-piggy", "Answers an Epstein question with 'quiet, piggy'",
+    "When Bloomberg's Catherine Lucey pressed him about the Epstein files aboard Air Force One, he pointed at her and supplied an insult instead.", 5, "Media tantrum",
+    "Lead Stories, with video of the exchange", "https://leadstories.com/hoax-alert/2025/11/fact-check-trump-did-tell-female-reporter-quiet-piggy.html"),
+  // First loyalty complaint was December 7; October 2026 repeats are not new events.
+  card("2025-12-07", "cuellar-pardon-loyalty", "Finds his pardon didn't turn Cuellar Republican",
+    "Days after pardoning Henry Cuellar, he complained about disloyalty when the congressman filed to run again with his actual party, the Democrats.", 5, "Grievance",
+    "Reuters", "https://www.investing.com/news/politics-news/us-lawmaker-cuellar-defends-democratic-ties-after-pardon-as-trump-blasts-lack-of-loyalty-4394811"),
+  card("2025-12-22", "trump-class-battleships", "Puts his name on battleships not yet built",
+    "He unveiled plans for Trump-class battleships in a Golden Fleet, promising ships 100 times more powerful before the first one existed.", 4, "Vanity",
+    "Reuters", "https://www.investing.com/news/world-news/trump-announces-plan-for-new-class-of-more-powerful-us-battleships-4420373"),
   // Reviewed October 7: one recent gap and six distinct second-term backfills.
   // Doral posts were October 5; reporting followed October 6.
   { ...card("2026-10-05", "doral-photo-grievance", "Accuses the Times of making his golf club ugly",
