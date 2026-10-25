@@ -46,7 +46,7 @@ jobs:
         if: steps.clock.outputs.run == 'true'
         run: npm run library:freeze
 
-      - name: Collect and curate the week
+      - name: Collect source candidates (event dates still need editorial review)
         if: steps.clock.outputs.run == 'true'
         env:
           REQUESTED_TODAY: ${{ inputs.today }}
@@ -88,6 +88,8 @@ jobs:
 
       # A successful archive update does not mean Sunday's puzzle is ready.
       # Run after publication so a shortfall never discards useful additions.
+      # The unused seasonal trigger must report a Sunday outage too; otherwise
+      # its green no-op can conceal the active trigger's editorial failure.
       - name: Verify Sunday has seven past-week stories
-        if: always() && steps.clock.outputs.run == 'true'
+        if: always()
         run: npm run library:readiness
