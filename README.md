@@ -78,9 +78,10 @@ The 07:00 and 08:00 UTC triggers are separate. `scripts/select-refresh-run.mjs` 
 
 Copy should be about 10% cheekier than the previous pass, not longer: state what happened, then add one short, dry jab when it fits. Keep victims out of the punchline. No invented quotes, motives, extra allegations, or em dashes. Titles stay within 50 characters; display writeups within 180. Add display copy for every new event to `lib/event-writeups.js`; use its overrides to polish existing cards without changing saved puzzles or answer orders.
 
-Editorial refresh sequence, starting from a clean, up-to-date `main`:
+Editorial refresh sequence, starting on `main`:
 
 ```bash
+npm run library:sync
 npm run library:freeze
 # Research and edit verified content only after preservation succeeds.
 npm run library:freeze -- --local
@@ -90,6 +91,10 @@ npm run library:release-check
 ```
 
 The local snapshot step only adds dates without a saved puzzle, such as a Sunday that previously returned `WEEKLY_NOT_READY`. Never replace a saved entry. Corrections may enrich sources and missing dates without changing card identities or answer order. Commit the archive together with content. After pushing, run `npm run library:verify-live`.
+
+`library:sync` fetches origin and only fast-forwards. It preserves unrelated pending content and untracked artwork. When both sides append to `published-puzzles.json`, it compares the saved objects, backs up the local file and keeps their union. Identical overlapping snapshots are safe; a changed or removed puzzle, overlapping edits to another file, staged changes or diverged history stop synchronization. A failed Git merge restores the local archive. If origin advances during curation, rerun this check and all release checks before publishing; never force push.
+
+The seasonal trigger guard controls collection and publication only. Both scheduled runs check Sunday readiness, including the run that skips collection. A green seasonal no-op must not conceal a missing Sunday game. Collection uses publication dates and cannot replace the separate editorial research and event-date verification step.
 
 The initial archive preserves 533 successful historical responses through September 26, 2026. The 29 available games in the August 26-September 26 review window were also compared against production. Previously unavailable Sundays are not invented or silently replaced.
 
