@@ -6,6 +6,32 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed October 26: three recent stories and five second-term backfills.
+  // The Georgia oil-profit boast was October 24, not its October 25 report date.
+  card("2026-10-24", "georgia-oil-profit-boast", "Brags about oil profits while drivers pay up",
+    "At his Georgia rally, he boasted about oil profits despite advisers asking him not to, acknowledging that drivers were suffering at the pump.", 4, "Off-script",
+    "The Daily Beast, with rally video", "https://www.thedailybeast.com/trump-sparks-fury-with-jaw-dropping-boast-about-gas-prices-at-georgia-rally"),
+  card("2026-10-25", "el-sayed-senate-terror-scare", "Turns El-Sayed's Senate bid into a terror scare",
+    "In Michigan, he said Muslim Senate candidate Abdul El-Sayed would need a metal detector to enter the chamber, dressing up a campaign attack as security advice.", 5, "Fearmongering",
+    "Associated Press via Michigan Public", "https://www.michiganpublic.org/politics-government/2026-10-25/trump-escalates-anti-muslim-attacks-against-el-sayed-in-michigan-drawing-arab-american-rebuke"),
+  card("2026-10-25", "minaj-rally-body-comment", "Reviews Nicki Minaj's backside at his rally",
+    "At his Michigan rally, he commented on Minaj's backside, signaled for her to stand, then said he hoped she wasn't insulted by the presidential attention.", 4, "Off-script",
+    "Associated Press via Michigan Public", "https://www.michiganpublic.org/politics-government/2026-10-25/trump-escalates-anti-muslim-attacks-against-el-sayed-in-michigan-drawing-arab-american-rebuke"),
+  card("2025-08-25", "maybe-like-dictator", "Suggests Americans might fancy a dictator",
+    "Defending his troop deployments, he claimed people might like a dictator, then assured reporters he was merely a very smart man with common sense.", 4, "Power grab",
+    "Video and transcript via RealClearPolitics", "https://www.realclearpolitics.com/video/2025/08/25/trump_a_lot_of_people_are_saying_maybe_wed_like_a_dictator.html"),
+  card("2025-10-28", "carrier-steam-catapult-pitch", "Tells the Navy to bring back his beloved steam",
+    "Aboard a carrier in Japan, he polled sailors on catapults and promised an order replacing electromagnetic launches with his preferred steam technology.", 4, "Off-script",
+    "Speech transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-uss-george-washington-troops-japan-october-28-2025"),
+  card("2025-11-18", "khashoggi-things-happen", "Waves off Khashoggi's murder: 'Things happen'",
+    "With the Saudi crown prince beside him, he dismissed Khashoggi's killing and scolded the reporter for embarrassing his guest.", 5, "Media tantrum",
+    "Roll Call", "https://rollcall.com/2025/11/18/trump-saudi-mohammed-salman-visit-khashoggi/"),
+  card("2025-12-15", "reiner-death-about-trump", "Makes Rob Reiner's death about himself",
+    "After Rob and Michele Reiner were found dead, he used a post about their deaths to blame the director's opposition to him, without evidence.", 5, "Grievance",
+    "Reuters via Investing.com", "https://www.investing.com/news/world-news/trump-mocks-rob-reiner-suggests-without-evidence-his-liberal-politics-led-to-his-death-4408909"),
+  card("2026-01-22", "canada-peace-board-uninvited", "Disinvites Canada from his peace club",
+    "After Carney's Davos speech challenged powerful nations, he withdrew Canada's invitation to his Board of Peace while praising his own guest list.", 4, "Grievance",
+    "Reuters via MarketScreener", "https://www.marketscreener.com/news/trump-revokes-canada-s-invitation-to-join-board-of-peace-ce7e58d3de88f222"),
   // Reviewed October 25 against reporting and dated rally transcripts.
   // Kansas was October 19 locally, not the Reuters publication date of October 20.
   card("2026-10-18", "zelensky-never-wanted-peace", "Decides Zelensky never wanted peace anyway",
