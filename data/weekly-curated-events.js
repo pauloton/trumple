@@ -6,6 +6,35 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed October 27: four recent stories and five second-term backfills.
+  // Alaska dates his admission, Libya the rally, and nuclear testing the Korea-local announcement.
+  card("2026-10-26", "brazil-runoff-rigged-claim", "Finds another 'rigged' election, now in Brazil",
+    "After Lula won Brazil's runoff, he told reporters the vote looked rigged, offering his familiar verdict without evidence.", 4, "False claim",
+    "Reuters via StreetInsider", "https://www.streetinsider.com/Reuters/Trump%2Bsays%2C%2Bwithout%2Bciting%2Bevidence%2C%2Bthat%2BBrazil%2Belection%2Blooks%2Brigged/27233877.html"),
+  card("2026-10-26", "voter-fraud-million-dollar-reward", "Puts a $1 million bounty on voter-fraud tips",
+    "He promised $1 million for voter-fraud tips leading to an arrest and conviction, leaving the source of this prize money unspecified.", 4, "Election grievance",
+    "NBC News via NBC Miami", "https://www.nbcmiami.com/elections/trump-reward-voter-fraud-tips-lead-convictions/3877897/"),
+  card("2026-10-24", "libya-shithouse-countries-rant", "Drags Libya into his 'shithouse' country list",
+    "At his Georgia rally, he lumped Libya, Yemen, Haiti and Somalia into a vulgar country review while railing against Senator Jon Ossoff.", 4, "Diplomatic insult",
+    "Reuters via Investing.com", "https://www.investing.com/news/politics-news/libya-summons-us-envoy-to-protest-at-trump-remarks-4971318"),
+  card("2026-10-23", "alaska-lawsuit-takes-credit", "Takes credit for preemptively suing Alaska",
+    "He said he ordered the lawsuit to block certification if Senator Sullivan lost through alleged namesake confusion, getting his election objection in early.", 5, "Power grab",
+    "ABC News", "https://abcnews.com/US/doj-preemptively-sues-alaska-senate-results-republican/story?id=137512876"),
+  card("2025-05-31", "biden-robot-clone-repost", "Shares a theory that Biden is a robot clone",
+    "He passed along a baseless claim that Biden had been executed in 2020 and replaced by clones and robots, without a word of explanation.", 4, "Conspiracy claim",
+    "Lead Stories", "https://leadstories.com/hoax-alert/2025/06/fact-check-trump-did-share-post-saying-boden-was-executed-in-2020-replaced-with-robotic-clones.html"),
+  card("2025-09-05", "pentagon-war-department-rebrand", "Rebrands the Pentagon as the Department of War",
+    "He ordered a Department of War rebrand for the Pentagon, getting the new signs up while a permanent legal name change still needed Congress.", 4, "Rebranding",
+    "Reuters via Investing.com", "https://www.investing.com/news/world-news/trump-orders-return-to-the-us-war-department-4227532"),
+  card("2025-09-15", "nyt-fifteen-billion-lawsuit", "Sends the New York Times a $15 billion complaint",
+    "He sued the Times and Penguin Random House over articles and a book about him, pricing the alleged damage to the Trump brand at $15 billion.", 4, "Media tantrum",
+    "Reuters via Investing.com", "https://www.investing.com/news/stock-market-news/trump-to-file-15-billion-defamation-and-libel-lawsuit-against-new-york-times-4239721"),
+  card("2025-09-18", "kimmel-broadcaster-license-threat", "Wants TV licenses pulled for bad Trump coverage",
+    "Fresh from cheering Kimmel's suspension, he told reporters broadcasters should lose their licenses over negative coverage of his administration.", 5, "Media tantrum",
+    "Reuters via Investing.com", "https://www.investing.com/news/stock-market-news/hollywood-comes-to-kimmels-defense-after-abc-pulls-latenight-show-4243785"),
+  card("2025-10-30", "nuclear-testing-before-xi", "Orders nuclear tests back on before meeting Xi",
+    "On his way to meet Xi in South Korea, he announced a return to nuclear-weapons testing on Truth Social, leaving the type of tests rather less clear.", 5, "Escalation",
+    "Reuters via MarketScreener", "https://www.marketscreener.com/news/trump-asks-pentagon-to-immediately-resume-testing-us-nuclear-weapons-ce7d5dd3d988ff2c"),
   // Reviewed October 26: three recent stories and five second-term backfills.
   // The Georgia oil-profit boast was October 24, not its October 25 report date.
   card("2026-10-24", "georgia-oil-profit-boast", "Brags about oil profits while drivers pay up",
