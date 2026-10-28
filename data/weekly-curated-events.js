@@ -6,6 +6,29 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed October 28: two recent stories and five second-term backfills.
+  // The recycled marriage boast is dated to the verified February speech, not October coverage.
+  card("2026-10-27", "paxton-body-does-not-qualify", "Decides Paxton's body doesn't quite qualify",
+    "Campaigning for Paxton in Lubbock, he revisited his admiration for Jon Husted's physique, then said his Texas candidate's body might not qualify.", 4, "Off-script",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-lubbock-texas-october-27-2026/"),
+  card("2026-10-22", "acton-estranged-mother-ad", "Calls an estranged-mom attack ad 'pay dirt'",
+    "He urged Ramaswamy to keep an ad attacking Amy Acton through her estranged mother, even as Ohio's Republican governor asked for it to come down.", 5, "Campaign attack",
+    "FactCheck.org", "https://www.factcheck.org/2026/10/controversial-ohio-ad-calls-acton-a-liar-but-records-back-her-account-of-childhood/"),
+  card("2025-06-25", "nato-daddy-compliment", "Takes 'Daddy' as a diplomatic compliment",
+    "Asked about Rutte calling him Daddy at the NATO summit, he repeated the nickname and explained that the NATO chief had said it very affectionately.", 4, "Vanity",
+    "Press conference transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-press-conference-nato-summit-the-hague-netherlands-june-25-2025"),
+  card("2025-08-25", "flag-burning-year-in-jail", "Promises a year in jail for burning the flag",
+    "Signing a flag-burning crackdown, he promised a year in jail despite the Supreme Court's protection of flag burning as political expression.", 5, "Power grab",
+    "Reuters via Investing.com", "https://www.investing.com/news/world-news/trump-to-sign-executive-order-on-flag-desecration-fox-news-reports-4208902"),
+  card("2025-09-02", "space-command-alabama-vote-tally", "Moves Space Command to his beloved Alabama",
+    "Announcing the move from Colorado, he brought up Alabama's votes for him, joked they hadn't influenced him, then called Colorado's elections crooked.", 4, "Personal rule",
+    "Reuters via Investing.com", "https://www.investing.com/news/stock-market-news/trump-set-to-move-space-command-headquarters-to-alabama-from-colorado-sources-say-4219731"),
+  card("2025-09-15", "nfl-sissy-kickoff-rant", "Declares NFL kickoffs too 'sissy' for America",
+    "He demanded the NFL scrap its new kickoff rule, declaring the less collision-heavy version sissy football and bad for America.", 4, "Grievance",
+    "PolitiFact, with the dated Truth Social post", "https://api.politifact.com/article/2025/sep/22/NFL-kickoff-rules-Trump-football-concussions/"),
+  card("2026-02-27", "policeman-sex-life-economy-boast", "Credits his economy for a cop's better sex life",
+    "In Corpus Christi, he claimed a New York cop's rising retirement savings had revived his marriage and sex life, extending his economic brag to the bedroom.", 4, "Vanity",
+    "Official speech transcript via GovInfo", "https://www.govinfo.gov/content/pkg/DCPD-202600139/pdf/DCPD-202600139.pdf"),
   // Reviewed October 27: four recent stories and five second-term backfills.
   // Alaska dates his admission, Libya the rally, and nuclear testing the Korea-local announcement.
   card("2026-10-26", "brazil-runoff-rigged-claim", "Finds another 'rigged' election, now in Brazil",
