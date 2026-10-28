@@ -14322,5 +14322,47 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-22049",
+    "date": "2026-10-28",
+    "title": "Tweaks imports of Wind Turbines and Their Parts",
+    "hint": "The Federal Register made it official: \"Adjusting Imports of Wind Turbines and Their Parts and Components Into the US.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/28/2026-22049/adjusting-imports-of-wind-turbines-and-their-parts-and-components-into-the-united-states"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-22051",
+    "date": "2026-10-28",
+    "title": "Signs off on Decreasing Housing Costs for",
+    "hint": "Official paperwork followed under \"Decreasing Housing Costs for the American People.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/28/2026-22051/decreasing-housing-costs-for-the-american-people"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-22052",
+    "date": "2026-10-28",
+    "title": "Signs off on Domestic Petroleum Production",
+    "hint": "The Federal Register made it official: \"Presidential Determination Pursuant to Section 303 of the Defense Production Act of 1950, as Amended.\" The fine print joined the plot.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/28/2026-22052/presidential-determination-pursuant-to-section-303-of-the-defense-production-act-of-1950-as-amended"
+      }
+    ],
+    "status": "approved"
   }
 ];
