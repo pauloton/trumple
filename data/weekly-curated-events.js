@@ -6,6 +6,40 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed October 29: five recent stories and five distinct historical gaps.
+  // The solar claim dates to September 2025, not its recycled October 2026 coverage.
+  // Maher's Sunday-night post date is corroborated here:
+  // https://www.thedailybeast.com/obsessed/bill-maher-70-downplays-threat-from-best-frenemy-trump
+  card("2026-10-28", "peltola-prosecution-demand", "Wants Peltola's Senate bid sent to prosecutors",
+    "After reports linking Peltola's campaign to a rival's namesake candidate, he called for her prosecution, taking his Alaska election fight into criminal territory.", 5, "Power grab",
+    "Associated Press", "https://apnews.com/article/alaska-peltola-senate-dan-sullivan-democrats-743677c9fb0d6696af7901504df2be3e"),
+  card("2026-10-27", "venezuela-fifty-first-state-pitch", "Adds Venezuela to his 51st-state shopping list",
+    "At his Corpus Christi rally, he floated turning oil-rich Venezuela into a US state and replacing its presidential election with one for governor.", 4, "Expansionism",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-corpus-christi-texas-october-27-2026/"),
+  card("2026-10-26", "obama-cheesecake-factory-rebuttal", "Can't let Obama's Cheesecake Factory joke go",
+    "After Obama mocked his White House decor, he called Obama stupid and said he didn't notice dirt, defending the renovations with a review of his predecessor's hygiene.", 4, "Grievance",
+    "Video and transcript via RealClearPolitics", "https://www.realclearpolitics.com/video/2026/10/26/trump_to_obama_to_say_the_white_house_is_a_cheesecake_factory_that_just_shows_why_you_were_a_lousy_president.html"),
+  card("2026-10-25", "maher-dinner-truth-social-rant", "Gives Bill Maher dinner, then a written roasting",
+    "After their second White House dinner, he unloaded on Maher on Truth Social, calling him a loser, disputing the dinner's length and telling him not to call again.", 4, "Media tantrum",
+    "Trump's Truth Social post; date reported by The Daily Beast", "https://truthsocial.com/@realDonaldTrump/posts/117504266048722465"),
+  card("2026-10-22", "bishops-private-prayer-public-video", "Makes private prayer into White House content",
+    "His White House posted the bishops praying over him; bishops later said the meeting was private and they hadn't agreed to become pre-election publicity.", 4, "Political theater",
+    "Associated Press via ABC News", "https://abcnews.com/Politics/wireStory/catholic-bishops-regret-white-house-prayer-photo-trump-137557990"),
+  card("2025-04-11", "obama-portrait-trump-fist-painting", "Moves Obama's portrait to make room for himself",
+    "His White House moved Obama's portrait across the foyer and gave its spot to a painting of Trump's raised fist after the Butler assassination attempt.", 4, "Vanity",
+    "Associated Press", "https://apnews.com/article/dc23fef7f43354e1411f4747dc3f4e4d"),
+  card("2025-08-05", "white-house-roof-nuclear-missile-joke", "Takes a roof walk, jokes about nuclear missiles",
+    "Surveying renovations from the White House roof, he fielded shouted questions and joked that his next building project was nuclear missiles.", 4, "Off-script",
+    "Associated Press", "https://apnews.com/article/trump-white-house-roof-west-wing-oval-b1e14afeea900df7858e7fd41e1578d0"),
+  card("2025-09-18", "solar-panels-fried-birds-claim", "Adds bird-frying to his solar-panel complaints",
+    "Aboard Air Force One, he called solar fields black plastic from China and claimed birds get fried when they land on the panels.", 4, "False claim",
+    "Press gaggle transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-press-gaggle-air-force-one-september-18-2025/"),
+  card("2026-03-27", "miami-investors-sex-questions", "Invites investors to ask him about sex",
+    "Opening questions at a Saudi-backed investment forum in Miami, he boasted he needed no screening and volunteered sex as an acceptable topic.", 4, "Off-script",
+    "Speech transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-saudi-investment-conference-florida-march-27-2026/"),
+  card("2026-03-27", "strait-of-trump-name-joke", "Tries 'Strait of Trump' on for size",
+    "At the Miami investment forum, he called Hormuz the Strait of Trump, corrected himself, then insisted there were no accidents with him.", 4, "Vanity",
+    "Speech transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-saudi-investment-conference-florida-march-27-2026/"),
   // Reviewed October 28: two recent stories and five second-term backfills.
   // The recycled marriage boast is dated to the verified February speech, not October coverage.
   card("2026-10-27", "paxton-body-does-not-qualify", "Decides Paxton's body doesn't quite qualify",
