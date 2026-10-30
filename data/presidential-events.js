@@ -14364,5 +14364,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-22292",
+    "date": "2026-10-30",
+    "title": "Signs off on Further Modifying the Scope",
+    "hint": "The Federal Register made it official: \"Further Modifying the Scope of Products of Canada Subject to the Additional Duties Imposed To Offset.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/10/30/2026-22292/further-modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset"
+      }
+    ],
+    "status": "approved"
   }
 ];
