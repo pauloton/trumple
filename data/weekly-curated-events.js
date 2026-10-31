@@ -6,6 +6,29 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed October 31: two recent stories and five distinct historical gaps.
+  // The travel-question exchange happened October 29, not the next day's recaps.
+  card("2026-10-30", "tele-rallies-only-work-for-trump", "Says phone rallies only work when he calls",
+    "Restoring his canceled Iowa and Kansas stops, he boasted that phone rallies only seem to work for him, while admitting Republicans wanted him there in person.", 4, "Vanity",
+    "Mediaite, with video", "https://www.mediaite.com/politics/trump/trump-says-he-tried-to-talk-republicans-out-of-in-person-rallies-in-iowa-and-kansas/"),
+  card("2026-10-29", "reuters-reporter-travel-question-body-insults", "Answers a travel question with a body review",
+    "Asked if he was sick of traveling, he called a Reuters reporter sick, disgusting and out of shape, turning a question about Kansas into unsolicited fitness advice.", 4, "Media tantrum",
+    "TheWrap", "https://www.thewrap.com/media-platforms/journalism/trump-insults-reporter-weight-after-health-question/"),
+  card("2025-06-18", "flagpole-crew-immigration-question", "Gives his flagpole crew an immigration quiz",
+    "Showing off new White House flagpoles, he jokingly asked the workers if any were illegal immigrants, then assured them he'd find out.", 4, "Off-script",
+    "ABC News", "https://abcnews.com/US/illegal-immigrants-trump-questions-workers-installing-white-house/story?id=122996015"),
+  card("2025-06-19", "juneteenth-too-many-holidays-complaint", "Spends Juneteenth complaining about days off",
+    "He complained America had too many holidays and claimed workers didn't want them either.", 4, "Grievance",
+    "Axios; contemporaneous June 19 post", "https://www.axios.com/2025/06/20/trump-usa-time-off-vacation-juneteenth-holidays-europe-asia"),
+  card("2025-07-03", "iowa-tax-speech-antisemitic-term", "Digs up 'shylocks' for his tax-bill sales pitch",
+    "Selling his tax bill in Iowa, he called some lenders shylocks, reaching for an antisemitic term while his administration billed itself as fighting antisemitism.", 4, "Off-script",
+    "Associated Press", "https://apnews.com/article/trump-offensive-term-jews-antisemitism-shakespeare-6c6517f6de0e4c80936c40055069c0db"),
+  card("2025-09-21", "kirk-memorial-opponents-hatred", "Makes room for grudges in his Kirk tribute",
+    "At Kirk's memorial, he praised Kirk for not hating opponents, then made sure the audience knew he hated his own.", 4, "Grievance",
+    "Reuters via Investing.com", "https://www.investing.com/news/politics-news/trump-vance-to-headline-memorial-service-for-charlie-kirk-in-arizona-4247755"),
+  card("2026-03-27", "prefers-losers-as-success-story-audience", "Prefers losers who'll listen to his success",
+    "At a Miami investment forum, he joked that he preferred hanging around losers who'd listen to his success stories, rather than successful people with their own.", 4, "Vanity",
+    "Speech transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-saudi-investment-conference-florida-march-27-2026/"),
   // Reviewed October 29: five recent stories and five distinct historical gaps.
   // The solar claim dates to September 2025, not its recycled October 2026 coverage.
   // Maher's Sunday-night post date is corroborated here:
