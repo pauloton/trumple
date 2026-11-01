@@ -6,6 +6,33 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 1: three recent stories and five historical gaps.
+  // Norway's released exchange dates the Nobel text to January 18, not January 19 reporting.
+  // The Ingraham tour was recorded November 10; the gold clip circulated November 11.
+  card("2026-10-31", "flavio-bolsonaro-indefinite-us-welcome", "Offers Bolsonaro an open-ended American stay",
+    "After Flavio Bolsonaro lost Brazil's election and left for the US, he said Bolsonaro could stay as long as he wanted, adding hospitality to his election complaints.", 4, "Personal rule",
+    "Reuters via Investing.com", "https://www.investing.com/news/world-news/trump-says-flavio-bolsonaro-can-stay-in-us-as-long-as-he-wants-4989356"),
+  card("2026-10-31", "halloween-iran-question-times-mockery", "Fits a Times tirade into his Halloween party",
+    "At Mar-a-Lago's Halloween party, he called a Times reporter's Iran-war question stupid, mimicked it and repeatedly asked why he'd tell the newspaper his plans.", 4, "Media tantrum",
+    "Press gaggle transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-press-gaggle-mar-a-lago-halloween-party-october-31-2026/"),
+  card("2026-10-25", "norway-nobel-snub-immigrants-rant", "Puts Norwegians on his Nobel grudge list",
+    "At his Michigan rally, he said he didn't want immigrants from Norway because he hadn't won the Nobel, then downgraded Norway to a shithouse country.", 4, "Grievance",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-political-rally-port-huron-michigan-october-25-2026/"),
+  card("2025-01-27", "imaginary-california-military-water-rescue", "Invents a military rescue for California's taps",
+    "He claimed troops had turned California's water on. State officials said federal pumps had simply restarted after maintenance, with no military rescue required.", 4, "False claim",
+    "AFP Fact Check", "https://factcheck.afp.com/doc.afp.com.36WL42G"),
+  card("2025-11-10", "oval-gold-not-home-depot", "Insists his Oval Office gold isn't Home Depot",
+    "Giving Laura Ingraham the gold tour, he insisted no paint could imitate real gold and twice denied her suggestion that the decor came from Home Depot.", 4, "Vanity",
+    "Fox interview transcript archived by Senate Democrats", "https://www.democrats.senate.gov/newsroom/trump-transcripts/transcript-president-trump-speaks-with-laura-ingraham-on-the-ingraham-angle-111025"),
+  card("2026-01-18", "norway-nobel-peace-obligation-text", "Tells Norway peace comes with a prize condition",
+    "In a text to Norway's prime minister, he said missing out on the Nobel freed him from thinking purely of peace, then renewed his claim to Greenland.", 5, "Grievance",
+    "Reuters, with the dated text exchange", "https://www.investing.com/news/world-news/the-exchange-of-messages-between-norways-prime-minister-and-president-trump-4453747"),
+  card("2026-01-20", "publishes-macron-private-greenland-text", "Makes Macron's private text everybody's business",
+    "He posted Macron's private message questioning his Greenland plans and offering dinner in Paris, giving quiet diplomacy the Truth Social treatment.", 4, "Off-script",
+    "Reuters via Investing.com", "https://www.investing.com/news/world-news/trump-pressures-macron-with-publication-of-private-message-threat-of-wine-tariffs-4454369"),
+  card("2026-01-21", "davos-macron-sunglasses-review", "Adds Macron's sunglasses to the Davos agenda",
+    "At Davos, he paused to mock Macron's aviators and ask what had happened, turning a world economic speech into an unsolicited eyewear review.", 4, "Off-script",
+    "Reuters via Investing.com", "https://www.investing.com/news/world-news/trump-mocks-macrons-sunglasses-in-davos-speech-4458254"),
   // Reviewed October 31: two recent stories and five distinct historical gaps.
   // The travel-question exchange happened October 29, not the next day's recaps.
   card("2026-10-30", "tele-rallies-only-work-for-trump", "Says phone rallies only work when he calls",
