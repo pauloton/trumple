@@ -6,6 +6,26 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 2: one recent story and five historical gaps.
+  // The morality interview took place Wednesday, January 7; reports appeared January 8.
+  card("2026-11-01", "hinson-iowa-rally-weight-commentary", "Can't leave Hinson's weight out of her rally",
+    "He told her Iowa crowd she used to be heavier and praised weight loss without injections, while saying she'd asked him not to bring it up.", 4, "Off-script",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-dubuque-iowa-november-1-2026/"),
+  card("2026-01-07", "own-morality-limit-on-global-power", "Names himself the limit on his own power",
+    "Asked what limited his global power, he named his own morality and said he didn't need international law, reserving the final say for himself.", 5, "Personal rule",
+    "ABC News, dating the interview to Wednesday", "https://abcnews.com/Politics/trump-morality-limit-global-power/story?id=129033900"),
+  card("2026-01-13", "ford-worker-middle-finger", "Answers a factory heckler with his middle finger",
+    "He answered a Ford worker's Epstein heckle with his middle finger and what appeared to be an expletive during his factory tour.", 4, "Off-script",
+    "Reuters via Investing.com", "https://www.investing.com/news/stock-market-news/trump-flips-off-antagonizing-worker-at-ford-plant-in-michigan-4445960"),
+  card("2026-01-22", "nato-afghanistan-frontlines-dismissal", "Demotes NATO's war service to the sidelines",
+    "In his Davos TV interview, he said America had never needed NATO allies and claimed their troops stayed back from Afghanistan's front lines.", 4, "False claim",
+    "Interview transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-interview-maria-bartiromo-fox-business-davos-january-22-2026/"),
+  card("2026-02-08", "bad-bunny-halftime-rant", "Takes his Bad Bunny complaints to Truth Social",
+    "He dismissed Bad Bunny's Super Bowl set as an affront to America, declaring nobody understood a word and taking particular offense at the dancing.", 4, "Grievance",
+    "ABC News", "https://abcnews.com/amp/US/trump-calls-bad-bunnys-super-bowl-halftime-show/story?id=129980124"),
+  card("2026-03-19", "japan-pearl-harbor-surprise-joke", "Brings Pearl Harbor to his meeting with Japan",
+    "Asked why allies got no warning about his Iran strikes, he invoked Pearl Harbor as a lesson in surprise, with Japan's prime minister sitting beside him.", 4, "Off-script",
+    "Reuters via Investing.com", "https://www.investing.com/news/world-news/trump-draws-parallel-between-pearl-harbor-and-us-strikes-on-iran-in-meeting-with-japanese-pm-4571363"),
   // Reviewed November 1: three recent stories and five historical gaps.
   // Norway's released exchange dates the Nobel text to January 18, not January 19 reporting.
   // The Ingraham tour was recorded November 10; the gold clip circulated November 11.
