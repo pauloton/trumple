@@ -14378,5 +14378,33 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-22385",
+    "date": "2026-11-02",
+    "title": "Tweaks imports of Robotics, Industrial Machinery",
+    "hint": "The Federal Register made it official: \"Adjusting Imports of Robotics, Industrial Machinery, and Their Parts and Components Into the US.\" The fine print joined the plot.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/02/2026-22385/adjusting-imports-of-robotics-industrial-machinery-and-their-parts-and-components-into-the-united"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-22386",
+    "date": "2026-11-02",
+    "title": "Delegates authority under Section 8335 of",
+    "hint": "The presidential record calls it \"Delegation of Authority Under Section 8335 of the National Defense Authorization Act for Fiscal Year 2026.\" The paperwork arrived with consequences.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/02/2026-22386/delegation-of-authority-under-section-8335-of-the-national-defense-authorization-act-for-fiscal-year"
+      }
+    ],
+    "status": "approved"
   }
 ];
