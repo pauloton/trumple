@@ -6,6 +6,34 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 3: three recent stories and six historical gaps.
+  card("2026-11-02", "reflecting-pool-election-eve-plumbing", "Makes pool plumbing his closing election pitch",
+    "At the Lincoln Memorial, he took reporters through the pipes, grass and granite. About 20 minutes in, he got around to the midterms.", 4, "Vanity",
+    "The Guardian", "https://www.theguardian.com/us-news/2026/nov/02/trump-reflecting-pool-renovation-midterms"),
+  card("2026-11-02", "iran-victory-was-it-a-war", "Declares victory in a war he may not call a war",
+    "At his election-eve press appearance, he declared victory in Iran, then questioned whether to call it a war at all, saying there had been no fighting for months.", 4, "Off-script",
+    "New York Post, quoting the remarks", "https://nypost.com/2026/11/02/us-news/trump-gives-blunt-one-word-answer-when-asked-about-renewed-iran-strikes-after-midterms/"),
+  card("2026-10-27", "corpus-christi-tanker-rally-prop", "Brings an oil tanker into his campaign pitch",
+    "At his Texas rally he pointed offshore to a tanker he said held a million barrels of Venezuelan oil and declared it the greatest oil victory in history.", 4, "Vanity",
+    "The Guardian", "https://www.theguardian.com/us-news/2026/oct/27/trump-oil-tanker-venezuela"),
+  card("2025-08-18", "mail-voting-only-country-claim", "Declares America the last country voting by mail",
+    "As he pledged to scrap mail voting, he claimed every other country had already given it up. Dozens still offered it, and he had used it himself in Florida.", 4, "False claim",
+    "The Guardian", "https://www.theguardian.com/us-news/2025/aug/18/trump-mail-in-ballots-voting-machines-2016-midterms"),
+  card("2025-08-18", "zelenskyy-jacket-oval-office-approval", "Gives Zelenskyy’s jacket his approval",
+    "At their Ukraine summit, the reporter who once asked if Zelenskyy owned a suit complimented his new jacket. Trump made sure he got credit for saying so too.", 3, "Off-script",
+    "The Guardian", "https://www.theguardian.com/world/2025/aug/19/zelenskyy-new-outfit-trump-summit-white-house-designer"),
+  card("2025-08-22", "asks-to-keep-world-cup-trophy", "Asks FIFA if he can keep the World Cup trophy",
+    "FIFA’s president handed him the trophy in the Oval Office. Trump set it on his desk, admired the gold and asked if he could keep it.", 4, "Vanity",
+    "The Guardian", "https://www.theguardian.com/football/2025/aug/22/trump-kennedy-center-2026-world-cup-draw"),
+  card("2025-08-25", "claims-dc-crackdown-reopens-restaurants", "Takes credit for reopening DC’s restaurants",
+    "He told reporters half of DC’s restaurants had closed out of fear and his crackdown had them opening again. Some owners were closing because staff feared raids.", 4, "Boast",
+    "The Guardian", "https://www.theguardian.com/us-news/2025/aug/29/trump-ice-washington-dc-restaurants"),
+  card("2025-08-28", "ends-harris-extended-protection", "Cuts his former rival’s Secret Service detail",
+    "He signed a memo ending the extra year of protection Biden had arranged for Kamala Harris. Her book tour was due to start in September.", 4, "Personal rule",
+    "The Guardian, citing the dated memo", "https://www.theguardian.com/us-news/2025/aug/29/kamala-harris-secret-service-trump-biden"),
+  card("2025-09-01", "promises-giuliani-medal-of-freedom", "Picks disbarred Giuliani for a Medal of Freedom",
+    "Trump promised the top US civilian honor to his former lawyer, who lost his law license over false claims about the election Trump lost.", 4, "Patronage",
+    "The Guardian", "https://www.theguardian.com/us-news/2025/sep/01/trump-rudy-giuliani-presidential-medal-of-freedom"),
   // Reviewed November 2: one recent story and five historical gaps.
   // The morality interview took place Wednesday, January 7; reports appeared January 8.
   card("2026-11-01", "hinson-iowa-rally-weight-commentary", "Can't leave Hinson's weight out of her rally",
