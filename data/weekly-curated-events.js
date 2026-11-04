@@ -6,6 +6,28 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 4: two recent stories and five historical gaps.
+  card("2026-11-03", "midterm-defeat-missing-his-name", "Blames the missing Trump name for GOP losses",
+    "As Republicans lost seats on election night, he declared they would have won in a landslide if only his name had been on the ballot.", 4, "Vanity",
+    "New York Post", "https://nypost.com/2026/11/03/us-news/furious-trump-declares-gop-would-have-won-in-a-landslide-if-he-was-on-midterm-ballot/"),
+  card("2026-11-03", "israel-aid-democrat-talking-point", "Calls Israel aid a bad talking point for him",
+    "Explaining a proposed end to US aid for Israel on Fox, he complained it gave Democrats an easy attack and said he and Netanyahu had agreed to stop it.", 4, "Off-script",
+    "Mediaite, with Fox interview video", "https://www.mediaite.com/media/tv/its-a-bad-talking-point-trump-explains-why-hes-cutting-4b-in-aid-to-israel/"),
+  card("2025-08-19", "ukraine-peace-personal-heaven-prospects", "Hopes a Ukraine deal improves his heaven odds",
+    "On Fox, he said saving lives in Ukraine might help him get into heaven, where he admitted his prospects were reportedly not looking good.", 4, "Off-script",
+    "Interview transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-interview-fox-and-friends-telephone-august-19-2025/"),
+  card("2026-10-10", "clarksville-stupidest-things-applause", "Says even his stupidest remarks would get claps",
+    "At his Tennessee rally, he told supporters they would applaud even his stupidest remarks, then assured them he only said things that made sense.", 4, "Vanity",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-clarksville-tennessee-october-10-2026/"),
+  card("2026-10-10", "trump-ocean-renaming-pitch", "Shops for an ocean to put his name on",
+    "At his Tennessee rally, he floated renaming the Atlantic or Pacific the Trump Ocean and decided he needed a great river too.", 4, "Vanity",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-clarksville-tennessee-october-10-2026/"),
+  card("2026-10-24", "aldean-marriage-record-sales-joke", "Gives Jason Aldean unsolicited marriage advice",
+    "With Jason and Brittany Aldean at his Georgia rally, he joked that she would leave the singer once the records stopped selling and told him to keep working.", 4, "Off-script",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-perry-georgia-october-24-2026/"),
+  card("2026-10-27", "mar-a-lago-five-thousand-burger", "Jokes his $5,000 pledge barely buys his burger",
+    "Pitching his election payout in Texas, he joked it might cover a burger and small dessert at Mar-a-Lago, then warned the price-conscious to stay away.", 4, "Vanity",
+    "Rally transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-midterm-political-rally-corpus-christi-texas-october-27-2026/"),
   // Reviewed November 3: three recent stories and six historical gaps.
   card("2026-11-02", "reflecting-pool-election-eve-plumbing", "Makes pool plumbing his closing election pitch",
     "At the Lincoln Memorial, he took reporters through the pipes, grass and granite. About 20 minutes in, he got around to the midterms.", 4, "Vanity",
