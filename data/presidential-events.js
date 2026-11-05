@@ -14406,5 +14406,47 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-22685",
+    "date": "2026-11-05",
+    "title": "Keeps the Iran emergency running",
+    "hint": "The Federal Register made it official: \"Continuation of the National Emergency With Respect to Iran.\" The fine print joined the plot.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/05/2026-22685/continuation-of-the-national-emergency-with-respect-to-iran"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-22686",
+    "date": "2026-11-05",
+    "title": "Keeps the Proliferation of Weapons of Mass",
+    "hint": "The presidential record calls it \"Continuation of the National Emergency With Respect to the Proliferation of Weapons of Mass Destruction.\" The paperwork arrived with consequences.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/05/2026-22686/continuation-of-the-national-emergency-with-respect-to-the-proliferation-of-weapons-of-mass"
+      }
+    ],
+    "status": "approved"
+  },
+  {
+    "id": "fr-2026-22688",
+    "date": "2026-11-05",
+    "title": "Keeps the Threat From Securities Investments That",
+    "hint": "The Federal Register made it official: \"Continuation of the National Emergency With Respect to the Threat From Securities Investments That Finance.\" The fine print joined the plot.",
+    "significance": 4,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/05/2026-22688/continuation-of-the-national-emergency-with-respect-to-the-threat-from-securities-investments-that"
+      }
+    ],
+    "status": "approved"
   }
 ];
