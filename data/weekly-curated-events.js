@@ -6,6 +6,28 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 5: two recent stories and five historical gaps.
+  card("2026-11-04", "post-midterm-ballroom-showcase", "Answers a midterm wipeout with a ballroom tour",
+    "The morning after Republican losses, he summoned reporters to his ballroom site and spent nearly 20 minutes admiring the building details.", 4, "Vanity",
+    "Associated Press", "https://www.25newsnow.com/2026/11/04/trump-has-no-public-events-scheduled-wednesday-after-democrats-midterm-wins/?outputType=amp"),
+  card("2026-11-03", "abbott-defeat-rino-demotion", "Demotes Abbott to fake Republican after defeat",
+    "After Greg Abbott lost the Texas governor race, he declared Abbott had spent six months becoming a Republican in name only and brought defeat on himself.", 4, "Retaliation",
+    "The Texas Tribune", "https://www.texastribune.org/2026/11/04/texas-democrats-blue-wave/"),
+  card("2025-11-25", "biden-turkeys-autopen-pardon-joke", "Drags Biden’s turkeys into his autopen feud",
+    "At the turkey pardon, he joked Biden’s birds had invalid autopen pardons, then cast himself as their last-minute rescuer from Thanksgiving dinner.", 4, "Grievance",
+    "Presidential transcript via The American Presidency Project", "https://www.presidency.ucsb.edu/documents/remarks-the-thanksgiving-turkey-presentation-ceremony-28"),
+  card("2025-12-02", "cabinet-somali-immigrants-garbage-rant", "Closes Cabinet with a rant against Somalis",
+    "He rounded off his Cabinet meeting by calling Somali immigrants garbage and declaring he did not want them in the country.", 5, "Racist rhetoric",
+    "ABC News", "https://abcnews.com/Politics/trump-describes-somali-immigrants-garbage-amid-feud-minnesota/story?id=128069199"),
+  card("2025-10-14", "time-cover-missing-hair-complaint", "Likes Time’s praise, objects to the hair",
+    "Time’s story got a pass, but its cover sent him to Truth Social to complain that the photo had disappeared his hair and left a tiny floating crown.", 4, "Vanity",
+    "PetaPixel", "https://petapixel.com/2025/10/14/president-trump-says-time-magazine-cover-photo-may-be-the-worst-of-all-time/"),
+  card("2025-05-08", "mattel-country-hundred-percent-tariff", "Threatens Barbie, calls Mattel a country",
+    "He threatened Mattel with a 100% toy tariff, predicted it would sell nothing in America and managed to refer to the California company as a country.", 4, "Retaliation",
+    "CNN interview and video transcript", "https://prod.transcripts.cnn.com/show/qmb/date/2025-05-09/segment/01"),
+  card("2025-11-26", "south-africa-g20-invitation-ban", "Drops a G20 member from his G20 guest list",
+    "After boycotting South Africa’s summit, he barred it from the next one in Miami, complaining that the handover had not gone his way.", 4, "Diplomatic grievance",
+    "Reuters", "https://www.marketscreener.com/news/trump-says-south-africa-won-t-receive-invitation-to-g20-in-2026-ce7d5ed3da88f424"),
   // Reviewed November 4: two recent stories and five historical gaps.
   card("2026-11-03", "midterm-defeat-missing-his-name", "Blames the missing Trump name for GOP losses",
     "As Republicans lost seats on election night, he declared they would have won in a landslide if only his name had been on the ballot.", 4, "Vanity",
