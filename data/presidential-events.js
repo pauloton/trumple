@@ -14448,5 +14448,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-22789",
+    "date": "2026-11-06",
+    "title": "Signs off on American Declaration of Freedom",
+    "hint": "Official paperwork followed under \"The American Declaration of Freedom in Space.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/06/2026-22789/the-american-declaration-of-freedom-in-space"
+      }
+    ],
+    "status": "approved"
   }
 ];
