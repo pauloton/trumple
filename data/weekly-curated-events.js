@@ -6,6 +6,17 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 6: two recent stories and one historical gap.
+  // The watercane remark was Tuesday, October 20, not the report date.
+  card("2026-11-05", "oval-office-monument-square-warning", "Protects the Oval Office from becoming square",
+    "Declaring his office a national monument, he warned that a future president might make it square and said Congress should stop that happening.", 4, "Vanity",
+    "Reuters", "https://www.investing.com/news/politics-news/trump-takes-action-to-make-sure-the-oval-office-stays-oval-5006158"),
+  card("2026-10-30", "jesus-sent-him-obama-meme", "Borrows Jesus for his latest Obama complaint",
+    "He reposted a meme in which Obama complains about Trump undoing his policies, and Jesus explains that was precisely why he sent Trump.", 4, "Self-promotion",
+    "Forbes", "https://www.forbes.com/sites/saradorn/2026/10/30/trump-posts-bizarre-meme-suggesting-he-was-sent-by-jesus-as-his-support-among-christians-is-down-20-points/"),
+  card("2026-10-20", "helene-watercane-rally-rebranding", "Gives Hurricane Helene a water-based rebrand",
+    "At his North Carolina rally, he called Helene a watercane and explained at length that this particular hurricane had brought a lot of water.", 4, "Off-script",
+    "MLive / Advance Local", "https://www.mlive.com/politics/2026/10/trump-drops-new-name-for-a-hurricane-during-north-carolina-rally-your-state-was-dying.html"),
   // Reviewed November 5: two recent stories and five historical gaps.
   card("2026-11-04", "post-midterm-ballroom-showcase", "Answers a midterm wipeout with a ballroom tour",
     "The morning after Republican losses, he summoned reporters to his ballroom site and spent nearly 20 minutes admiring the building details.", 4, "Vanity",
