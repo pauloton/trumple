@@ -6,6 +6,21 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 8: three recent stories and one historical gap.
+  // The interview was recorded Friday, November 6, before its Sunday broadcast.
+  // The Iowa rally was Thursday, October 22, not the October 23 report date.
+  card("2026-11-07", "dana-white-press-secretary-fighter-assistants", "Offers the press room to a UFC boss",
+    "He offered Dana White the press secretary job and asked him to bring UFC fighters as assistants to fend off the left.", 4, "Spectacle",
+    "Associated Press", "https://apnews.com/article/trump-dana-white-press-secretary-ufc-3fdad45c3822423209af40c04246707e"),
+  card("2026-11-06", "civility-pledge-dumocrats-interview", "Offers civility, slips in Dumocrats",
+    "Asked if he could work with Democrats without insults, he volunteered his Dumocrats nickname before assuring the interviewer he could manage six months of restraint.", 4, "Own goal",
+    "New York Post via AOL", "https://www.aol.com/articles/trump-insists-could-six-months-163745000.html"),
+  card("2026-11-05", "stock-market-crash-voters-to-blame", "Blames voters for the market crash",
+    "He blamed the market selloff on Democratic wins and told voters they had only themselves to blame.", 4, "Grievance",
+    "Axios", "https://www.axios.com/2026/11/06/trump-stock-market-sell-off"),
+  card("2026-10-22", "iowa-rally-lawnmower-sound-effects", "Supplies his own lawnmower sound effects",
+    "At his Iowa rally, he complained that starting a lawnmower required too much thinking, then provided the noises he would prefer it to make.", 4, "Off-script",
+    "The New Republic, with rally video", "https://newrepublic.com/post/217046/donald-trump-repeatedly-short-circuits-speech-noises"),
   // Reviewed November 6: two recent stories and one historical gap.
   // The watercane remark was Tuesday, October 20, not the report date.
   card("2026-11-05", "oval-office-monument-square-warning", "Protects the Oval Office from becoming square",
