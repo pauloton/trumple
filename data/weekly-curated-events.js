@@ -6,6 +6,18 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 9: three missed stories from the previous seven days.
+  // CBS recorded the interview Friday, November 6; it aired Sunday, November 8.
+  // These dates describe his public remarks, not the undated AI incident he alleged.
+  card("2026-11-06", "three-billion-net-worth-everyone-stock-answer", "Explains his billions with 'so did everyone'",
+    "Asked about a reported $3 billion rise in his wealth, he said everyone had gained and told the interviewer, who hadn't, that he should have owned stocks.", 4, "Vanity",
+    "Mediaite, with CBS interview clip", "https://www.mediaite.com/politics/trump/forbes-senior-editor-shreds-trumps-explanation-for-how-his-net-worth-went-up-3-billion-nonsense/"),
+  card("2026-11-06", "unnamed-ai-boss-jail-threat-account", "Claims a jail threat sorted out an AI boss",
+    "He said his team warned a major AI boss to kiss his family goodnight before prison, then claimed the unnamed executive changed everything.", 4, "Off-script",
+    "CBS interview transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-interview-ross-douthat-cbs-news-60-minutes-november-8-2026/"),
+  card("2026-11-06", "senate-roadblock-mr-veto-portrait", "Calls Senate a roadblock, names himself Mr. Veto",
+    "After complaining that the Senate blocked legislation while senators were away, he posted an Oval Office portrait billing himself as Mr. Veto.", 4, "Self-promotion",
+    "Mediaite via AOL", "https://www.aol.com/articles/art-deal-president-calls-himself-125825000.html"),
   // Reviewed November 8: three recent stories and one historical gap.
   // The interview was recorded Friday, November 6, before its Sunday broadcast.
   // The Iowa rally was Thursday, October 22, not the October 23 report date.
