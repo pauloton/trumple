@@ -6,6 +6,14 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 10: one recent story and one historical gap.
+  // The Pete Rose post was Friday, February 28, not the March 2 report date.
+  card("2026-11-09", "midterm-results-machines-reversal", "Accepts the midterms, then blames the machines",
+    "Less than a week after accepting the midterm results, he questioned the vote's honesty and blamed voting machines and early ballots.", 4, "Election denial",
+    "The New York Times via GV Wire", "https://gvwire.com/2026/11/09/trump-veers-back-into-claims-of-rigged-election/"),
+  card("2025-02-28", "pete-rose-pardon-hall-of-fame-pitch", "Campaigns for Pete Rose with a pardon promise",
+    "He promised the late Pete Rose a pardon, pushed baseball to put him in its Hall of Fame and stressed that Rose had only bet on his own team winning.", 4, "Off-script",
+    "Sports Business Journal", "https://www.sportsbusinessjournal.com/Articles/2025/03/02/trump-promises-pardon-of-pete-rose/"),
   // Reviewed November 9: three missed stories from the previous seven days.
   // CBS recorded the interview Friday, November 6; it aired Sunday, November 8.
   // These dates describe his public remarks, not the undated AI incident he alleged.
