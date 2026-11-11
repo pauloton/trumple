@@ -6,6 +6,15 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 11: one missed recent moment and one historical gap.
+  // CBS recorded the interview November 6; the broadcast was November 8.
+  // Reuters dates the mock convention pledge to September 10 in Dallas.
+  card("2026-11-06", "heaven-forgiveness-political-enemies", "Keeps his grudges even at the gates of heaven",
+    "Asked if he could forgive political enemies to enter heaven, he said no, explaining that dropping the hatred would not be true to himself.", 4, "Grievance",
+    "CBS interview transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-interview-ross-douthat-cbs-news-60-minutes-november-8-2026/"),
+  card("2026-09-10", "convention-mock-pledge-cheat-like-hell", "Adds 'cheat like hell' to his voting pledge",
+    "He led convention-goers in a mock pledge to vote whether registered or not and to cheat like hell, then warned that skipping the vote meant going to hell.", 4, "Spectacle",
+    "Reuters via MarketScreener", "https://au.marketscreener.com/news/trump-tells-republicans-to-vote-whether-registered-or-not-ce785bdfdb81f021"),
   // Reviewed November 10: one recent story and one historical gap.
   // The Pete Rose post was Friday, February 28, not the March 2 report date.
   card("2026-11-09", "midterm-results-machines-reversal", "Accepts the midterms, then blames the machines",
