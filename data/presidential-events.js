@@ -14462,5 +14462,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-23113",
+    "date": "2026-11-12",
+    "title": "Signs off on Establishment of the Oval Office",
+    "hint": "Official paperwork followed under \"Establishment of the Oval Office National Monument.\" Yes, it came with a presidential seal.",
+    "significance": 2,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/12/2026-23113/establishment-of-the-oval-office-national-monument"
+      }
+    ],
+    "status": "approved"
   }
 ];
