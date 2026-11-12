@@ -6,6 +6,14 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 12: two distinct recent stories.
+  // The DOJ demand was posted November 7, before the later counsel letter.
+  card("2026-11-11", "veterans-arch-two-hundred-year-wait", "Says veterans waited 200 years for his arch",
+    "At Arlington, he promised veterans a triumphal arch and announced they had been waiting for it for 200 years.", 4, "Vanity",
+    "The Washington Sun", "https://www.washingtonsun.com/whitehouse/trump-touts-veterans-and-his-arch"),
+  card("2026-11-07", "democratic-oversight-criminal-investigation-order", "Wants the investigators investigated first",
+    "Facing promised Democratic investigations, he ordered the Justice Department to investigate the Democrats, calling their oversight threats criminal.", 4, "Retaliation",
+    "Reuters via Investing.com", "https://www.investing.com/news/politics-news/trump-orders-doj-to-look-into-democrats-for-threatening-people-5009993"),
   // Reviewed November 11: one missed recent moment and one historical gap.
   // CBS recorded the interview November 6; the broadcast was November 8.
   // Reuters dates the mock convention pledge to September 10 in Dallas.
