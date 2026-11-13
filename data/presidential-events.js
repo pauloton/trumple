@@ -14476,5 +14476,19 @@ export const PRESIDENTIAL_EVENTS = [
       }
     ],
     "status": "approved"
+  },
+  {
+    "id": "fr-2026-23233",
+    "date": "2026-11-13",
+    "title": "Signs off on Presidential Determination",
+    "hint": "Official paperwork followed under \"Presidential Determination Pursuant to Section 1245(d)(4)(B) and (C) of the National Defense Authorization.\" Yes, it came with a presidential seal.",
+    "significance": 3,
+    "sources": [
+      {
+        "name": "Federal Register",
+        "url": "https://www.federalregister.gov/documents/2026/11/13/2026-23233/presidential-determination-pursuant-to-section-1245d4b-and-c-of-the-national-defense-authorization"
+      }
+    ],
+    "status": "approved"
   }
 ];
