@@ -6,6 +6,15 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 13: one recent story and one historical gap.
+  // The White House Bond post was May 16, not the May 18 article date.
+  // Original post: https://x.com/WhiteHouse/status/2055785300148764859
+  card("2026-11-12", "nvidia-ceo-tim-cook-shortlist", "Has a one-man shortlist for Nvidia's top job",
+    "After Jensen Huang resigned, he declared Tim Cook the only man for Nvidia's top job, billing the proposed switch as one legend replacing another.", 4, "Off-script",
+    "Reuters via Investing.com", "https://www.investing.com/news/stock-market-news/trump-says-ex-apple-ceo-cook-should-replace-huang-at-nvidia-5022650"),
+  card("2026-05-16", "white-house-james-bond-casting-poster", "Gets a White House audition as James Bond",
+    "With James Bond auditions underway, his White House supplied its own candidate: Trump in a tuxedo with a silenced pistol and a MAGA-branded 007 poster.", 4, "Self-promotion",
+    "Variety", "https://au.variety.com/2026/film/news/donald-trump-james-bond-white-house-image-36693/"),
   // Reviewed November 12: two distinct recent stories.
   // The DOJ demand was posted November 7, before the later counsel letter.
   card("2026-11-11", "veterans-arch-two-hundred-year-wait", "Says veterans waited 200 years for his arch",
