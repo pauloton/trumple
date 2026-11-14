@@ -6,6 +6,18 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 14: two missed stories from the completed seven days, plus one older gap.
+  // The Smith interview happened November 12, not the November 13 report date.
+  // November 3 dates the public Hannity anecdote, not the undated calls he described.
+  card("2026-11-12", "obama-hypothetical-race-self-described-unifier", "Calls Obama a divider, himself a unifier",
+    "Asked about facing Obama in an election, he predicted an easy win, dismissed Obama as a divider and cast himself as someone who brings people together.", 4, "Vanity",
+    "HuffPost via AOL", "https://www.aol.com/articles/trump-really-just-said-himself-090200000.html"),
+  card("2026-11-09", "hegseth-defense-vietnam-war-impeachment", "Suggests impeaching the Vietnam War's leaders",
+    "Defending Pete Hegseth, he asked why Congress wasn't impeaching the people who ran the Vietnam War, which had ended more than 50 years earlier.", 4, "Off-script",
+    "Cronkite News / Arizona PBS", "https://cronkitenews.azpbs.org/2026/11/09/trump-hegseth-impeachment/"),
+  card("2026-11-03", "hannity-phone-call-fake-xi-excuse", "Claims fake Xi calls get Hannity off the phone",
+    "On Fox, he said he escapes Sean Hannity's long calls by pretending Xi Jinping is on the other line, an excuse he claimed to use four nights running.", 4, "Off-script",
+    "HuffPost via AOL", "https://www.aol.com/articles/trump-tells-ainsley-earhardt-much-174042000.html"),
   // Reviewed November 13: one recent story and one historical gap.
   // The White House Bond post was May 16, not the May 18 article date.
   // Original post: https://x.com/WhiteHouse/status/2055785300148764859
