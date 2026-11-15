@@ -6,6 +6,15 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 15: two distinct November 14 posts complete the November 8-14 window.
+  // The Newsom reaction is dated to Trump's posts, not the earlier commutations.
+  // Golf photos were reposted November 14; this does not date their original capture.
+  card("2026-11-14", "hannibal-lecter-newsom-death-sentences", "Recruits Hannibal Lecter for his Newsom feud",
+    "He brought Hannibal Lecter into his attack on Newsom's death-sentence commutations, claiming some prisoners made the fictional cannibal look like a nice guy.", 4, "Grievance",
+    "Mediaite", "https://www.mediaite.com/politics/trump-trashes-newsom-for-halting-death-penalty-mercy-for-killers-who-make-hannibal-lecter-look-like-a-nice-guy/"),
+  card("2026-11-14", "trash-island-golf-photo-flood", "Floods his feed with 'Trash Island' photos",
+    "He posted dozens of East Potomac Park photos, rated its golf course the world's worst and complained about the judge holding up his makeover.", 4, "Vanity",
+    "Mediaite", "https://www.mediaite.com/media/news/trump-dumps-dozens-of-trash-island-photos-amid-east-potomac-park-legal-dispute/"),
   // Reviewed November 14: two missed stories from the completed seven days, plus one older gap.
   // The Smith interview happened November 12, not the November 13 report date.
   // November 3 dates the public Hannity anecdote, not the undated calls he described.
