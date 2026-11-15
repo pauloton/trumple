@@ -7760,13 +7760,13 @@ export const PRESIDENTIAL_EVENTS = [
   {
     "id": "fr-2021-01228",
     "date": "2021-01-19",
-    "title": "Rewrites Executive Order 13959Addressing",
-    "hint": "The Federal Register made it official: \"Amending Executive Order 13959Addressing the Threat From Securities Investments That Finance Communist.\" The fine print joined the plot.",
+    "title": "Rewrites Executive Order 13959--Addressing",
+    "hint": "The Federal Register made it official: \"Amending Executive Order 13959--Addressing the Threat From Securities Investments That Finance Communist.\" The fine print joined the plot.",
     "significance": 4,
     "sources": [
       {
         "name": "Federal Register",
-        "url": "https://www.federalregister.gov/documents/2021/01/19/2021-01228/amending-executive-order-13959addressing-the-threat-from-securities-investments-that-finance"
+        "url": "https://www.federalregister.gov/documents/2021/01/19/2021-01228/amending-executive-order-13959--addressing-the-threat-from-securities-investments-that-finance"
       }
     ],
     "status": "approved"
