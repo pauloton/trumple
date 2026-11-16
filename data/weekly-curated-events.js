@@ -6,6 +6,15 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 16: one new story and one November 5 gap.
+  // Chart posts: https://www.trumpstruth.org/statuses/43591 and /statuses/43592
+  // Sullivan demand date: https://www.presidency.ucsb.edu/documents/truth-social-posts-november-5-2026
+  card("2026-11-15", "midterm-charts-obama-mixed-elections", "Mixes Obama's midterms to flatter his own",
+    "His loss-comparison charts paired Obama's 2010 House losses with his 2014 Senate losses, giving Trump a hand-picked benchmark for his own defeat.", 4, "Vanity",
+    "Clash Report", "https://clashreport.com/world/articles/trump-compares-midterm-losses-with-obama-clinton-and-reagan-bqpc3l3nxp"),
+  card("2026-11-05", "sullivan-rival-votes-transfer-demand", "Wants rival candidates' votes gifted to his man",
+    "With Alaska still counting, he demanded that two rivals' votes be handed to Senator Dan Sullivan, declaring his preferred candidate the winner on the spot.", 5, "Election denial",
+    "Washington Examiner", "https://www.washingtonexaminer.com/news/white-house/4793778/"),
   // Reviewed November 15: two distinct November 14 posts complete the November 8-14 window.
   // The Newsom reaction is dated to Trump's posts, not the earlier commutations.
   // Golf photos were reposted November 14; this does not date their original capture.
