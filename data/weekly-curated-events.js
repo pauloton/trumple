@@ -6,6 +6,19 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 17: two November 16 remarks and one missed November 14 post.
+  // Gaggle date and wording: https://rollcall.com/factbase/trump/transcript/donald-trump-press-gaggle-before-marine-one-departure-november-16-2026/
+  // Mullin post: https://truthsocial.com/@realDonaldTrump/posts/117618190139423939
+  // The post was November 14; the injury and actual help were in 2020.
+  card("2026-11-16", "white-house-columns-airline-funding-reporter", "Answers flight chaos with a lecture on columns",
+    "Asked about White House renovations versus airline funding, he told the reporter she lacked talent and wouldn't notice a broken column.", 4, "Vanity",
+    "Associated Press", "https://apnews.com/article/nationwide-ground-stop-trump-air-travel-faa-6f58e64d9ced2543aaaf7317ec389d06"),
+  card("2026-11-16", "huang-spy-suspicions-beautiful-woman", "Explains spy suspicions with 'beautiful woman'",
+    "Asked about the allegations around Jensen Huang, he said beautiful women from China get called spies and said he wouldn't mind Huang returning to Nvidia.", 4, "Off-script",
+    "Associated Press", "https://apnews.com/article/nvidia-artificial-intelligence-ai-jensen-huang-202e72d0c05646479e96a4936620b983"),
+  card("2026-11-14", "mullin-good-deed-ai-images", "Gives his good-deed story AI illustrations",
+    "He reposted images apparently made with AI of himself comforting Markwayne Mullin's son, supplying extra visuals for a story about his help.", 4, "Self-promotion",
+    "The Daily Beast", "https://www.thedailybeast.com/trump-sparks-calls-for-the-25th-amendment-over-his-ai-slop-fantasy"),
   // Reviewed November 16: one new story and one November 5 gap.
   // Chart posts: https://www.trumpstruth.org/statuses/43591 and /statuses/43592
   // Sullivan demand date: https://www.presidency.ucsb.edu/documents/truth-social-posts-november-5-2026
