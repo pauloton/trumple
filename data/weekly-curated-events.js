@@ -6,6 +6,19 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 19: two distinct November 18 luncheon remarks and a November 17 post.
+  // Luncheon dates use Manila local time, confirmed by News5 and the press pool.
+  // Christmas reporting: https://www.thedailybeast.com/trump-80-derails-in-speech-to-world-leader-talking-xmas
+  // Gas post timestamp: https://www.presidency.ucsb.edu/documents/truth-social-posts-november-17-2026
+  card("2026-11-18", "macarthur-gold-baton-field-marshal-request", "Puts himself forward for MacArthur's gold baton",
+    "Recalling MacArthur's gold baton and Philippine Army rank, he jokingly asked Marcos for the same treatment and wondered why he shouldn't get it.", 4, "Vanity",
+    "TV5 / News5", "https://news.tv5.com.ph/producers-pick/watch/Sf7fSJERAaI/US%20Pres%20Donald%20Trump%20nagbiro%20na%20gusto%20ring%20makatanggap%20ng%20field%20marshal%20rank%20at%20gold%20baton/PL5HOfFlVmenZEdldNIGzxgXXBK0HSlo5T"),
+  card("2026-11-18", "manila-lunch-christmas-rescue-claim", "Takes credit for keeping Christmas on the menu",
+    "Admiring the palace's Christmas decorations in Manila, he claimed Americans had wanted to drop the word Christmas until he put a stop to it in 2016.", 4, "Self-promotion",
+    "Manila luncheon transcript via Roll Call", "https://rollcall.com/factbase/trump/transcript/donald-trump-remarks-bilateral-lunch-bongbong-marcos-philippines-manila-november-18-2026/"),
+  card("2026-11-17", "gas-price-drop-election-timing-suspicion", "Finds falling gas prices suspiciously timed",
+    "Sharing a post giving him credit for cheaper gas, he suggested someone had waited until after the election to let prices fall.", 4, "Grievance",
+    "Benzinga", "https://www.benzinga.com/news/politics/26/11/63381885/biggest-gas-price-drop-in-18-years-gasbuddy-analyst-mocks-trumps-gas-price-election-theory-they-must-have-read-your-september-memo"),
   // Reviewed November 17: two November 16 remarks and one missed November 14 post.
   // Gaggle date and wording: https://rollcall.com/factbase/trump/transcript/donald-trump-press-gaggle-before-marine-one-departure-november-16-2026/
   // Mullin post: https://truthsocial.com/@realDonaldTrump/posts/117618190139423939
