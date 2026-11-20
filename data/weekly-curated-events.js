@@ -6,6 +6,16 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 20: November 19 interview and return-flight gifts.
+  // NBC interview reported by ABC; AFP pooler received the cards on the November 19 return flight.
+  // Summit outcome: https://www.axios.com/2026/11/19/trump-xi-putin-summit-no-major-deal
+  // Hold the Shenzhen YMCA performance: reports disagree on November 18 versus 19.
+  card("2026-11-19", "putin-xi-summit-twelve-out-of-ten", "Gives his Putin-Xi summit 12 out of 10",
+    "After talks with Xi and Putin produced no specific nuclear cuts, he awarded the meeting 12 out of 10 and praised the fantastic relationships.", 4, "Vanity",
+    "ABC News / NBC interview", "https://abcnews.com/amp/Politics/live-updates/trump-asia-trip-2026/?id=138187702&offset=0"),
+  card("2026-11-19", "return-flight-record-cards-sharpies", "Turns a flight record into an autograph occasion",
+    "His gift to reporters on the flight home: cards bearing his signature and boasting of flight records, each accompanied by a black Sharpie.", 4, "Self-promotion",
+    "AFP White House pool report", "https://pool.pp.tools/reports/10388"),
   // Reviewed November 19: two distinct November 18 luncheon remarks and a November 17 post.
   // Luncheon dates use Manila local time, confirmed by News5 and the press pool.
   // Christmas reporting: https://www.thedailybeast.com/trump-80-derails-in-speech-to-world-leader-talking-xmas
