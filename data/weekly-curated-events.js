@@ -6,6 +6,17 @@ const card = (date, slug, title, hint, significance, category, name, url) => ({
 });
 
 export const WEEKLY_CURATED_EVENTS = [
+  // Reviewed November 21: two distinct November 20 briefing remarks and an August 19 gap.
+  // Dates confirmed by AFP/AP reporting of the events, rather than later publication dates.
+  card("2026-11-20", "miller-presidential-audition-vance-rubio", "Gives Miller a 2028 audition in front of Vance",
+    "With Vance and Rubio behind him, he rated Stephen Miller the better speaker and jokingly asked whether his chief of staff wanted to run for president.", 4, "Off-script",
+    "AFP", "https://www.afp.com/en/do-you-wanna-run-president-trump-floats-chief-staff-2028"),
+  card("2026-11-20", "putin-personal-friend-cannot-speak-america", "Keeps Putin's friendship strictly personal",
+    "Asked whether his friend Putin was also a friend to America, he said he couldn't speak to that, then returned to praising their personal relationship.", 4, "Off-script",
+    "Associated Press via WRAL", "https://www.wral.com/news/ap/961f5-trump-defends-calling-putin-a-friend-but-says-he-can-t-speak-to-whether-hes-a-friend-to-the-us/"),
+  card("2026-08-19", "helipad-granite-signature-future-generations", "Autographs his helipad for future generations",
+    "He signed the back of a granite helipad stone, then joked about laying it upside down so future generations could admire the signature.", 4, "Vanity",
+    "Associated Press via WTOP", "https://wtop.com/government/2026/08/trump-plays-white-house-tour-guide-to-show-off-work-on-his-helipad-and-ballroom/"),
   // Reviewed November 20: November 19 interview and return-flight gifts.
   // NBC interview reported by ABC; AFP pooler received the cards on the November 19 return flight.
   // Summit outcome: https://www.axios.com/2026/11/19/trump-xi-putin-summit-no-major-deal
